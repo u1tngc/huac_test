@@ -66,7 +66,7 @@ def GK_practice01():
         return redirect(url_for('GK_menu01'))
     
     if request.method == 'POST':
-        return redirect(url_for('GK_practice02'))  # redirectを使用
+        return render_template('GK_practice02.html')  # 元の処理に戻す
     return render_template('GK_practice01.html')
 
 # 練習問題解答
