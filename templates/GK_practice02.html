@@ -17,11 +17,11 @@
         <section class="options">
             <form method="post" action="/GK_practice02">
                 <h2>問題文</h2>
-                <div><a>{{ session['mondai_list'][session['ix1']][3] }}</a></div>
+                <div><a>{{ question }}</a></div>
                 <br>
                 <h2>答え</h2>
                 <div style="text-align: center;">
-                    <a>{{ session['mondai_list'][session['ix1']][4] | trim | safe }}</a>
+                    <a>{{ answer | trim | safe }}</a>
                 </div>
                 <div class="button-group">
                     <button type="submit" class="execute-button">次の問題</button>

@@ -56,38 +56,41 @@ def GK_menu01():
     return render_template('GK_menu01.html')
 
 # 練習問題
-@app.route('/GK_practice01', methods=['GET', 'POST'])  # メソッド名を大文字に修正
+@app.route('/GK_practice01', methods=['GET', 'POST']) 
 def GK_practice01():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
     
-    # mondai_listが存在しない場合はメニューに戻る
     if 'mondai_list' not in session or not session['mondai_list']:
         return redirect(url_for('GK_menu01'))
     
+    question_index = session['ix1']
+    question = session['mondai_list'][question_index][3]  # 現在の問題を取得
+    
     if request.method == 'POST':
-        return render_template('GK_practice02.html')  # 元の処理に戻す
-    return render_template('GK_practice01.html')
+        return redirect(url_for('GK_practice02'))
+    
+    return render_template('GK_practice01.html', question=question)
 
 # 練習問題解答
-@app.route('/GK_practice02', methods=['GET', 'POST'])  # メソッド名を大文字に修正
+@app.route('/GK_practice02', methods=['GET', 'POST'])
 def GK_practice02():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
     
-    # ix1が存在しない場合の処理
-    if 'ix1' not in session:
-        session['ix1'] = 0
+    question_index = session['ix1']
+    answer = session['mondai_list'][question_index][4]  # 解答を取得
+    question = session['mondai_list'][question_index][3]
     
-    session['ix1'] = session['ix1'] + 1
-    
-    if session['ix1'] >= 5:  # >= を使用してより安全に
-        # セッション変数をクリア
-        session.pop('ix1', None)
-        session.pop('mondai_list', None)
-        return redirect(url_for('GK_menu01'))  # redirectを使用
-    
-    return redirect(url_for('GK_practice01'))  # redirectを使用
+    if request.method == 'POST':
+        session['ix1'] += 1  # **次の問題に進むときに増加**
+        if session['ix1'] >= 5:
+            session.pop('ix1', None)
+            session.pop('mondai_list', None)
+            return redirect(url_for('GK_menu01'))  # 終了後メニューへ戻る
+        return redirect(url_for('GK_practice01'))  # 次の問題へ
+    return render_template('GK_practice02.html', answer=answer, question=question)
+
 
 # ログアウト
 @app.route('/GK_logout')
