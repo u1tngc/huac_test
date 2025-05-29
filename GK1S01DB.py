@@ -1,3 +1,6 @@
+#PGM-ID:GK1S01DB
+#PGM-NAME:GK自家用DB操作
+
 import psycopg2
 
 # データベース接続情報を定数として定義

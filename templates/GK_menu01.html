@@ -28,8 +28,8 @@
                         <option value="5">その他</option>
                     </select>
                 </div>
-                <label class="radio-group"><input type="radio" name="selection" value="nigate">苦手克服</label>
-                <label class="radio-group"><input type="radio" name="selection" value="test">小テスト</label>
+                <label class="radio-group"><input type="radio" name="selection" value="practice">苦手克服</label>
+                <label class="radio-group"><input type="radio" name="selection" value="practice">小テスト</label>
                 {% endif %}
 
                 {% if session['authority'] in [6, 7, 9] %}
@@ -39,7 +39,7 @@
                 {% if session['authority'] in [7, 9] %}
                 <label class="radio-group"><input type="radio" name="selection" value="db">ＤＢ登録・訂正・削除</label>
                 {% endif %}
-                <label class="radio-group"><input type="radio" name="selection" value="pass">パスワード変更</label>
+                <label class="radio-group"><input type="radio" name="selection" value="practice">パスワード変更</label>
             </section>
             <button class="submit-button">実行</button>
         </form>

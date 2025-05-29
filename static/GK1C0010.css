@@ -1,0 +1,180 @@
+/* 全体 */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    /* 子要素を縦に並べる */
+    align-items: center;
+    /* 水平方向に中央揃え */
+    justify-content: center;
+    /* 垂直方向に中央揃え */
+}
+
+/* ヘッダー */
+header {
+    background-color: #1e3a8a;
+    /* PANTONE280 */
+    color: white;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+/* メインコンテンツ */
+main {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-form {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.input-form h2 {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-size: 1.1em;
+    color: #555;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #3b82f6;
+}
+
+/* 必須マーク */
+.required {
+    color: #e53e3e;
+    margin-left: 3px;
+}
+
+/* 実行ボタン */
+.submit-button {
+    background-color: #3b82f6;
+    /* DIC161に近い色 */
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 200px;
+}
+
+.submit-button:hover {
+    background-color: #2563eb;
+}
+
+/* 戻るリンク */
+.back-link {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.back-link a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 1em;
+}
+
+.back-link a:hover {
+    text-decoration: underline;
+}
+
+/* フッター */
+footer {
+    background-color: #1e3a8a;
+    /* PANTONE280 */
+    color: white;
+    text-align: center;
+    padding: 10px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* 注意書き */
+.notice {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    color: #856404;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+    .input-form {
+        width: 95%;
+        padding: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        font-size: 1em;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="email"],
+    .form-group select {
+        padding: 10px;
+    }
+}
+
+#err {
+    color: red
+}

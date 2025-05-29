@@ -46,7 +46,6 @@ def get_mondai(bunya):
                 eof_flg = 1
     for ix1 in range(len(mondai)):
         mondai[ix1][4] = mondai[ix1][4].replace("\\n", "\n").replace("\n", "<br>")
-        print(mondai[ix1])
     return mondai
                 
     
