@@ -1,7 +1,7 @@
 #PGM-ID:GK1L00000
 #PGM-NAME:GK自家用学科ウェブメイン
 
-from flask import Flask, render_template, request, redirect, url_for, session, send_file, flash
+from flask import Flask, render_template, request, redirect, url_for, session
 import os
 
 import GK1S0001
