@@ -71,6 +71,7 @@ def GK_practice02():
         return redirect(url_for('GK_menu01'))
     
     question_index = session['ix1']
+    question = session['mondai_list'][question_index][3]
     answer = session['mondai_list'][question_index][4].replace("\n", "<br>")  # 改行適用
     
     if request.method == 'POST':
@@ -83,7 +84,7 @@ def GK_practice02():
         
         return redirect(url_for('GK_practice01'))  # 次の問題へ
     
-    return render_template('GK_practice02.html', answer=answer)
+    return render_template('GK_practice02.html', answer=answer, question=question)
 
 # ログアウト
 @app.route('/GK_logout')
