@@ -69,6 +69,8 @@ def GK_practice02():
         return redirect(url_for('GK_login'))
     session['ix1'] = session['ix1'] + 1
     if session['ix1'] == 5:
+        session['ix1'] = 0
+        session.pop('mondai_list', None)
         return render_template('GK_menu01.html')
     return render_template('GK_practice01.html')
 
