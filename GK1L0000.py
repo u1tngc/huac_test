@@ -1,16 +1,14 @@
-#PGM-ID:GK1L00000
-#PGM-NAME:GK自家用学科ウェブメイン
-
 from flask import Flask, render_template, request, redirect, url_for, session
 import os
-
 import GK1S0001
+from datetime import timedelta
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)  # 毎回ランダムなキーを生成
+app.secret_key = "your_fixed_secret_key_here"  # 固定のキーを使用
+app.config['SESSION_PERMANENT'] = True
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # セッション有効期限30分
 
-
-# ログインページの表示
+# ログインページ
 @app.route('/', methods=['GET', 'POST'])
 def GK_login():
     if request.method == 'POST':
@@ -18,6 +16,7 @@ def GK_login():
         in_user = request.form['user']
         login_ret, info = GK1S0001.login_check(in_user, in_password)
         if login_ret == 0:
+            session.permanent = True
             session['logged_in'] = True
             session['user_id'] = in_user
             session['authority'] = info
@@ -26,37 +25,26 @@ def GK_login():
             return 'ログイン失敗。ユーザー名またはパスワードが違います。'
     return render_template('GK_login.html')
 
-# メニュー画面の表示
+# メニュー画面
 @app.route('/GK_menu01', methods=['GET', 'POST'])
 def GK_menu01():
     if not session.get('logged_in'):
-        print("###")
         return redirect(url_for('GK_login'))
+    
     if request.method == 'POST':
         shorikbn = request.form['selection']
         if shorikbn == "practice":
-            # 練習問題用のセッション変数を初期化
             session.pop('mondai_list', None)
-            session.pop('ix1', None)  # 既存の ix1 を削除
-            session['ix1'] = 0        # 新しく 0 で初期化
+            session.pop('ix1', None)
+            session['ix1'] = 0  
             bunya = request.form['bunya']
             mondai = GK1S0001.get_mondai(bunya)
             session['mondai_list'] = mondai
-            return redirect(url_for('GK_practice01'))  # redirectを使用
-
-        elif shorikbn == "nigate":
-            pass
-        elif shorikbn == "test":
-            pass
-        elif shorikbn == "analysis":
-            pass
-        elif shorikbn == "db":
-            pass
-        elif shorikbn == "pass":
-            pass
+            return redirect(url_for('GK_practice01'))
+    
     return render_template('GK_menu01.html')
 
-# 練習問題
+# 練習問題（問題表示）
 @app.route('/GK_practice01', methods=['GET', 'POST']) 
 def GK_practice01():
     if not session.get('logged_in'):
@@ -66,32 +54,36 @@ def GK_practice01():
         return redirect(url_for('GK_menu01'))
     
     question_index = session['ix1']
-    question = session['mondai_list'][question_index][3]  # 現在の問題を取得
+    question = session['mondai_list'][question_index][3].replace("\n", "<br>")  # 改行適用
     
     if request.method == 'POST':
         return redirect(url_for('GK_practice02'))
     
     return render_template('GK_practice01.html', question=question)
 
-# 練習問題解答
+# 練習問題（解答表示）
 @app.route('/GK_practice02', methods=['GET', 'POST'])
 def GK_practice02():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
     
+    if 'mondai_list' not in session or not session['mondai_list']:
+        return redirect(url_for('GK_menu01'))
+    
     question_index = session['ix1']
-    answer = session['mondai_list'][question_index][4]  # 解答を取得
-    question = session['mondai_list'][question_index][3]
+    answer = session['mondai_list'][question_index][4].replace("\n", "<br>")  # 改行適用
     
     if request.method == 'POST':
-        session['ix1'] += 1  # **次の問題に進むときに増加**
+        session['ix1'] += 1  # **解答後に次の問題に進む**
+        
         if session['ix1'] >= 5:
             session.pop('ix1', None)
             session.pop('mondai_list', None)
-            return redirect(url_for('GK_menu01'))  # 終了後メニューへ戻る
+            return redirect(url_for('GK_menu01'))
+        
         return redirect(url_for('GK_practice01'))  # 次の問題へ
-    return render_template('GK_practice02.html', answer=answer, question=question)
-
+    
+    return render_template('GK_practice02.html', answer=answer)
 
 # ログアウト
 @app.route('/GK_logout')
@@ -104,6 +96,5 @@ def GK_logout():
     return redirect(url_for('GK_login'))
 
 if __name__ == "__main__":
-    #app.run(debug=True)
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
