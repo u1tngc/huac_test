@@ -31,15 +31,17 @@ def GK_menu01():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
     
+    user_id = session.get('user_id')  # ユーザーIDを取得
+
     if request.method == 'POST':
         shorikbn = request.form['selection']
         if shorikbn == "practice":
-            session.pop('mondai_list', None)
-            session.pop('ix1', None)
-            session['ix1'] = 0  
+            session.pop(f"user_{user_id}_mondai_list", None)
+            session.pop(f"user_{user_id}_ix1", None)
+            session[f"user_{user_id}_ix1"] = 0  
             bunya = request.form['bunya']
             mondai = GK1S0001.get_mondai(bunya)
-            session['mondai_list'] = mondai
+            session[f"user_{user_id}_mondai_list"] = mondai
             return redirect(url_for('GK_practice01'))
     
     return render_template('GK_menu01.html')
@@ -50,15 +52,17 @@ def GK_practice01():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
     
-    if 'mondai_list' not in session or not session['mondai_list']:
+    user_id = session.get('user_id')
+
+    if f"user_{user_id}_mondai_list" not in session:
         return redirect(url_for('GK_menu01'))
     
-    question_index = session['ix1']
-    question = session['mondai_list'][question_index][3].replace("\n", "<br>")  # 改行適用
-    
+    question_index = session[f"user_{user_id}_ix1"]
+    question = session[f"user_{user_id}_mondai_list"][question_index][3].replace("\n", "<br>")  # 改行適用
+
     if request.method == 'POST':
         return redirect(url_for('GK_practice02'))
-    
+
     return render_template('GK_practice01.html', question=question)
 
 # 練習問題（解答表示）
@@ -67,33 +71,36 @@ def GK_practice02():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
     
-    if 'mondai_list' not in session or not session['mondai_list']:
+    user_id = session.get('user_id')
+
+    if f"user_{user_id}_mondai_list" not in session:
         return redirect(url_for('GK_menu01'))
     
-    question_index = session['ix1']
-    question = session['mondai_list'][question_index][3]
-    answer = session['mondai_list'][question_index][4].replace("\n", "<br>")  # 改行適用
-    
+    question_index = session[f"user_{user_id}_ix1"]
+    question = session[f"user_{user_id}_mondai_list"][question_index][3]
+    answer = session[f"user_{user_id}_mondai_list"][question_index][4].replace("\n", "<br>")  # 改行適用
+
     if request.method == 'POST':
-        session['ix1'] += 1  # **解答後に次の問題に進む**
-        
-        if session['ix1'] >= 5:
-            session.pop('ix1', None)
-            session.pop('mondai_list', None)
+        session[f"user_{user_id}_ix1"] += 1  # **次の問題へ進む**
+
+        if session[f"user_{user_id}_ix1"] >= 5:
+            session.pop(f"user_{user_id}_ix1", None)
+            session.pop(f"user_{user_id}_mondai_list", None)
             return redirect(url_for('GK_menu01'))
-        
-        return redirect(url_for('GK_practice01'))  # 次の問題へ
-    
+
+        return redirect(url_for('GK_practice01'))
+
     return render_template('GK_practice02.html', answer=answer, question=question)
 
 # ログアウト
 @app.route('/GK_logout')
 def GK_logout():
+    user_id = session.get('user_id')
     session.pop('logged_in', None)
     session.pop('authority', None)
-    session.pop('mondai_list', None)
+    session.pop(f"user_{user_id}_mondai_list", None)
     session.pop('user_id', None)
-    session.pop('ix1', None)
+    session.pop(f"user_{user_id}_ix1", None)
     return redirect(url_for('GK_login'))
 
 if __name__ == "__main__":
