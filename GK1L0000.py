@@ -30,6 +30,7 @@ def GK_login():
 @app.route('/GK_menu01', methods=['GET', 'POST'])
 def GK_menu01():
     if not session.get('logged_in'):
+        print("###")
         return redirect(url_for('GK_login'))
     if request.method == 'POST':
         shorikbn = request.form['selection']
