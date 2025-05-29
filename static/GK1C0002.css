@@ -121,19 +121,22 @@ footer {
 }
 
 /* レスポンシブ対応 */
-@media (max-width: 768px) {
-    .options {
-        width: 95%;
-        padding: 20px;
-    }
-
+@media (max-width: 600px) {
     .radio-group {
-        flex-direction: column;
+        flex-direction: row;
+        /* 横並びを維持 */
+        flex-wrap: nowrap;
+        /* 折り返さない */
     }
 
-    .radio-group input[type="radio"],
+    .radio-group input[type="radio"] {
+        width: auto;
+        /* 既定サイズに戻す */
+    }
+
     .radio-group label {
-        margin: 5px 0;
+        font-size: 14px;
+        /* 文字サイズを適切に調整 */
     }
 }
 
