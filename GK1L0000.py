@@ -29,13 +29,13 @@ def GK_login():
 # メニュー画面の表示
 @app.route('/GK_menu01', methods=['GET', 'POST'])
 def GK_menu01():
-    session.pop('mondai_list', None)
-    session['ix1'] = 0
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
     if request.method == 'POST':
         shorikbn = request.form['selection']
         if shorikbn == "practice":
+            session.pop('mondai_list', None)
+            session['ix1'] = 0
             bunya = request.form['bunya']
             mondai = GK1S0001.get_mondai(bunya)
             session['mondai_list'] = mondai
@@ -60,7 +60,7 @@ def GK_practice01():
         return redirect(url_for('GK_login'))
     if request.method == 'POST':
         return render_template('GK_practice02.html')
-    return render_template('GK_practice02.html')
+    return render_template('GK_practice01.html')
 
 # 練習問題解答
 @app.route('/GK_practice02', methods=['get', 'post'])
