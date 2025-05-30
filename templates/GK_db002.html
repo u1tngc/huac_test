@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 学生管理セグ訂正</title>
+    <link rel="stylesheet" href="../static/GK1C0041.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>学生管理セグ訂正</h2>
+            <a>訂正する学生の学籍番号もしくは氏名を入力してください。</a>
+            <br>
+            <br>
+            {% if err %}
+            <a class="err">{{err}}</a>
+            <br>
+            <br>
+            {% endif %}
+            <form method="post" action="/GK_db002">
+                <div class="input-group">
+                    <label for="id">学籍番号</label>
+                    <input type="text" id="id" name="id" placeholder="ここに入力してください">
+                </div>
+                <div class="input-group">
+                    <label for="name">氏名</label>
+                    <input type="text" id="name" name="name" placeholder="ここに入力してください">
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="execute-button">次へ</button>
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                </div>
+
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUAC学科ツール</title>
+    <title>HUAC学科ツール メニュー</title>
     <link rel="stylesheet" href="../static/GK1C0002.css">
 </head>
 
@@ -12,41 +12,67 @@
     <header>
         <h1>HUAC学科ツール</h1>
     </header>
+
     <main>
-        <form method="post">
-            <section class="options">
-                <h2>機能選択</h2>
+        <section class="options">
+            <h2>機能選択</h2>
+            {% if err %}
+            <a class="err">{{err}}</a>
+            <br>
+            <br>
+            {% endif %}
+            <form method="post">
                 {% if session['authority'] in [0, 1, 2, 3, 4, 5, 7, 9] %}
-                <label class="radio-group"><input type="radio" name="selection" value="practice" checked>練習問題</label>
-                <div class="form-group">
-                    <label for="bunya">分野を選択:</label>
-                    <select id="bunya" name="bunya">
-                        <option value="1">法規</option>
-                        <option value="2">気象</option>
-                        <option value="3">工学</option>
-                        <option value="4">情報</option>
-                        <option value="5">その他</option>
-                    </select>
+                <div class="data-section">
+                    <label class="radio-group"><input type="radio" name="selection" value="practice"
+                            checked>練習問題</label>
+                    <div class="form-group">
+                        <label for="bunya">分野を選択:</label>
+                        <select id="bunya" name="bunya">
+                            <option value="1">法規</option>
+                            <option value="2">気象</option>
+                            <option value="3">工学</option>
+                            <option value="4">情報</option>
+                            <option value="5">その他</option>
+                        </select>
+                    </div>
+                    <label class="radio-group"><input type="radio" name="selection" value="nigate">苦手克服</label>
+                    <label class="radio-group"><input type="radio" name="selection" value="quiz">小テスト</label>
                 </div>
-                <label class="radio-group"><input type="radio" name="selection" value="practice">苦手克服</label>
-                <label class="radio-group"><input type="radio" name="selection" value="practice">小テスト</label>
                 {% endif %}
-
                 {% if session['authority'] in [6, 7, 9] %}
-                <label class="radio-group"><input type="radio" name="selection" value="analysis">苦手分析</label>
+                <div class="data-section">
+                    <label class="radio-group"><input type="radio" name="selection" value="analysis">苦手分析</label>
+                </div>
                 {% endif %}
-
                 {% if session['authority'] in [7, 9] %}
-                <label class="radio-group"><input type="radio" name="selection" value="db">ＤＢ登録・訂正・削除</label>
+                <div class="data-section">
+                    <label class="radio-group"><input type="radio" name="selection" value="db">ＤＢ登録・訂正・削除</label>
+                    <div class="form-group">
+                        <label for="db_kbn">処理を選択:</label>
+                        <select id="db_kbn" name="db_kbn">
+                            <option value="0">学生管理セグ照会</option>
+                            <option value="1">学生管理セグ訂正</option>
+                        </select>
+                    </div>
+                </div>
                 {% endif %}
-                <label class="radio-group"><input type="radio" name="selection" value="practice">パスワード変更</label>
-            </section>
-            <button class="submit-button">実行</button>
-        </form>
-        <a href="{{ url_for('GK_logout') }}">ログアウト</a>
-        <div>推奨ブラウザ：Chrome</div>
-        <div>スマホでも使用できるが、画面はPCサイズで出力される。</div>
+                <div class="data-section">
+                    <label class="radio-group"><input type="radio" name="selection" value="password">パスワード変更</label>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="execute-button">実行</button>
+                </div>
+            </form>
+        </section>
+
+        <div class="data-section info-section">
+            <a href="{{ url_for('GK_logout') }}">ログアウト</a>
+            <div>推奨ブラウザ：Chrome</div>
+            <div>スマホでも使用できるが、画面はPCサイズで出力される。</div>
+        </div>
     </main>
+
     <footer>
         <p>&copy; 2025 Yuichi Taniguchi</p>
     </footer>

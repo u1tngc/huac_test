@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 学生管理セグ訂正</title>
+    <link rel="stylesheet" href="../static/GK1C0041.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>学生管理セグ訂正</h2>
+            {% if err %}
+            <a class="err">{{err}}</a>
+            <br>
+            <br>
+            {% endif %}
+            <form method="post" action="/GK_db003">
+                <div class="data-section">
+                    <h3>■変更前■</h3>
+                    <table class="data-table">
+                        <tr>
+                            <td>学籍番号</td>
+                            <td>氏名</td>
+                            <td>状況CD</td>
+                            <td>解答状況CD</td>
+                        </tr>
+                        <tr>
+                            <td>{{ gakusei[0] }}</td>
+                            <td>{{ gakusei[1] }}</td>
+                            <td>{{ gakusei[2] }}</td>
+                            <td>{{ gakusei[3] }}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="data-section">
+                    <h3>■変更後■</h3>
+                    <table class="data-table">
+                        <tr>
+                            <td>学籍番号</td>
+                            <td>氏名</td>
+                            <td>状況CD</td>
+                            <td>解答状況CD</td>
+                        </tr>
+                        <tr>
+                            <td>{{ gakusei[0] }}</td>
+                            <td><input type="text" name="name" value="{{ gakusei[1] }}" class="table-input"></td>
+                            <td><input type="text" name="status_cd" value="{{ gakusei[2] }}" class="table-input"></td>
+                            <td><input type="text" name="answer_cd" value="{{ gakusei[3] }}" class="table-input"></td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="button-group">
+                    <button type="submit" class="execute-button">訂正</button>
+                    <button type="button" onclick="location.href='/GK_db002'" class="menu-button">戻る</button>
+                </div>
+
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>
