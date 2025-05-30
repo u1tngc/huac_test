@@ -161,10 +161,19 @@ def GK_logout():
     user_id = session.get('user_id')
     session.pop('logged_in', None)
     session.pop('authority', None)
-    session.pop(f"{user_id}_mondai_list", None)
     session.pop('user_id', None)
-    session.pop(f"{user_id}_ix1", None)
-    session.pop(f"{user_id}_gakusei")
+    try:
+        session.pop(f"{user_id}_mondai_list", None)
+    except KeyError:
+        pass
+    try:
+        session.pop(f"{user_id}_ix1", None)
+    except KeyError:
+        pass
+    try:
+        session.pop(f"{user_id}_gakusei")
+    except KeyError:
+        pass
     return redirect(url_for('GK_login'))
 
 if __name__ == "__main__":

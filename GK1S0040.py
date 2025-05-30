@@ -12,7 +12,21 @@ def get_gakusei(id,name):
     return gakusei_list, err
 
 def get_gakuseiAll():
+    status_dict = {
+    0: "自家用養成中",
+    1: "学生チェック済み",
+    2: "教官チェック済み",
+    3: "自家用取得済み",
+    4: "",  # 🔥 値が未設定の場合は空文字
+    5: "退部済み",
+    6: "学科班",
+    7: "学科班主任",
+    8: "教官",
+    9: "管理者"
+    }
     array = GK1S01DB.get_gakuseiAll()
+    for ix1 in range(len(array)):
+        array[ix1][2] = status_dict[array[ix1][2]]
     return array
 
 

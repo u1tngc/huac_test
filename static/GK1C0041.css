@@ -127,3 +127,23 @@ footer {
 .err {
     color: red;
 }
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    /* 枠線を統一 */
+    margin-top: 20px;
+}
+
+.data-table th,
+.data-table td {
+    border: 2px solid black;
+    /* 2pxの黒枠を追加 */
+    padding: 10px;
+    text-align: center;
+}
+
+.data-table th {
+    background-color: #f2f2f2;
+    /* ヘッダー部分の背景色 */
+}

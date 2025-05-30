@@ -22,7 +22,7 @@
             <br>
             {% endif %}
             <form method="post">
-                {% if session['authority'] in [0, 1, 2, 3, 4, 5, 7, 9] %}
+                {% if session['authority'] in [0, 1, 2, 3, 6, 7, 9] %}
                 <div class="data-section">
                     <label class="radio-group"><input type="radio" name="selection" value="practice"
                             checked>練習問題</label>
@@ -40,19 +40,21 @@
                     <label class="radio-group"><input type="radio" name="selection" value="quiz">小テスト</label>
                 </div>
                 {% endif %}
-                {% if session['authority'] in [6, 7, 9] %}
+                {% if session['authority'] in [6,7,8,9] %}
                 <div class="data-section">
                     <label class="radio-group"><input type="radio" name="selection" value="analysis">苦手分析</label>
                 </div>
                 {% endif %}
-                {% if session['authority'] in [7, 9] %}
+                {% if session['authority'] in [6, 7, 9] %}
                 <div class="data-section">
                     <label class="radio-group"><input type="radio" name="selection" value="db">ＤＢ登録・訂正・削除</label>
                     <div class="form-group">
                         <label for="db_kbn">処理を選択:</label>
                         <select id="db_kbn" name="db_kbn">
                             <option value="0">学生管理セグ照会</option>
+                            {% if session['authority'] in [7, 9] %}
                             <option value="1">学生管理セグ訂正</option>
+                            {% endif %}
                         </select>
                     </div>
                 </div>
