@@ -161,6 +161,8 @@ def GK_db003():
 @app.route('/GK_logout')
 def GK_logout():
     session.clear()
+    return redirect(url_for('GK_login'))
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
