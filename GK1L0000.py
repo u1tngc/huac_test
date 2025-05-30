@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
 import GK1S0000
 import GK1S0040
@@ -151,30 +151,16 @@ def GK_db003():
         id = list[0]
         update_gakusei = [id, name, int(status_cd),int(answer_cd) ]
         err = GK1S0040.update_gakusei(update_gakusei)
-        return render_template('GK_menu01.html',err="学生管理セグの訂正が完了しました。")
+        flash("学生管理セグの訂正が完了しました。")
+        return redirect(url_for('GK_menu01'))
+
     return render_template('GK_db003.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")       
     
 
 # ログアウト
 @app.route('/GK_logout')
 def GK_logout():
-    user_id = session.get('user_id')
-    session.pop('logged_in', None)
-    session.pop('authority', None)
-    session.pop('user_id', None)
-    try:
-        session.pop(f"{user_id}_mondai_list", None)
-    except KeyError:
-        pass
-    try:
-        session.pop(f"{user_id}_ix1", None)
-    except KeyError:
-        pass
-    try:
-        session.pop(f"{user_id}_gakusei")
-    except KeyError:
-        pass
-    return redirect(url_for('GK_login'))
+    session.clear()
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

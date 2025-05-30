@@ -16,11 +16,15 @@
     <main>
         <section class="options">
             <h2>機能選択</h2>
-            {% if err %}
-            <a class="err">{{err}}</a>
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="err">
+                {{ messages[0] }}
+            </div>
             <br>
             <br>
             {% endif %}
+            {% endwith %}
             <form method="post">
                 {% if session['authority'] in [0, 1, 2, 3, 6, 7, 9] %}
                 <div class="data-section">
