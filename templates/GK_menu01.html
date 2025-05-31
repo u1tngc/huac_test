@@ -33,7 +33,7 @@
                                 checked>練習問題</label>
                         <div class="form-horizontal">
                             <div class="form-group">
-                                <label for="bunya">分野を選択:</label>
+                                <label for="bunya">分野:</label>
                                 <select id="bunya" name="bunya">
                                     <option value="1">法規</option>
                                     <option value="2">気象</option>
@@ -43,10 +43,10 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label for="mondai_num">問題数:</label>
+                                <label for="mondai_num">問題数(5~25問):</label>
                                 <input type="number" id="mondai_num" name="mondai_num" value="5" min="5" max="25"
                                     required>
-                                <small style="color: #666; font-size: 0.9em;">（5〜25問まで設定可能）</small>
+                                <small style="color: #666; font-size: 0.9em;"></small>
                             </div>
                         </div>
                     </div>
@@ -70,7 +70,7 @@
                     <div class="radio-section">
                         <label class="radio-group"><input type="radio" name="selection" value="db">ＤＢ登録・訂正・削除</label>
                         <div class="form-group">
-                            <label for="db_kbn">処理を選択:</label>
+                            <label for="db_kbn"></label>
                             <select id="db_kbn" name="db_kbn">
                                 <option value="0">学生管理セグ照会</option>
                                 {% if session['authority'] in [7, 9] %}
