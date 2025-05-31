@@ -6,7 +6,6 @@ import random
 import GK1S01DB
 
 def login_check(user, password):
-    # ユーザー名の存在チェック
     user_info = GK1S01DB.select_gakusei(user)
     if not user_info:
         return 1,0
@@ -17,7 +16,7 @@ def login_check(user, password):
         else:
             return 2,0
 
-def get_mondai(bunya):
+def get_mondai(bunya,mondai_num):
 
     bunya_list = {
         "1" : "法規",
@@ -36,8 +35,6 @@ def get_mondai(bunya):
     }
     """
     bunya_name = bunya_list[bunya]
-
-    #bunya_name = "法規"
     ret_list = GK1S01DB.get_mondai(bunya_name)
     mondai = []
     random_num = [0]
@@ -52,7 +49,7 @@ def get_mondai(bunya):
         else:
             random_num.append(num)
             mondai.append(ret_list[num])
-            if len(mondai) == 5:
+            if len(mondai) == mondai_num:
                 eof_flg = 1
     for ix1 in range(len(mondai)):
         mondai[ix1][4] = mondai[ix1][4].replace("\\n", "\n").replace("\n", "<br>")

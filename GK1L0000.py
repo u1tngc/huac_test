@@ -1,13 +1,19 @@
+#PGM-ID:GK1L0000
+#PGM-NAME:GK自家用オンラインメイン
+
+from datetime import timedelta
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
+
+
 import GK1S0000
 import GK1S0040
-from datetime import timedelta
+
 
 app = Flask(__name__)
 app.secret_key = "your_fixed_secret_key_here"  # 固定のキーを使用
 app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)  # セッション有効期限30分
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)  # セッション有効期限30分
 
 # ログインページ
 @app.route('/', methods=['GET', 'POST'])
@@ -31,17 +37,18 @@ def GK_login():
 @app.route('/GK_menu01', methods=['GET', 'POST'])
 def GK_menu01():
     if not session.get('logged_in'):
-        return redirect(url_for('GK_login'))
-    
+        return redirect(url_for('GK_login'))  
     user_id = session.get('user_id')  # ユーザーIDを取得
     if request.method == 'POST':
         shorikbn = request.form['selection']
         if shorikbn == "practice":
+            bunya = request.form['bunya']
+            mondai_num = request.form['mondai_num']
             session.pop(f"{user_id}_mondai_list", None)
             session.pop(f"{user_id}_ix1", None)
             session[f"{user_id}_ix1"] = 0  
-            bunya = request.form['bunya']
-            mondai = GK1S0000.get_mondai(bunya)
+            session[f'{user_id}_mondaiNum'] = mondai_num
+            mondai = GK1S0000.get_mondai(bunya, mondai_num - 1)
             session[f"{user_id}_mondai_list"] = mondai
             return redirect(url_for('GK_practice01'))
         elif shorikbn == "db":
@@ -53,7 +60,7 @@ def GK_menu01():
                 return redirect(url_for('GK_db002',err=""))
         elif shorikbn == "password":
                 return redirect(url_for('GK_db010',err=""))
-    
+
     return render_template('GK_menu01.html')
 
 
@@ -62,17 +69,17 @@ def GK_menu01():
 def GK_practice01():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
-    
     user_id = session.get('user_id')
-
     if f"{user_id}_mondai_list" not in session:
-        return redirect(url_for('GK_menu01'))
-    
+        return redirect(url_for('GK_menu01'))    
     question_index = session[f"{user_id}_ix1"]
     question = session[f"{user_id}_mondai_list"][question_index][3].replace("\n", "<br>")  # 改行適用
-
+    if session[f"{user_id}_ix1"] == session[f'{user_id}_mondaiNum']:
+        end = 1
+    else:
+        end = 0
     if request.method == 'POST':
-        return redirect(url_for('GK_practice02'))
+        return redirect(url_for('GK_practice02', end=end))
 
     return render_template('GK_practice01.html', question=question)
 
@@ -81,30 +88,26 @@ def GK_practice01():
 @app.route('/GK_practice02', methods=['GET', 'POST'])
 def GK_practice02():
     if not session.get('logged_in'):
-        return redirect(url_for('GK_login'))
-    
+        return redirect(url_for('GK_login'))   
     user_id = session.get('user_id')
-
     if f"{user_id}_mondai_list" not in session:
-        return redirect(url_for('GK_menu01'))
-    
+        return redirect(url_for('GK_menu01'))    
     question_index = session[f"{user_id}_ix1"]
     question = session[f"{user_id}_mondai_list"][question_index][3]
     answer = session[f"{user_id}_mondai_list"][question_index][4].replace("\n", "<br>")  # 改行適用
 
+    # 最後の問題かどうかを判定
+    if session[f"{user_id}_ix1"] + 1 >= session[f'{user_id}_mondaiNum']:
+        err = 1  # 最後の問題
+    else:
+        err = 0  
     if request.method == 'POST':
-        session[f"{user_id}_ix1"] += 1  # **次の問題へ進む**
-
-        if session[f"{user_id}_ix1"] >= 5:
-            session.pop(f"{user_id}_ix1", None)
-            session.pop(f"{user_id}_mondai_list", None)
-            return redirect(url_for('GK_menu01'))
-
+        session[f"{user_id}_ix1"] += 1  
         return redirect(url_for('GK_practice01'))
 
-    return render_template('GK_practice02.html', answer=answer, question=question)
+    return render_template('GK_practice02.html', answer=answer, question=question, err=err)
 
-
+#学生管理セグ・照会
 @app.route('/GK_db001', methods=['GET', 'POST'])
 def GK_db001():
     user_id = session.get('user_id')
@@ -115,6 +118,7 @@ def GK_db001():
     return render_template('GK_db001.html')
 
 
+#学生管理セグ訂正・照会
 @app.route('/GK_db002', methods=['GET', 'POST'])
 def GK_db002():
     user_id = session.get('user_id')
@@ -135,6 +139,8 @@ def GK_db002():
         return redirect(url_for('GK_db003', gakusei=session.get(f'{user_id}_gakusei'), err=""))
     return render_template('GK_db002.html')
 
+
+#学生管理セグ・訂正
 @app.route('/GK_db003', methods=['GET', 'POST'])
 def GK_db003():
     user_id = session.get('user_id')
@@ -158,6 +164,7 @@ def GK_db003():
 
     return render_template('GK_db003.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")      
 
+
 @app.route('/GK_db010', methods=['GET', 'POST'])
 def GK_db010():
     user_id = session.get('user_id')
@@ -175,6 +182,12 @@ def GK_db010():
 
     return render_template('GK_db010.html', err ="")  
     
+
+# セッションの有効期限をリセット
+@app.before_request
+def refresh_session():
+    session.modified = True  
+
 
 # ログアウト
 @app.route('/GK_logout')
