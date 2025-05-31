@@ -87,10 +87,10 @@ def get_gakusei(id,name):
 
         with conn.cursor() as cur:
             if id:
-                sql = 'SELECT 学籍番号, 氏名, 状況CD", 解答状況CD FROM 学生管理セグ WHERE 学籍番号 = %s'
+                sql = 'SELECT 学籍番号, 氏名, 状況CD, 解答状況CD FROM 学生管理セグ WHERE 学籍番号 = %s'
                 data = (id,)
             else:
-                sql = 'SELECT 学籍番号, 氏名, 状況CD", 解答状況CD FROM 学生管理セグ WHERE 氏名 = %s'
+                sql = 'SELECT 学籍番号, 氏名, 状況CD, 解答状況CD FROM 学生管理セグ WHERE 氏名 = %s'
                 data = (name,)
             cur.execute(sql,data)
             result = cur.fetchone()  
