@@ -43,7 +43,7 @@ def GK_menu01():
         shorikbn = request.form['selection']
         if shorikbn == "practice":
             bunya = request.form['bunya']
-            mondai_num = request.form['mondai_num']
+            mondai_num = int(request.form['mondai_num'])
             session.pop(f"{user_id}_mondai_list", None)
             session.pop(f"{user_id}_ix1", None)
             session[f"{user_id}_ix1"] = 0  
