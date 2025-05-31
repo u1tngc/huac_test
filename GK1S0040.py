@@ -3,10 +3,13 @@
 
 import GK1S01DB
 
-def get_gakusei(id,name):
+def get_gakusei(id,name, authority):
     gakusei_list = GK1S01DB.get_gakusei(id,name)
     if gakusei_list:
-        err = ""
+        if gakusei_list[2] in [7,8,9] and authority in [0,1,2,3,4,5,6,7,8]:
+            err = "当ユーザーの訂正は管理者のみが可能です"
+        else:
+            err = ""
     else:
         err = "DB相手無し"
     return gakusei_list, err
@@ -56,7 +59,26 @@ def check02(name,status,answer):
         return "状況CDは半角数字で入力してください。"
     return ""
     
+def check03(pass1,pass2):
+    if pass1 != pass2:
+        return "１回目と２回目で入力値が異なります。"
+    else:
+        if len(pass1) < 6 or len(pass1) > 30:
+            return "パスワードは６字以上３０字以内で設定してください。"
+        if not pass1.isalnum():
+            return "パスワードは半角英数字で設定してください。"
+        if not any(ix1.isdigit() for ix1 in pass1):
+            return "パスワードは文字と数字を組み合わせてください。"
+        if not any(ix1.isalpha() for ix1 in pass1):
+            return "パスワードは文字と数字を組み合わせてください。"
+        return ""
+
 
 def update_gakusei(update_gakusei):
     err = GK1S01DB.update_gakusei(update_gakusei)
     return ""
+
+def update_password(user_id,password):
+    err = GK1S01DB.update_password(user_id,password)
+    return ""        
+

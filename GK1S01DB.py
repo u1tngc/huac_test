@@ -166,6 +166,28 @@ def update_lastLogin(id):
         return 1
     except Exception as e:
         return 2
+    
+
+def update_password(id,password):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  # 定数を展開して接続
+
+        with conn.cursor() as cur:
+            sql = """
+            UPDATE 学生管理セグ SET パスワード = %s WHERE 学籍番号 = %s
+            """
+            data = (password, id) 
+
+            cur.execute(sql, data)
+            conn.commit()
+
+        conn.close()
+
+        return 0  # 成功時のリターンコード
+    except psycopg2.Error as e:
+        return 1
+    except Exception as e:
+        return 2
 
 """
 # 実行例

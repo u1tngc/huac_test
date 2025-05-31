@@ -51,6 +51,8 @@ def GK_menu01():
                 return render_template('GK_db001.html',gakuseiList=array)
             elif db_kbn == "1":
                 return redirect(url_for('GK_db002',err=""))
+        elif shorikbn == "password":
+                return redirect(url_for('GK_db010',err=""))
     
     return render_template('GK_menu01.html')
 
@@ -126,7 +128,7 @@ def GK_db002():
         err = GK1S0040.check01(id,name)
         if err:
             return render_template('GK_db002.html', err=err)
-        gakusei_list, err = GK1S0040.get_gakusei(id,name)
+        gakusei_list, err = GK1S0040.get_gakusei(id,name,session.get('authority'))
         if err:  
             return render_template('GK_db002.html', err=err)
         session[f'{user_id}_gakusei'] = gakusei_list
@@ -154,7 +156,24 @@ def GK_db003():
         flash("学生管理セグの訂正が完了しました。")
         return redirect(url_for('GK_menu01'))
 
-    return render_template('GK_db003.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")       
+    return render_template('GK_db003.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")      
+
+@app.route('/GK_db010', methods=['GET', 'POST'])
+def GK_db010():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if request.method == 'POST':  
+        pass1 = request.form['pass1']
+        pass2 = request.form['pass2']
+        err = GK1S0040.check03(pass1, pass2)
+        if err:
+            return render_template('GK_db010.html', err =err)   
+        err = GK1S0040.update_password(user_id,pass1)
+        flash(f"{user_id}のパスワード変更が完了しました。")
+        return redirect(url_for('GK_menu01'))
+
+    return render_template('GK_db010.html', err ="")  
     
 
 # ログアウト
