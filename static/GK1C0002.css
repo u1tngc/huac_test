@@ -167,6 +167,26 @@ footer {
     padding: 20px 0;
 }
 
+/* 横並びのフォームグループ */
+.form-horizontal {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+.form-horizontal .form-group {
+    flex: 1;
+    padding-left: 0;
+    margin: 0;
+}
+
+.form-horizontal .form-group select,
+.form-horizontal .form-group input[type="number"] {
+    width: 100%;
+}
+
 /* レスポンシブ対応 */
 @media (max-width: 600px) {
     .data-section .radio-group {
@@ -184,6 +204,22 @@ footer {
 
     .form-group select,
     .form-group input[type="number"] {
+        width: calc(100% - 20px);
+    }
+
+    /* スマホでは縦並びに戻す */
+    .form-horizontal {
+        flex-direction: column;
+        gap: 10px;
+        padding-left: 10px;
+    }
+
+    .form-horizontal .form-group {
+        padding-left: 0;
+    }
+
+    .form-horizontal .form-group select,
+    .form-horizontal .form-group input[type="number"] {
         width: calc(100% - 20px);
     }
 }

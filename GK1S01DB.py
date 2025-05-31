@@ -1,14 +1,13 @@
 #PGM-ID:GK1S01DB
 #PGM-NAME:GK自家用DB操作(オンライン)
 
-import os
 import psycopg2
 
 DB_CONFIG = {
-    "dbname": os.environ.get("DB_NAME"),
-    "user": os.environ.get("DB_USER"),
-    "password": os.environ.get("DB_PASSWORD"),
-    "host": os.environ.get("DB_HOST"),
+    "dbname": "huac_gakka",
+    "user": "taniguchi_tanglin_ic",
+    "password": "N6eEqr20vmfNV-_McGwfkA",
+    "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud",
     "port": 26257,
     "sslmode": "require",
     "sslcert": "",
