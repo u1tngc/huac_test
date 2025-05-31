@@ -20,6 +20,7 @@ form {
 /* ヘッダー */
 header {
     background-color: #1e3a8a;
+    /* PANTONE280 */
     color: white;
     padding: 20px;
     text-align: center;
@@ -52,7 +53,8 @@ main {
 
 .options h2 {
     color: #333;
-    margin-bottom: 20px;
+    margin-top: 0;
+    margin-bottom: 10px;
 }
 
 /* 入力グループ */

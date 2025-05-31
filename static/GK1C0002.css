@@ -56,7 +56,8 @@ main {
 
 .options h2 {
     color: #333;
-    margin-bottom: 20px;
+    margin-top: 0;
+    margin-bottom: 10px;
 }
 
 .data-section {
@@ -167,12 +168,30 @@ footer {
     padding: 20px 0;
 }
 
+/* ラジオボタンエリアの背景 */
+.radio-section {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    border: 1px solid #e9ecef;
+}
+
+.radio-section .radio-group {
+    padding-left: 0;
+    margin: 0 0 10px 0;
+}
+
+.radio-section .radio-group:last-of-type {
+    margin-bottom: 0;
+}
+
 /* 横並びのフォームグループ */
 .form-horizontal {
     display: flex;
     gap: 20px;
     align-items: flex-start;
-    padding-left: 20px;
+    padding-left: 0;
     margin: 10px 0;
 }
 
@@ -184,7 +203,8 @@ footer {
 
 .form-horizontal .form-group select,
 .form-horizontal .form-group input[type="number"] {
-    width: 100%;
+    width: calc(100% - 20px);
+    padding: 10px;
 }
 
 /* レスポンシブ対応 */
@@ -207,20 +227,32 @@ footer {
         width: calc(100% - 20px);
     }
 
-    /* スマホでは縦並びに戻す */
+    /* スマホでも横並びを維持 */
     .form-horizontal {
-        flex-direction: column;
+        display: flex;
+        flex-direction: row;
         gap: 10px;
-        padding-left: 10px;
+        padding-left: 0;
+    }
+
+    .radio-section .radio-group {
+        padding-left: 0;
     }
 
     .form-horizontal .form-group {
         padding-left: 0;
+        flex: 1;
     }
 
     .form-horizontal .form-group select,
     .form-horizontal .form-group input[type="number"] {
         width: calc(100% - 20px);
+        padding: 8px;
+        font-size: 14px;
+    }
+
+    .form-horizontal .form-group label {
+        font-size: 13px;
     }
 }
 

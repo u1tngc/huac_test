@@ -28,50 +28,63 @@
             <form method="post">
                 {% if session['authority'] in [0, 1, 2, 3, 6, 7, 9] %}
                 <div class="data-section">
-                    <label class="radio-group"><input type="radio" name="selection" value="practice"
-                            checked>練習問題</label>
-                    <div class="form-horizontal">
-                        <div class="form-group">
-                            <label for="bunya">分野を選択:</label>
-                            <select id="bunya" name="bunya">
-                                <option value="1">法規</option>
-                                <option value="2">気象</option>
-                                <option value="3">工学</option>
-                                <option value="4">情報</option>
-                                <option value="5">その他</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="mondai_num">問題数:</label>
-                            <input type="number" id="mondai_num" name="mondai_num" value="5" min="5" max="25" required>
-                            <small style="color: #666; font-size: 0.9em;">（5〜25問まで設定可能）</small>
+                    <div class="radio-section">
+                        <label class="radio-group"><input type="radio" name="selection" value="practice"
+                                checked>練習問題</label>
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="bunya">分野を選択:</label>
+                                <select id="bunya" name="bunya">
+                                    <option value="1">法規</option>
+                                    <option value="2">気象</option>
+                                    <option value="3">工学</option>
+                                    <option value="4">情報</option>
+                                    <option value="5">その他</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="mondai_num">問題数:</label>
+                                <input type="number" id="mondai_num" name="mondai_num" value="5" min="5" max="25"
+                                    required>
+                                <small style="color: #666; font-size: 0.9em;">（5〜25問まで設定可能）</small>
+                            </div>
                         </div>
                     </div>
-                    <label class="radio-group"><input type="radio" name="selection" value="nigate">苦手克服</label>
-                    <label class="radio-group"><input type="radio" name="selection" value="quiz">小テスト</label>
+                    <div class="radio-section">
+                        <label class="radio-group"><input type="radio" name="selection" value="nigate">苦手克服</label>
+                    </div>
+                    <div class="radio-section">
+                        <label class="radio-group"><input type="radio" name="selection" value="quiz">小テスト</label>
+                    </div>
                 </div>
                 {% endif %}
                 {% if session['authority'] in [6,7,8,9] %}
                 <div class="data-section">
-                    <label class="radio-group"><input type="radio" name="selection" value="analysis">苦手分析</label>
+                    <div class="radio-section">
+                        <label class="radio-group"><input type="radio" name="selection" value="analysis">苦手分析</label>
+                    </div>
                 </div>
                 {% endif %}
                 {% if session['authority'] in [6, 7, 9] %}
                 <div class="data-section">
-                    <label class="radio-group"><input type="radio" name="selection" value="db">ＤＢ登録・訂正・削除</label>
-                    <div class="form-group">
-                        <label for="db_kbn">処理を選択:</label>
-                        <select id="db_kbn" name="db_kbn">
-                            <option value="0">学生管理セグ照会</option>
-                            {% if session['authority'] in [7, 9] %}
-                            <option value="1">学生管理セグ訂正</option>
-                            {% endif %}
-                        </select>
+                    <div class="radio-section">
+                        <label class="radio-group"><input type="radio" name="selection" value="db">ＤＢ登録・訂正・削除</label>
+                        <div class="form-group">
+                            <label for="db_kbn">処理を選択:</label>
+                            <select id="db_kbn" name="db_kbn">
+                                <option value="0">学生管理セグ照会</option>
+                                {% if session['authority'] in [7, 9] %}
+                                <option value="1">学生管理セグ訂正</option>
+                                {% endif %}
+                            </select>
+                        </div>
                     </div>
                 </div>
                 {% endif %}
                 <div class="data-section">
-                    <label class="radio-group"><input type="radio" name="selection" value="password">パスワード変更</label>
+                    <div class="radio-section">
+                        <label class="radio-group"><input type="radio" name="selection" value="password">パスワード変更</label>
+                    </div>
                 </div>
                 <div class="button-group">
                     <button type="submit" class="execute-button">実行</button>
