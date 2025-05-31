@@ -48,7 +48,7 @@ def GK_menu01():
             session.pop(f"{user_id}_ix1", None)
             session[f"{user_id}_ix1"] = 0  
             session[f'{user_id}_mondaiNum'] = mondai_num
-            mondai = GK1S0000.get_mondai(bunya, mondai_num - 1)
+            mondai = GK1S0000.get_mondai(bunya, mondai_num)
             session[f"{user_id}_mondai_list"] = mondai
             return redirect(url_for('GK_practice01'))
         elif shorikbn == "db":
