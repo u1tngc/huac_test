@@ -18,17 +18,26 @@ def login_check(user, password):
             return 2,0
 
 def get_mondai(bunya):
-    """
+
     bunya_list = {
+        "1" : "法規",
+        "2" : "気象",
+        "3" : "法規",
+        "4" : "法規",
+        "5" : "法規"
+    }
+    """
+        bunya_list = {
         "1" : "法規",
         "2" : "気象",
         "3" : "工学",
         "4" : "情報",
         "5" : "その他"
     }
-    bunya_name = bunya_list[bunya]
     """
-    bunya_name = "法規"
+    bunya_name = bunya_list[bunya]
+
+    #bunya_name = "法規"
     ret_list = GK1S01DB.get_mondai(bunya_name)
     mondai = []
     random_num = [0]
