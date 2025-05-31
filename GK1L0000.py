@@ -72,12 +72,13 @@ def GK_practice01():
     user_id = session.get('user_id')
     if f"{user_id}_mondai_list" not in session:
         return redirect(url_for('GK_menu01'))    
-    question_index = session[f"{user_id}_ix1"]
-    question = session[f"{user_id}_mondai_list"][question_index][3].replace("\n", "<br>")  # 改行適用
+
     if session[f"{user_id}_ix1"] == session[f'{user_id}_mondaiNum']:
         end = 1
     else:
         end = 0
+        question_index = session[f"{user_id}_ix1"]
+        question = session[f"{user_id}_mondai_list"][question_index][3].replace("\n", "<br>")  # 改行適用
     if request.method == 'POST':
         return redirect(url_for('GK_practice02', end=end))
 
