@@ -52,6 +52,7 @@ def get_mondai(bunya,mondai_num):
             if len(mondai) == mondai_num:
                 eof_flg = 1
     for ix1 in range(len(mondai)):
+        mondai[ix1][3] = mondai[ix1][3].replace("\\n", "\n").replace("\n", "<br>")
         mondai[ix1][4] = mondai[ix1][4].replace("\\n", "\n").replace("\n", "<br>")
     return mondai
                 

@@ -96,7 +96,7 @@ def GK_practice02():
     if f"{user_id}_mondai_list" not in session:
         return redirect(url_for('GK_menu01'))    
     question_index = session[f"{user_id}_ix1"]
-    question = session[f"{user_id}_mondai_list"][question_index][3]
+    question = session[f"{user_id}_mondai_list"][question_index][3].replace("\n", "<br>")  # 改行適用
     answer = session[f"{user_id}_mondai_list"][question_index][4].replace("\n", "<br>")  # 改行適用
 
     # 最後の問題かどうかを判定
