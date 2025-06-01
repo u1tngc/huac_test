@@ -1,6 +1,8 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
 
+import re
+
 import GK1S01DB
 
 def get_gakusei(id,name, authority):
@@ -74,9 +76,29 @@ def check03(pass1,pass2):
         return ""
 
 
+def check04(id, name, status_cd):
+    if len(id) != 7:
+        return "学籍番号が不正な値です。"
+    pattern = r'^\d{2}[A-Z]\d{4}$'
+    if not re.match(pattern, id):
+        return "学籍番号が不正な値です。"
+    if len(name) > 10:
+        return "氏名は10字以内で入力してください。"
+    if ' ' in name or '　' in name:
+        return "氏名は空白を入れずに入力してください。"
+    return ""
+
+
 def update_gakusei(update_gakusei):
     err = GK1S01DB.update_gakusei(update_gakusei)
     return ""
+
+def insert_gakusei(id, name, status_cd):
+    err = GK1S01DB.insert_gakusei(id, name, status_cd)
+    if err == 3:
+        return "入力した学籍番号は登録済みです。"
+    return ""    
+
 
 def update_password(user_id,password):
     err = GK1S01DB.update_password(user_id,password)

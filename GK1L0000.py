@@ -58,6 +58,8 @@ def GK_menu01():
                 return render_template('GK_db001.html',gakuseiList=array)
             elif db_kbn == "1":
                 return redirect(url_for('GK_db002',err=""))
+            elif db_kbn == "2":
+                return redirect(url_for('GK_db004',err=""))
         elif shorikbn == "password":
                 return redirect(url_for('GK_db010',err=""))
 
@@ -164,6 +166,30 @@ def GK_db003():
         return redirect(url_for('GK_menu01'))
 
     return render_template('GK_db003.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")      
+
+
+#学生管理セグ・登録
+@app.route('/GK_db004', methods=['GET', 'POST'])
+def GK_db004():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [7,9]:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':  
+        id = request.form['id']
+        name = request.form['name']
+        status_cd = request.form['status_cd']
+        err = GK1S0040.check04(id, name, status_cd)
+        if err:
+            return render_template('GK_db004.html', err =err)   
+        err = GK1S0040.insert_gakusei(id, name, status_cd)
+        if err:
+            return render_template('GK_db004.html', err =err)   
+        flash("学生管理セグの訂正が完了しました。")
+        return redirect(url_for('GK_menu01'))        
+
+    return render_template('GK_db004.html', err="")  
 
 
 @app.route('/GK_db010', methods=['GET', 'POST'])

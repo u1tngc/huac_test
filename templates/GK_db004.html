@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 学生管理セグ登録</title>
+    <link rel="stylesheet" href="../static/GK1C0041.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>学生管理セグ登録</h2>
+            {% if err %}
+            <a class="err">{{ err }}</a>
+            <br><br>
+            {% endif %}
+            <form method="post" action="/GK_db004">
+                <div class="data-section">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>学籍番号</th>
+                                <th>氏名</th>
+                                <th>状況CD</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="text" name="id" class="table-input"></td>
+                                <td><input type="text" name="name" class="table-input"></td>
+                                <td>
+                                    <select name="status_cd" class="table-input">
+                                        <option value="0">0:自家用養成中</option>
+                                        <option value="1">1:学生チェック済み</option>
+                                        <option value="2">2:教官チェック済み</option>
+                                        <option value="3">3:自家用取得済み</option>
+                                        <!-- <option value="4"></option> -->
+                                        <option value="5">5:退部済み</option>
+                                        <option value="6">6:学科班</option>
+                                        {% if session['authority'] == 9 %}
+                                        <option value="7">7:学科班主任</option>
+                                        <option value="8">8:教官</option>
+                                        <option value="9">9:管理者</option>
+                                        {% endif %}
+                                    </select>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">戻る</button>
+                    <button type="submit" class="execute-button">登録</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>
