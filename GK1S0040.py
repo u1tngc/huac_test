@@ -95,6 +95,7 @@ def update_gakusei(update_gakusei):
 
 def insert_gakusei(id, name, status_cd):
     err = GK1S01DB.insert_gakusei(id, name, status_cd)
+    print(err)
     if err == 3:
         return "入力した学籍番号は登録済みです。"
     return ""    

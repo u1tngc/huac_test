@@ -15,25 +15,22 @@ def login_check(user, password):
             return 0,user_info[2]
         else:
             return 2,0
+        
+
+def check01(user_id):
+    list = GK1S01DB.check_rireki(user_id)
+    if not list:
+        return "現在発生している小テストはありません。", list
+    return "", list
 
 def get_mondai(bunya,mondai_num):
-
     bunya_list = {
-        "1" : "法規",
-        "2" : "気象",
-        "3" : "法規",
-        "4" : "情報",
-        "5" : "法規"
+        "A":"法規",
+        "B":"工学",
+        "C":"気象",
+        "D":"情報",
+        "E":"その他"
     }
-    """
-        bunya_list = {
-        "1" : "法規",
-        "2" : "気象",
-        "3" : "工学",
-        "4" : "情報",
-        "5" : "その他"
-    }
-    """
     bunya_name = bunya_list[bunya]
     ret_list = GK1S01DB.get_mondai(bunya_name)
     mondai = []
@@ -55,5 +52,21 @@ def get_mondai(bunya,mondai_num):
         mondai[ix1][3] = mondai[ix1][3].replace("\\n", "\n").replace("\n", "<br>")
         mondai[ix1][4] = mondai[ix1][4].replace("\\n", "\n").replace("\n", "<br>")
     return mondai
-                
+
+
+def get_testMondai(mondai):
+    bunya = mondai[0:1]
+    kubun = mondai[1:2]
+    mondai_no = mondai[2:]
+    ret_list = GK1S01DB.get_test(bunya,kubun,mondai_no)
+    ret_list[3] = ret_list[3].replace("\\n", "\n").replace("\n", "<br>")
+    ret_list[4] = ret_list[4].replace("\\n", "\n").replace("\n", "<br>")
+    return ret_list
     
+
+                
+def update_rireki01(user_id, shoriYMD, mondai_no,column, result):
+    err = GK1S01DB.update_rireki01(user_id, shoriYMD, mondai_no,column, result)
+
+def update_rireki02(user_id, shoriYMD):
+    GK1S01DB.update_rireki02(user_id, shoriYMD)

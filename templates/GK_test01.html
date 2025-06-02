@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 小テスト</title>
+    <link rel="stylesheet" href="../static/GK1C0003.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>問題文</h2>
+            <form method="post" action="/GK_test01">
+                <div><a>{{ question | trim | safe }}</a></div>
+
+                <div class="button-group">
+                    <button type="submit" class="execute-button">採点</button>
+                </div>
+
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>
