@@ -105,3 +105,25 @@ def update_password(user_id,password):
     err = GK1S01DB.update_password(user_id,password)
     return ""        
 
+def get_rirekiAll(user_id):
+    list = GK1S01DB.get_rirekiAll(user_id)
+    number = [4,6,8,10,12]
+    result = {
+        0 : "未",
+        1 : "〇",
+        2 : "△",
+        3 : "✕"
+    }
+    cd = {
+        0:"未解答",
+        9:"解答済み"
+    }
+    if list:
+        for ix1 in range(len(list)):
+            list[ix1][2] = cd[list[ix1][2]]  
+            for ix2 in range(len(number)):
+                list[ix1][number[ix2]] = result[list[ix1][number[ix2]]]
+        ret_list = sorted(list, key=lambda x: x[1], reverse=True)
+        return ret_list
+
+    return []

@@ -269,3 +269,21 @@ def get_test(bunya, kubun, mondai_no):
     finally:
         if conn:
             conn.close()  # 接続を確実に閉じる
+
+
+def get_rirekiAll(user_id):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT * FROM "履歴管理セグ" WHERE 学籍番号 = %s'
+            data = (user_id,)
+            cur.execute(sql,data)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []    

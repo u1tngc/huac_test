@@ -71,6 +71,12 @@ def GK_menu01():
                 return redirect(url_for('GK_db002',err=""))
             elif db_kbn == "2":
                 return redirect(url_for('GK_db004',err=""))
+            elif db_kbn == "10":
+                array = GK1S0040.get_rirekiAll(user_id)
+                if not array:
+                    flash("照会するデータがありません。")
+                    return redirect(url_for('GK_menu01')) 
+                return render_template('GK_db020.html',rireki=array)
         elif shorikbn == "password":
                 return redirect(url_for('GK_db010',err=""))
 
@@ -280,6 +286,15 @@ def GK_db010():
         return redirect(url_for('GK_menu01'))
 
     return render_template('GK_db010.html', err ="")  
+
+
+#履歴管理セグ・照会
+@app.route('/GK_db020', methods=['GET', 'POST'])
+def GK_db020():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    return render_template('GK_db010.html')
     
 
 # セッションの有効期限をリセット

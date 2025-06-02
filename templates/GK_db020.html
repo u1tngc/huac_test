@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 学生管理セグ照会</title>
+    <link rel="stylesheet" href="../static/GK1C0040.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>履歴管理セグ照会</h2>
+            <form method="post" action="/GK_db010">
+                <div class="data-section">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>処理年月日</th>
+                                <th>状況CD</th>
+                                <th>法規</th>
+                                <th>工学</th>
+                                <th>気象</th>
+                                <th>情報</th>
+                                <th>その他</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for list in rireki %}
+                            <tr>
+                                <td>{{ list[1] }}</td>
+                                <td>{{ list[2] }}</td>
+                                <td>{{ list[4] }}</td>
+                                <td>{{ list[6] }}</td>
+                                <td>{{ list[8] }}</td>
+                                <td>{{ list[10] }}</td>
+                                <td>{{ list[12] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">戻る</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>
