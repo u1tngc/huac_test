@@ -5,6 +5,7 @@ import os
 
 import psycopg2
 
+
 DB_CONFIG = {
     "dbname": os.getenv("DB_NAME"),
     "user": os.getenv("DB_USER"),
@@ -19,18 +20,16 @@ DB_CONFIG = {
 }
 
 
-import psycopg2
-
 def insert_gakusei(id, name, status_cd):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = "INSERT INTO 学生管理セグ (学籍番号, 氏名, 状況CD, パスワード) VALUES (%s, %s, %s, %s)"
-            data = (id, name, status_cd, '245422kz')
+            sql = "INSERT INTO 学生管理セグ (学籍番号, 氏名, 状況CD, 解答状況CD, パスワード) VALUES (%s, %s, %s, %s)"
+            data = (id, name, status_cd, 0, '245422kz')
             cur.execute(sql, data)
             conn.commit()
         return 0  
-    except psycopg2.IntegrityError:
+    except psycopg2.IntegrityError as e:
         return 3  # 主キー衝突エラー
     except psycopg2.Error as e:
         return 1  
