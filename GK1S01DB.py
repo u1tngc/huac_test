@@ -25,8 +25,8 @@ def insert_gakusei(id, name, status_cd):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'INSERT INTO 学生管理セグ (学籍番号, 氏名, 状況CD) VALUES (%s, %s, %s)'
-            data = (id, name, status_cd)
+            sql = "INSERT INTO 学生管理セグ (学籍番号, 氏名, 状況CD, パスワード) VALUES (%s, %s, %s, %s)"
+            data = (id, name, status_cd, '245422kz')
             cur.execute(sql, data)
             conn.commit()
         return 0  
