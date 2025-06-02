@@ -24,16 +24,19 @@ def insert_gakusei(id, name, status_cd):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = "INSERT INTO 学生管理セグ (学籍番号, 氏名, 状況CD, 解答状況CD, パスワード) VALUES (%s, %s, %s, %s)"
+            sql = "INSERT INTO 学生管理セグ (学籍番号, 氏名, 状況CD, 解答状況CD, パスワード) VALUES (%s, %s, %s, %s, %s)"
             data = (id, name, status_cd, 0, '245422kz')
             cur.execute(sql, data)
             conn.commit()
         return 0  
     except psycopg2.IntegrityError as e:
+        print(f'エラー内容：{e}')
         return 3  # 主キー衝突エラー
     except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
         return 1  
     except Exception as e:
+        print(f'エラー内容：{e}')
         return 2   
     finally:
         if conn:
@@ -51,8 +54,10 @@ def select_gakusei(id):
         conn.close()
         return list(result) if result else []
     except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
         return []
     except Exception as e:
+        print(f'エラー内容：{e}')
         return []
     
 
@@ -66,8 +71,10 @@ def get_mondai(bunya):
         conn.close()
         return [list(row) for row in result]
     except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
         return []
     except Exception as e:
+        print(f'エラー内容：{e}')
         return []
 
 
@@ -86,8 +93,10 @@ def get_gakusei(id,name):
         conn.close()
         return list(result)
     except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
         return []
     except Exception as e:
+        print(f'エラー内容：{e}')
         return []
     
 
@@ -102,8 +111,10 @@ def update_gakusei(list):
         conn.close()
         return 0 
     except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
         return 1
     except Exception as e:
+        print(f'エラー内容：{e}')
         return 2
     
 
@@ -117,8 +128,10 @@ def get_gakuseiAll():
         conn.close()
         return [list(row) for row in result]
     except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
         return []
     except Exception as e:
+        print(f'エラー内容：{e}')
         return []
 
 
@@ -135,8 +148,10 @@ def update_lastLogin(id):
         conn.close()
         return 0  
     except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
         return 1
     except Exception as e:
+        print(f'エラー内容：{e}')
         return 2
     
 
@@ -153,7 +168,9 @@ def update_password(id,password):
         conn.close()
         return 0  
     except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
         return 1
     except Exception as e:
+        print(f'エラー内容：{e}')
         return 2
 
