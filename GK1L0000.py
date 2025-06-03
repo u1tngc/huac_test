@@ -62,21 +62,23 @@ def GK_menu01():
                 session[f'{user_id}_test'] = test
                 session[f'{user_id}_end'] = 0
             return redirect(url_for('GK_test01'))
-        elif shorikbn == "db":
-            db_kbn = request.form['db_kbn']
-            if db_kbn == "0":
+        elif shorikbn == "db_show":
+            db_kbn = request.form['db_kbn1']
+            if db_kbn == "1":
                 array = GK1S0040.get_gakuseiAll()
-                return render_template('GK_db001.html',gakuseiList=array)
-            elif db_kbn == "1":
-                return redirect(url_for('GK_db002',err=""))
+                return render_template('GK_db001.html',gakuseiList=array)     
             elif db_kbn == "2":
-                return redirect(url_for('GK_db004',err=""))
-            elif db_kbn == "10":
                 array = GK1S0040.get_rirekiAll(user_id)
                 if not array:
                     flash("照会するデータがありません。")
                     return redirect(url_for('GK_menu01')) 
-                return render_template('GK_db020.html',rireki=array)
+                return render_template('GK_db020.html',rireki=array)       
+        elif shorikbn == "db_edit":
+            db_kbn = request.form['db_kbn2']
+            if db_kbn == "1":
+                return redirect(url_for('GK_db002',err=""))
+            elif db_kbn == "2":
+                return redirect(url_for('GK_db004',err=""))
         elif shorikbn == "password":
                 return redirect(url_for('GK_db010',err=""))
 
@@ -194,7 +196,7 @@ def GK_db001():
     user_id = session.get('user_id')
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
-    if not session.get('authority') in [7,9]:
+    if not session.get('authority') in [6,7,8,9]:
         return redirect(url_for('GK_menu01'))
     return render_template('GK_db001.html')
 
