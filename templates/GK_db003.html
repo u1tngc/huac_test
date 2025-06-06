@@ -29,6 +29,7 @@
                                 <th>学籍番号</th>
                                 <th>氏名</th>
                                 <th>状況CD</th>
+                                <th>出題区分</th>
                                 <th>解答状況CD</th>
                             </tr>
                         </thead>
@@ -38,6 +39,7 @@
                                 <td>{{ gakusei[1] }}</td>
                                 <td>{{ gakusei[2] }}</td>
                                 <td>{{ gakusei[3] }}</td>
+                                <td>{{ gakusei[4] }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -51,6 +53,7 @@
                                 <th>学籍番号</th>
                                 <th>氏名</th>
                                 <th>状況CD</th>
+                                <th>出題区分</th>
                                 <th>解答状況CD</th>
                             </tr>
                         </thead>
@@ -72,6 +75,12 @@
                                         <option value="8" {% if gakusei[2]==8 %}selected{% endif %}>8:教官</option>
                                         <option value="9" {% if gakusei[2]==9 %}selected{% endif %}>9:管理者</option>
                                         {% endif %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="kanri_cd" class="table-input">
+                                        <option value="0" {% if gakusei[2]==0 %}selected{% endif %}>0:小テスト有</option>
+                                        <option value="1" {% if gakusei[2]==1 %}selected{% endif %}>1:小テスト無</option>
                                     </select>
                                 </td>
                                 <td><input type="text" name="answer_cd" value="{{ gakusei[3] }}" class="table-input">

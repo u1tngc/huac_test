@@ -24,6 +24,7 @@
                                 <th>学籍番号</th>
                                 <th>氏名</th>
                                 <th>状況CD</th>
+                                <th>出題区分</th>
                                 <th>解答状況CD</th>
                                 {% if session['authority'] == 9 %}
                                 <th>最終ログイン日時</th>
@@ -37,8 +38,9 @@
                                 <td>{{ student[1] }}</td>
                                 <td>{{ student[2] }}</td>
                                 <td>{{ student[3] }}</td>
+                                <td>{{ student[4] }}</td>
                                 {% if session['authority'] == 9 %}
-                                <td>{{ student[5] }}</td>
+                                <td>{{ student[6] }}</td>
                                 {% endif %}
                             </tr>
                             {% endfor %}

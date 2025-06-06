@@ -29,9 +29,14 @@ def get_gakuseiAll():
     8: "教官",
     9: "管理者"
     }
+    kanri_dict = {
+        0 : "小テスト有",
+        1 : "小テスト無"       
+    }    
     array = GK1S01DB.get_gakuseiAll()
     for ix1 in range(len(array)):
         array[ix1][2] = status_dict[array[ix1][2]]
+        array[ix1][3] = kanri_dict[array[ix1][3]]
     return array
 
 
@@ -93,9 +98,8 @@ def update_gakusei(update_gakusei):
     err = GK1S01DB.update_gakusei(update_gakusei)
     return ""
 
-def insert_gakusei(id, name, status_cd):
-    err = GK1S01DB.insert_gakusei(id, name, status_cd)
-    print(err)
+def insert_gakusei(id, name, status_cd, kanri_cd):
+    err = GK1S01DB.insert_gakusei(id, name, status_cd, kanri_cd)
     if err == 3:
         return "入力した学籍番号は登録済みです。"
     return ""    

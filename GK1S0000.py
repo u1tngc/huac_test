@@ -10,7 +10,7 @@ def login_check(user, password):
     if not user_info:
         return 1,0
     else:
-        if user_info[4] == password:
+        if user_info[5] == password:
             GK1S01DB.update_lastLogin(user)
             return 0,user_info[2]
         else:

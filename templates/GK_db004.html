@@ -28,6 +28,7 @@
                                 <th>学籍番号</th>
                                 <th>氏名</th>
                                 <th>状況CD</th>
+                                <th>出題区分</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -48,6 +49,12 @@
                                         <option value="8">8:教官</option>
                                         <option value="9">9:管理者</option>
                                         {% endif %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="kanri_cd" class="table-input">
+                                        <option value="0">0:小テスト有</option>
+                                        <option value="1">1:小テスト無</option>
                                     </select>
                                 </td>
                             </tr>

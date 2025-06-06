@@ -20,12 +20,12 @@ DB_CONFIG = {
 }
 
 
-def insert_gakusei(id, name, status_cd):
+def insert_gakusei(id, name, status_cd,kanri_cd):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = "INSERT INTO 学生管理セグ (学籍番号, 氏名, 状況CD, 解答状況CD, パスワード) VALUES (%s, %s, %s, %s, %s)"
-            data = (id, name, status_cd, 0, '245422kz')
+            sql = "INSERT INTO 学生管理セグ (学籍番号, 氏名, 状況CD, 出題区分, 解答状況CD, パスワード) VALUES (%s, %s, %s, %s, %s, %s)"
+            data = (id, name, status_cd, kanri_cd, 0, '245422kz')
             cur.execute(sql, data)
             conn.commit()
         return 0  
@@ -104,8 +104,8 @@ def update_gakusei(list):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'UPDATE 学生管理セグ SET 氏名 = %s, 状況CD = %s, 解答状況CD = %s WHERE 学籍番号 = %s'
-            data = (list[1], list[2], list[3], list[0]) 
+            sql = 'UPDATE 学生管理セグ SET 氏名 = %s, 状況CD = %s, 出題区分 = %s,解答状況CD = %s WHERE 学籍番号 = %s'
+            data = (list[1], list[2], list[3], list[4], list[0]) 
             cur.execute(sql, data)
             conn.commit()
         conn.close()
