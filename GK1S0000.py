@@ -23,6 +23,7 @@ def check01(user_id):
         return "現在発生している小テストはありません。", list
     return "", list
 
+
 def get_mondai(bunya,mondai_num):
     bunya_list = {
         "A":"法規",
@@ -63,10 +64,21 @@ def get_testMondai(mondai):
     ret_list[4] = ret_list[4].replace("\\n", "\n").replace("\n", "<br>")
     return ret_list
     
-
-                
+            
 def update_rireki01(user_id, shoriYMD, mondai_no,column, result):
     err = GK1S01DB.update_rireki01(user_id, shoriYMD, mondai_no,column, result)
 
+
 def update_rireki02(user_id, shoriYMD):
     GK1S01DB.update_rireki02(user_id, shoriYMD)
+    update_kaitoJyokyoCD(user_id)
+
+
+def update_kaitoJyokyoCD(user_id):
+    ret_array = GK1S01DB.get_rirekiAll(user_id)
+    mikaito = 0
+    for ix1 in range(len(ret_array)):
+        if ret_array[ix1][2] == 0:
+            mikaito = mikaito + 1
+    if mikaito < 2:
+        ret_cd = GK1S01DB.update_kaitoJyokyoCD(user_id)

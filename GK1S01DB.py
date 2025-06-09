@@ -7,10 +7,10 @@ import psycopg2
 
 
 DB_CONFIG = {
-    "dbname": os.getenv("DB_NAME"),
-    "user": os.getenv("DB_USER"),
-    "password": os.getenv("DB_PASSWORD"),
-    "host": os.getenv("DB_HOST"),
+    "dbname": "huac_gakka", 
+    "user": "taniguchi_tanglin_ic", 
+    "password": "N6eEqr20vmfNV-_McGwfkA", 
+    "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
     "port": 26257,
     "sslmode": "require",
     "sslcert": "",
@@ -286,4 +286,22 @@ def get_rirekiAll(user_id):
         return []
     except Exception as e:
         print(f'エラー内容：{e}')
-        return []    
+        return []
+    
+
+def update_kaitoJyokyoCD(user_id):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'UPDATE 学生管理セグ SET 解答状況CD = 0 WHERE 学籍番号 = %s'
+            data = (user_id,) 
+            cur.execute(sql, data)
+            conn.commit()
+        conn.close()
+        return 0  
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 2
