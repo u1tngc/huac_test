@@ -1,6 +1,7 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
 
+import datetime
 import re
 
 import GK1S01DB
@@ -30,14 +31,21 @@ def get_gakuseiAll():
     9: "管理者"
     }
     kanri_dict = {
-        0 : "小テスト有",
-        1 : "小テスト無"       
+        0 : "テスト有",
+        1 : "テスト無"       
     }    
     array = GK1S01DB.get_gakuseiAll()
     for ix1 in range(len(array)):
         array[ix1][2] = status_dict[array[ix1][2]]
         array[ix1][3] = kanri_dict[array[ix1][3]]
+        array[ix1][6] = timestamp_to_date(array[ix1][6])
     return array
+
+def timestamp_to_date(timestamp):
+    if timestamp is None:
+        return "未ログイン"
+    date_str = timestamp.strftime("%Y/%m/%d/%H:%M")
+    return date_str
 
 
 def check01(id,name):
@@ -46,6 +54,7 @@ def check01(id,name):
     else:
         err = ""
     return err
+
 
 def check02(name,status,answer):
     if not name or not status or not answer:
@@ -66,6 +75,7 @@ def check02(name,status,answer):
         return "状況CDは半角数字で入力してください。"
     return ""
     
+
 def check03(pass1,pass2):
     if pass1 != pass2:
         return "１回目と２回目で入力値が異なります。"
@@ -98,6 +108,7 @@ def update_gakusei(update_gakusei):
     err = GK1S01DB.update_gakusei(update_gakusei)
     return ""
 
+
 def insert_gakusei(id, name, status_cd, kanri_cd):
     err = GK1S01DB.insert_gakusei(id, name, status_cd, kanri_cd)
     if err == 3:
@@ -108,6 +119,7 @@ def insert_gakusei(id, name, status_cd, kanri_cd):
 def update_password(user_id,password):
     err = GK1S01DB.update_password(user_id,password)
     return ""        
+
 
 def get_rirekiAll(user_id):
     list = GK1S01DB.get_rirekiAll(user_id)
