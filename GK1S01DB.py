@@ -83,10 +83,10 @@ def get_gakusei(id,name):
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
             if id:
-                sql = 'SELECT 学籍番号, 氏名, 状況CD, 解答状況CD FROM 学生管理セグ WHERE 学籍番号 = %s'
+                sql = 'SELECT 学籍番号, 氏名, 状況CD, 出題区分, 解答状況CD FROM 学生管理セグ WHERE 学籍番号 = %s'
                 data = (id,)
             else:
-                sql = 'SELECT 学籍番号, 氏名, 状況CD, 解答状況CD FROM 学生管理セグ WHERE 氏名 = %s'
+                sql = 'SELECT 学籍番号, 氏名, 状況CD, 出題区分, 解答状況CD FROM 学生管理セグ WHERE 氏名 = %s'
                 data = (name,)
             cur.execute(sql,data)
             result = cur.fetchone()  

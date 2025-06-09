@@ -79,11 +79,11 @@
                                 </td>
                                 <td>
                                     <select name="kanri_cd" class="table-input">
-                                        <option value="0" {% if gakusei[2]==0 %}selected{% endif %}>0:小テスト有</option>
-                                        <option value="1" {% if gakusei[2]==1 %}selected{% endif %}>1:小テスト無</option>
+                                        <option value="0" {% if gakusei[3]==0 %}selected{% endif %}>0:テスト有</option>
+                                        <option value="1" {% if gakusei[3]==1 %}selected{% endif %}>1:テスト無</option>
                                     </select>
                                 </td>
-                                <td><input type="text" name="answer_cd" value="{{ gakusei[3] }}" class="table-input">
+                                <td><input type="text" name="answer_cd" value="{{ gakusei[4] }}" class="table-input">
                                 </td>
                             </tr>
                         </tbody>
