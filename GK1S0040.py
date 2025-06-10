@@ -1,7 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
 
-import datetime
 import re
 
 import GK1S01DB
@@ -16,6 +15,7 @@ def get_gakusei(id,name, authority):
     else:
         err = "DB相手無し"
     return gakusei_list, err
+
 
 def get_gakuseiAll():
     status_dict = {
@@ -40,6 +40,7 @@ def get_gakuseiAll():
         array[ix1][3] = kanri_dict[array[ix1][3]]
         array[ix1][6] = timestamp_to_date(array[ix1][6])
     return array
+
 
 def timestamp_to_date(timestamp):
     if timestamp is None:
@@ -121,8 +122,8 @@ def update_password(user_id,password):
     return ""        
 
 
-def get_rirekiAll(user_id):
-    list = GK1S01DB.get_rirekiAll(user_id)
+def get_rireki(user_id):
+    list = GK1S01DB.get_rireki(user_id)
     number = [4,6,8,10,12]
     result = {
         0 : "未",
@@ -132,7 +133,7 @@ def get_rirekiAll(user_id):
     }
     cd = {
         0:"未解答",
-        9:"解答済み"
+        9:"解答済"
     }
     if list:
         for ix1 in range(len(list)):
@@ -143,3 +144,37 @@ def get_rirekiAll(user_id):
         return ret_list
 
     return []
+
+
+def get_rirekiAll():
+    list = GK1S01DB.get_rirekiAll()
+    number = [4,6,8,10,12]
+    result = {
+        0 : "未",
+        1 : "〇",
+        2 : "△",
+        3 : "✕"
+    }
+    cd = {
+        0:"未解答",
+        9:"解答済"
+    }
+    if list:
+        for ix1 in range(len(list)):
+            list[ix1][2] = cd[list[ix1][2]]  
+            for ix2 in range(len(number)):
+                list[ix1][number[ix2]] = result[list[ix1][number[ix2]]]
+        ret_list = sorted(list, key=lambda x: x[1], reverse=True)
+        return ret_list
+
+    return []
+
+
+def get_gakuseiInfo():
+    ret_array = GK1S01DB.get_gakuseiInfo()
+    return ret_array
+
+
+def get_gakuseiName(id):
+    ret_array = GK1S01DB.get_gakuseiName(id)
+    return ret_array

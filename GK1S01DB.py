@@ -7,10 +7,10 @@ import psycopg2
 
 
 DB_CONFIG = {
-    "dbname": "huac_gakka", 
-    "user": "taniguchi_tanglin_ic", 
-    "password": "N6eEqr20vmfNV-_McGwfkA", 
-    "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
+    "dbname": os.getenv("DB_NAME"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "host": os.getenv("DB_HOST"),
     "port": 26257,
     "sslmode": "require",
     "sslcert": "",
@@ -271,13 +271,30 @@ def get_test(bunya, kubun, mondai_no):
             conn.close()  # 接続を確実に閉じる
 
 
-def get_rirekiAll(user_id):
+def get_rireki(user_id):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
             sql = 'SELECT * FROM "履歴管理セグ" WHERE 学籍番号 = %s'
             data = (user_id,)
             cur.execute(sql,data)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
+
+
+def get_rirekiAll():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT * FROM "履歴管理セグ"'
+            cur.execute(sql)
             result = cur.fetchall()  
         conn.close()
         return [list(row) for row in result]
@@ -305,3 +322,38 @@ def update_kaitoJyokyoCD(user_id):
     except Exception as e:
         print(f'エラー内容：{e}')
         return 2
+    
+
+def get_gakuseiInfo():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ" WHERE 出題区分 = 0'
+            cur.execute(sql)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return ""
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return ""
+    
+
+def get_gakuseiName(id):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT 氏名 FROM "学生管理セグ" WHERE 学籍番号 = %s'
+            data = (id,)
+            cur.execute(sql, data)
+            result = cur.fetchone()  
+        conn.close()
+        return result[0] if result else ""
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return ""
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return ""

@@ -16,7 +16,10 @@
     <main>
         <section class="options">
             <h2>小テスト履歴照会</h2>
-            <form method="post" action="/GK_db020">
+            <div class="student-info">
+                <p><strong>氏名:</strong> {{ gakuseiName }}</p>
+            </div>
+            <form method="post" action="/GK_db022">
                 <div class="data-section">
                     <table class="data-table">
                         <thead>
@@ -47,7 +50,7 @@
                 </div>
 
                 <div class="button-group">
-                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">戻る</button>
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
                 </div>
             </form>
         </section>

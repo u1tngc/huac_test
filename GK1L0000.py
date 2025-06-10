@@ -43,6 +43,7 @@ def GK_login():
 def GK_menu01():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))  
+    
     user_id = session.get('user_id')  # ユーザーIDを取得
     if request.method == 'POST':
         shorikbn = request.form['selection']
@@ -70,14 +71,22 @@ def GK_menu01():
         elif shorikbn == "db_show":
             db_kbn = request.form['db_kbn1']
             if db_kbn == "1":
-                array = GK1S0040.get_gakuseiAll()
-                return render_template('GK_db001.html',gakuseiList=array)     
+                gakuseiList = GK1S0040.get_gakuseiAll()
+                return render_template('GK_db001.html',gakuseiList=gakuseiList)     
             elif db_kbn == "2":
-                array = GK1S0040.get_rirekiAll(user_id)
-                if not array:
-                    flash("照会するデータがありません。")
-                    return redirect(url_for('GK_menu01')) 
-                return render_template('GK_db020.html',rireki=array)       
+                session.pop(f"{user_id}_gakuseiName", None)
+                session.pop(f"{user_id}_gakuseiID", None) 
+                session.pop(f"{user_id}_rireki", None)
+                if session.get('authority') in [7,8,9]:
+                    gakuseiName = GK1S0040.get_gakuseiInfo()
+                    session[f"{user_id}_gakuseiName"] = gakuseiName
+                    return render_template('GK_db021.html', gakuseiName=gakuseiName) 
+                else:
+                    array = GK1S0040.get_rireki(user_id)
+                    if not array:
+                        flash("照会するデータがありません。")
+                        return redirect(url_for('GK_menu01')) 
+                    return render_template('GK_db020.html',rireki=array)       
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
@@ -118,7 +127,8 @@ def GK_practice02():
         return redirect(url_for('GK_login'))   
     user_id = session.get('user_id')
     if f"{user_id}_mondai_list" not in session:
-        return redirect(url_for('GK_menu01'))    
+        return redirect(url_for('GK_menu01'))   
+     
     question_index = session[f"{user_id}_ix1"]
     question = session[f"{user_id}_mondai_list"][question_index][3].replace("\n", "<br>")  # 改行適用
     answer = session[f"{user_id}_mondai_list"][question_index][4].replace("\n", "<br>")  # 改行適用
@@ -143,6 +153,7 @@ def GK_test01():
     user_id = session.get('user_id')
     if f"{user_id}_test" not in session:
         return redirect(url_for('GK_menu01')) 
+    
     err, test = GK1S0000.check01(user_id)      
     session[f'{user_id}_test' ] = test
     numbers = [4, 6, 8, 10, 12]
@@ -163,6 +174,7 @@ def GK_test01():
             eof_flg = 1
     if request.method == 'POST':
         return redirect(url_for('GK_test02'))
+    
     return render_template('GK_test01.html', question=question)
 
 
@@ -173,7 +185,8 @@ def GK_test02():
         return redirect(url_for('GK_login'))   
     user_id = session.get('user_id')
     if f"{user_id}_test" not in session:
-        return redirect(url_for('GK_menu01'))    
+        return redirect(url_for('GK_menu01')) 
+       
     question = session[f"{user_id}_testList"][3].replace("\n", "<br>")  # 改行適用
     answer = session[f"{user_id}_testList"][4].replace("\n", "<br>")  # 改行適用
 
@@ -203,6 +216,7 @@ def GK_db001():
         return redirect(url_for('GK_login'))
     if not session.get('authority') in [6,7,8,9]:
         return redirect(url_for('GK_menu01'))
+    
     return render_template('GK_db001.html')
 
 
@@ -214,6 +228,7 @@ def GK_db002():
         return redirect(url_for('GK_login'))
     if not session.get('authority') in [7,9]:
         return redirect(url_for('GK_menu01'))
+    
     if request.method == 'POST':
         id = request.form['id']
         name = request.form['name']
@@ -225,6 +240,7 @@ def GK_db002():
             return render_template('GK_db002.html', err=err)
         session[f'{user_id}_gakusei'] = gakusei_list
         return redirect(url_for('GK_db003', gakusei=session.get(f'{user_id}_gakusei'), err=""))
+    
     return render_template('GK_db002.html')
 
 
@@ -236,6 +252,7 @@ def GK_db003():
         return redirect(url_for('GK_login'))
     if not session.get('authority') in [7,9]:
         return redirect(url_for('GK_menu01'))
+    
     if request.method == 'POST':  
         name = request.form['name']
         status_cd = request.form['status_cd']
@@ -262,6 +279,7 @@ def GK_db004():
         return redirect(url_for('GK_login'))
     if not session.get('authority') in [7,9]:
         return redirect(url_for('GK_menu01'))
+    
     if request.method == 'POST':  
         id = request.form['id']
         name = request.form['name']
@@ -279,11 +297,13 @@ def GK_db004():
     return render_template('GK_db004.html', err="")  
 
 
+#パスワード変更
 @app.route('/GK_db010', methods=['GET', 'POST'])
 def GK_db010():
     user_id = session.get('user_id')
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
+    
     if request.method == 'POST':  
         pass1 = request.form['pass1']
         pass2 = request.form['pass2']
@@ -297,14 +317,54 @@ def GK_db010():
     return render_template('GK_db010.html', err ="")  
 
 
-#履歴管理セグ・照会
+#履歴管理セグ・照会（学生用）
 @app.route('/GK_db020', methods=['GET', 'POST'])
 def GK_db020():
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    
+    return render_template('GK_db020.html')
+    
+
+#履歴管理セグ・照会１（管理者用）
+@app.route('/GK_db021', methods=['GET', 'POST'])
+def GK_db021():
     user_id = session.get('user_id')
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
-    return render_template('GK_db010.html')
+    if f"{user_id}_gakuseiName" not in session:
+        return redirect(url_for('GK_menu01'))  
+    if not session.get('authority') in [7,8,9]:
+        return redirect(url_for('GK_menu01'))
     
+    if request.method == 'POST':
+        gakuseiID = request.form['selected_student']
+        session[f'{user_id}_gakuseiID'] = gakuseiID
+        rireki = GK1S0040.get_rireki(gakuseiID)
+        session[f'{user_id}_rireki'] = rireki
+        return redirect(url_for('GK_db022'))
+    
+    return render_template('GK_db021.html', gakuseiName=session.get(f"{user_id}_gakuseiName"))
+
+
+#履歴管理セグ・照会２（管理者用）
+@app.route('/GK_db022', methods=['GET', 'POST'])
+def GK_db022():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if f"{user_id}_gakuseiID" not in session:
+        return redirect(url_for('GK_menu01'))
+    if not session.get('authority') in [7,8,9]:
+        return redirect(url_for('GK_menu01'))  
+    
+    if request.method == 'POST':
+        return redirect(url_for('GK_menu01'))
+    gakuseiName = GK1S0040.get_gakuseiName(session.get(f'{user_id}_gakuseiID'))
+    rireki = session.get(f'{user_id}_rireki')
+    
+    return render_template('GK_db022.html', gakuseiName=gakuseiName, rireki=rireki)
+
 
 # セッションの有効期限をリセット
 @app.before_request
