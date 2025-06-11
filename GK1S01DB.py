@@ -7,10 +7,10 @@ import psycopg2
 
 
 DB_CONFIG = {
-    "dbname": "huac_gakka", 
-    "user": "taniguchi_tanglin_ic", 
-    "password": "N6eEqr20vmfNV-_McGwfkA", 
-    "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
+    "dbname": os.getenv("DB_NAME"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "host": os.getenv("DB_HOST"),
     "port": 26257,
     "sslmode": "require",
     "sslcert": "",
@@ -18,7 +18,6 @@ DB_CONFIG = {
     "sslrootcert": "",
     "target_session_attrs": "read-write"
 }
-
 
 
 def insert_gakusei(id, name, status_cd,kanri_cd):
