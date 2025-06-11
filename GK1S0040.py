@@ -20,9 +20,9 @@ def get_gakusei(id,name, authority):
 def get_gakuseiAll():
     status_dict = {
     0: "自家用養成中",
-    1: "学生チェック済み",
-    2: "教官チェック済み",
-    3: "自家用取得済み",
+    1: "自家用養成完了",
+    2: "自家用取得済み",
+    3: "",
     4: "",  # 🔥 値が未設定の場合は空文字
     5: "退部済み",
     6: "学科班",
@@ -106,6 +106,8 @@ def check04(id, name, status_cd):
 
 
 def update_gakusei(update_gakusei):
+    if update_gakusei[2] == 2:
+        update_gakusei[3] = 1
     err = GK1S01DB.update_gakusei(update_gakusei)
     return ""
 
