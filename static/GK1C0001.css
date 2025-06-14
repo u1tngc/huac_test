@@ -88,3 +88,15 @@ body {
     background-color: #005f88;
     /* 濃いめの色にホバー */
 }
+
+.flash-messages {
+    background-color: #ffcccc;
+    padding: 10px;
+    border: 1px solid red;
+    margin-bottom: 10px;
+}
+
+.flash-message {
+    color: red;
+    font-weight: bold;
+}

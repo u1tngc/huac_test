@@ -15,6 +15,16 @@
             <h1>HUAC学科ツール</h1>
         </header>
         <main class="login-main">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                <p class="flash-message">{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
             <form class="login-form" method="post" action="/">
                 <div class="input-group">
                     <label for="password">学籍番号</label>
