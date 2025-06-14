@@ -1,10 +1,12 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
+#最終更新日:
 
 from datetime import timedelta
 import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
+import pytz
 
 
 import GK1S0000
@@ -20,7 +22,8 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)  # セッショ
 @app.route('/', methods=['GET', 'POST'])
 def GK_login():
     if request.method == 'POST':
-        now = datetime.datetime.now()
+        japan_tz = pytz.timezone('Asia/Tokyo')
+        now = datetime.datetime.now(japan_tz)
         if now.weekday() == 6 and now.hour == 0 and now.minute < 60:
             flash("日曜日の午前0時から午前1時まではメンテナンス時間です。")
             return redirect(url_for('GK_login'))
