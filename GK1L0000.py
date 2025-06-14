@@ -3,7 +3,7 @@
 #最終更新日:2025/06/15
 
 from datetime import timedelta
-import datetime
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import os
 from zoneinfo import ZoneInfo
