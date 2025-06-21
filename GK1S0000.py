@@ -1,6 +1,9 @@
 #PGM-ID:GK1S0000
-#PGM-NAME:GK自家用練習問題
+#PGM-NAME:GK自家用練習問題・テスト
+#最終更新日:
 
+import datetime
+from zoneinfo import ZoneInfo
 import random
 
 import GK1S01DB
@@ -82,3 +85,13 @@ def update_kaitoJyokyoCD(user_id):
             mikaito = mikaito + 1
     if mikaito < 2:
         ret_cd = GK1S01DB.update_kaitoJyokyoCD(user_id)
+
+
+def update_fukushu(user_id, fukushu):
+    today = datetime.datetime.today().astimezone(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
+    for ix1 in range(len(fukushu)):
+        ret_array = GK1S01DB.check_fukushu(user_id, fukushu[ix1])
+        if ret_array:
+            GK1S01DB.update_fukushu(user_id, fukushu[ix1], today)
+        else:
+            GK1S01DB.insert_fukushu(user_id, fukushu[ix1], today)

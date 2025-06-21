@@ -24,12 +24,13 @@
                     <a>{{ answer | trim | safe }}</a>
                 </div>
                 <div class="button-group">
-                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
                     {% if err == 0 %}
-                    <button type="submit" class="execute-button">次の問題</button>
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
                     {% endif %}
+                    <button value="1" name="result" class="execute-button">〇</button>
+                    <button value="2" name="result" class="execute-button">▲</button>
+                    <button value="3" name="result" class="execute-button">×</button>
                 </div>
-
             </form>
         </section>
     </main>

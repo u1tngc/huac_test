@@ -310,3 +310,24 @@ footer {
 .err {
     color: black;
 }
+
+button[value="1"] {
+    background-color: #1e3a8a !important;
+    /* 法政ブルー（正解） - ヘッダーと同色 */
+    color: white !important;
+}
+
+button[value="2"] {
+    background-color: #e67e22 !important;
+    color: white !important;
+    font-size: 20px !important;
+    /* 文字サイズのみ大きく */
+}
+
+button[value="3"] {
+    background-color: #95a5a6 !important;
+    /* グレー（不正解） */
+    color: white !important;
+    font-size: 20px !important;
+    /* 文字サイズのみ大きく */
+}

@@ -23,7 +23,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)  # セッショ
 def GK_login():
     if request.method == 'POST':
         now = datetime.now(ZoneInfo("Asia/Tokyo"))
-        if now.weekday() == 6 and now.hour == 0 and now.minute < 60:
+        if now.weekday() == 6 and now.hour == 0 and now.minute < 15:
             flash("日曜日の午前0時から午前1時まではメンテナンス時間です。")
             return redirect(url_for('GK_login'))
         in_password = request.form['password']
@@ -47,13 +47,15 @@ def GK_menu01():
         return redirect(url_for('GK_login'))  
     
     user_id = session.get('user_id')  # ユーザーIDを取得
+    jizen(user_id)
+    init01(user_id)
     if request.method == 'POST':
         shorikbn = request.form['selection']
         if shorikbn == "practice":
             bunya = request.form['bunya']
             mondai_num = int(request.form['mondai_num'])
-            session.pop(f"{user_id}_mondai_list", None)
-            session.pop(f"{user_id}_ix1", None)
+            init02(user_id)
+            session[f"{user_id}_fukushu"] = []
             session[f"{user_id}_ix1"] = 0  
             session[f'{user_id}_mondaiNum'] = mondai_num
             mondai = GK1S0000.get_mondai(bunya, mondai_num)
@@ -65,8 +67,7 @@ def GK_menu01():
                 flash("今週の小テストは完了しています。")
                 return redirect(url_for('GK_menu01'))
             else:
-                session.pop(f'{user_id}_testList',None)
-                session.pop(f'{user_id}_test',None)
+                init03(user_id)
                 session[f'{user_id}_test'] = test
                 session[f'{user_id}_end'] = 0
             return redirect(url_for('GK_test01'))
@@ -76,9 +77,7 @@ def GK_menu01():
                 gakuseiList = GK1S0040.get_gakuseiAll()
                 return render_template('GK_db001.html',gakuseiList=gakuseiList)     
             elif db_kbn == "2":
-                session.pop(f"{user_id}_gakuseiName", None)
-                session.pop(f"{user_id}_gakuseiID", None) 
-                session.pop(f"{user_id}_rireki", None)
+                init04(user_id)
                 if session.get('authority') in [7,8,9]:
                     gakuseiName = GK1S0040.get_gakuseiInfo()
                     session[f"{user_id}_gakuseiName"] = gakuseiName
@@ -115,6 +114,7 @@ def GK_practice01():
     else:
         end = 0
         question_index = session[f"{user_id}_ix1"]
+        session[f'{user_id}_mondaiNo'] = session[f"{user_id}_mondai_list"][question_index][0] + session[f"{user_id}_mondai_list"][question_index][1] + session[f"{user_id}_mondai_list"][question_index][2]
         question = session[f"{user_id}_mondai_list"][question_index][3].replace("\n", "<br>")  # 改行適用
     if request.method == 'POST':
         return redirect(url_for('GK_practice02', end=end))
@@ -141,8 +141,16 @@ def GK_practice02():
     else:
         err = 0  
     if request.method == 'POST':
-        session[f"{user_id}_ix1"] += 1  
-        return redirect(url_for('GK_practice01'))
+        session[f"{user_id}_ix1"] += 1 
+        result = request.form["result"]
+        fukushu = session.get(f"{user_id}_fukushu")
+        if result != "1":
+            fukushu.append(session[f'{user_id}_mondaiNo'])
+            session[f"{user_id}_fukushu"] = fukushu
+        if err == 0:
+            return redirect(url_for('GK_practice01'))
+        else:
+            return redirect(url_for('GK_menu01'))  # 最後の問題の場合はメニューに戻る
 
     return render_template('GK_practice02.html', answer=answer, question=question, err=err)
 
@@ -379,6 +387,39 @@ def refresh_session():
 def GK_logout():
     session.clear()
     return redirect(url_for('GK_login'))
+
+
+def jizen(user_id):
+    try:
+        fukushu = session.get(f"{user_id}_fukushu", [])
+        if fukushu:
+            GK1S0000.update_fukushu(user_id, fukushu)
+            session.pop(f"{user_id}_fukushu", None)
+    except:
+        pass
+
+
+def init01(user_id):
+    session.pop(f"{user_id}_fukushu", None)
+
+
+def init02(user_id):
+    session.pop(f"{user_id}_mondai_list", None)
+    session.pop(f"{user_id}_ix1", None)
+    session.pop(f"{user_id}_fukushu", None)
+    session.pop(f"{user_id}_mondaiNum", None)
+    session.pop(f"{user_id}_mondaiNo", None)
+
+
+def init03(user_id):
+    session.pop(f"{user_id}_testList", None)
+    session.pop(f"{user_id}_test", None)
+    session.pop(f"{user_id}_end", None) 
+
+def init04(user_id):
+    session.pop(f"{user_id}_gakuseiName", None)
+    session.pop(f"{user_id}_gakuseiID", None)
+    session.pop(f"{user_id}_rireki", None)
 
 
 if __name__ == "__main__":

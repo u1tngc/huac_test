@@ -49,6 +49,11 @@
                             </div>
                         </div>
                     </div>
+                    {% if session['authority'] in [10] %}
+                    <div class="radio-section">
+                        <label class="radio-group"><input type="radio" name="selection" value="fukushu">復習</label>
+                    </div>
+                    {% endif %}
                     {% if session['authority'] in [0, 1, 2, 3, 6, 7, 9] %}
                     <!-- <div class="radio-section">
                         <label class="radio-group"><input type="radio" name="selection" value="nigate">苦手克服</label>
