@@ -1,12 +1,14 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
+#最終更新日:
 
 import re
 
-import GK1S01DB
+import GK0S001D
+import GK0S002D
 
 def get_gakusei(id,name, authority):
-    gakusei_list = GK1S01DB.get_gakusei(id,name)
+    gakusei_list = GK0S001D.get_gakusei(id,name)
     if gakusei_list:
         if gakusei_list[2] in [7,8,9] and authority in [0,1,2,3,4,5,6,7,8]:
             err = "当ユーザーの訂正は管理者のみが可能です"
@@ -34,7 +36,7 @@ def get_gakuseiAll():
         0 : "テスト有",
         1 : "テスト無"       
     }    
-    array = GK1S01DB.get_gakuseiAll()
+    array = GK0S001D.get_gakuseiAll()
     for ix1 in range(len(array)):
         array[ix1][2] = status_dict[array[ix1][2]]
         array[ix1][3] = kanri_dict[array[ix1][3]]
@@ -108,24 +110,24 @@ def check04(id, name, status_cd):
 def update_gakusei(update_gakusei):
     if update_gakusei[2] == 2:
         update_gakusei[3] = 1
-    err = GK1S01DB.update_gakusei(update_gakusei)
+    err = GK0S001D.update_gakusei(update_gakusei)
     return ""
 
 
 def insert_gakusei(id, name, status_cd, kanri_cd):
-    err = GK1S01DB.insert_gakusei(id, name, status_cd, kanri_cd)
+    err = GK0S001D.insert_gakusei(id, name, status_cd, kanri_cd)
     if err == 3:
         return "入力した学籍番号は登録済みです。"
     return ""    
 
 
 def update_password(user_id,password):
-    err = GK1S01DB.update_password(user_id,password)
+    err = GK0S001D.update_password(user_id,password)
     return ""        
 
 
 def get_rireki(user_id):
-    list = GK1S01DB.get_rireki(user_id)
+    list = GK0S002D.get_rireki(user_id)
     number = [4,6,8,10,12]
     result = {
         0 : "未",
@@ -149,7 +151,7 @@ def get_rireki(user_id):
 
 
 def get_rirekiAll():
-    list = GK1S01DB.get_rirekiAll()
+    list = GK0S002D.get_rirekiAll()
     number = [4,6,8,10,12]
     result = {
         0 : "未",
@@ -173,10 +175,10 @@ def get_rirekiAll():
 
 
 def get_gakuseiInfo():
-    ret_array = GK1S01DB.get_gakuseiInfo()
+    ret_array = GK0S001D.get_gakuseiInfo()
     return ret_array
 
 
 def get_gakuseiName(id):
-    ret_array = GK1S01DB.get_gakuseiName(id)
+    ret_array = GK0S001D.get_gakuseiName(id)
     return ret_array
