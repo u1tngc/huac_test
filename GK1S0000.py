@@ -119,7 +119,6 @@ def update_fukushu1(user_id, fukushuNo, result):
     today = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
     if result == "1":
         fukushu = GK0S003D.check_shoriymd(user_id, fukushuNo)
-        print(fukushu)
         bef_date = datetime.strptime(today, "%Y%m%d")
         aft_date = datetime.strptime(fukushu[4], "%Y%m%d")
         days_difference = (bef_date - aft_date).days

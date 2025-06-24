@@ -75,12 +75,15 @@ def GK_menu01():
             init05(user_id)
             fukushu_num = request.form['fukushu_num']
             fukushu_list, fukushu_num = GK1S0000.get_fukushuNum(user_id, fukushu_num)
-            print(fukushu_list)
-            session[f"{user_id}_fukushuList"] = fukushu_list
-            session[f"{user_id}_fukushuNum"] = fukushu_num
-            session[f"{user_id}_fukushu_ix1"] = 0
-            session[f"{user_id}_fukushu_eof"] = 0
-            return redirect(url_for('GK_fukushu01', err=""))
+            if fukushu_list:
+                session[f"{user_id}_fukushuList"] = fukushu_list
+                session[f"{user_id}_fukushuNum"] = fukushu_num
+                session[f"{user_id}_fukushu_ix1"] = 0
+                session[f"{user_id}_fukushu_eof"] = 0
+                return redirect(url_for('GK_fukushu01', err=""))
+            else:
+                flash("復習対象の問題がありません。")
+                return redirect(url_for('GK_menu01'))
         elif shorikbn == "db_show":
             db_kbn = request.form['db_kbn1']
             if db_kbn == "1":
@@ -172,7 +175,6 @@ def GK_fukushu01():
         return redirect(url_for('GK_login'))
     user_id = session.get('user_id')
     if f"{user_id}_fukushuList" not in session:
-        print("$$$$")
         return redirect(url_for('GK_menu01'))    
 
     if session[f"{user_id}_fukushu_ix1"] + 1 == session[f'{user_id}_fukushuNum']:
@@ -196,7 +198,6 @@ def GK_fukushu02():
         return redirect(url_for('GK_login'))   
     user_id = session.get('user_id')
     if f"{user_id}_fukushuList" not in session:
-        print("@@@@")
         return redirect(url_for('GK_menu01'))   
     if session[f"{user_id}_fukushu_eof"] == 0:
         err = ""
