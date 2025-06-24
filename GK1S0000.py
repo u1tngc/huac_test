@@ -91,7 +91,7 @@ def update_kaitoJyokyoCD(user_id):
 
 
 def update_fukushu(user_id, fukushu):
-    today = datetime.datetime.today().astimezone(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
+    today = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
     for ix1 in range(len(fukushu)):
         ret_array = GK0S003D.check_fukushu(user_id, fukushu[ix1])
         if ret_array:
