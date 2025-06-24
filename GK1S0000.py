@@ -102,6 +102,7 @@ def update_fukushu(user_id, fukushu):
 
 def get_fukushuNum(user_id,num):
     fukushu_array = GK0S003D.select_fukushu(user_id)
+    random.shuffle(fukushu_array)
     if len(fukushu_array) < int(num):
         ret_num = len(fukushu_array)
     else:
