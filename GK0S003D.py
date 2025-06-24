@@ -1,6 +1,6 @@
 #PGM-ID:GK0S003D
 #PGM-NAME:GK復習問題セグ(オンライン)
-#最終更新日:
+#最終更新日:2025/06/25
 
 import os
 
@@ -77,3 +77,61 @@ def update_fukushu(user_id, mondaiNo, today):
     except Exception as e:
         print(f'エラー内容：{e}')
         return 2
+    
+
+def select_fukushu(user_id):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT * FROM "復習問題セグ" WHERE 学籍番号 = %s'
+            data = (user_id,)
+            cur.execute(sql, data)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
+
+
+def delete_fukushu(user_id, fukushuNo):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'DELETE FROM "復習問題セグ" WHERE 学籍番号 = %s AND 分野 = %s AND 区分 = %s AND 問題番号 = %s'
+            data = (user_id, fukushuNo[0:1], fukushuNo[1:2], fukushuNo[2:])
+            cur.execute(sql, data)
+            conn.commit()
+        return 0  
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 2
+    
+
+def check_shoriymd(user_id, mondaiNo):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT * FROM "復習問題セグ" WHERE 学籍番号 = %s AND 分野 = %s AND 区分 = %s AND 問題番号 = %s'
+            data = (user_id, mondaiNo[0:1], mondaiNo[1:2], mondaiNo[2:])
+            cur.execute(sql, data)
+            result = cur.fetchone()
+            return list(result) if result else None
+
+    except psycopg2.Error as e:
+        print(f"データベースエラー: {e}")
+        return None
+
+    except Exception as e:
+        print(f"予期せぬエラー: {e}")
+        return None
+
+    finally:
+        if conn:
+            conn.close()  # 接続を確実に閉じる

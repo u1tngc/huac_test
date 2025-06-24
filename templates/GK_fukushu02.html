@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 復習問題答え</title>
+    <link rel="stylesheet" href="../static/GK1C0002.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <form method="post" action="/GK_fukushu02">
+                {% if err %}
+                <a class="err">{{err}}</a>
+                <br>
+                <br>
+                {% endif %}
+                <h2>問題文</h2>
+                <div><a>{{ question | trim | safe }}</a></div>
+                <br>
+                <h2>答え</h2>
+                <div style="text-align: center;">
+                    <a>{{ answer | trim | safe }}</a>
+                </div>
+                <div class="button-group">
+                    <button value="1" name="result" class="execute-button">〇</button>
+                    <button value="2" name="result" class="execute-button">▲</button>
+                    <button value="3" name="result" class="execute-button">×</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

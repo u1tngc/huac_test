@@ -1,8 +1,8 @@
 #PGM-ID:GK1S0000
 #PGM-NAME:GK自家用練習問題・テスト
-#最終更新日:
+#最終更新日:2025/06/25
 
-import datetime
+from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import random
 
@@ -98,3 +98,32 @@ def update_fukushu(user_id, fukushu):
             GK0S003D.update_fukushu(user_id, fukushu[ix1], today)
         else:
             GK0S003D.insert_fukushu(user_id, fukushu[ix1], today)
+
+
+def get_fukushuNum(user_id,num):
+    fukushu_array = GK0S003D.select_fukushu(user_id)
+    if len(fukushu_array) < int(num):
+        ret_num = len(fukushu_array)
+    else:
+        ret_num = int(num)
+    ret_array = []
+    for ix1 in range(ret_num):
+        array = GK0S01XD.get_test(fukushu_array[ix1][1], fukushu_array[ix1][2], fukushu_array[ix1][3])
+        array[3] = array[3].replace("\\n", "\n").replace("\n", "<br>")
+        array[4] = array[4].replace("\\n", "\n").replace("\n", "<br>")
+        ret_array.append(array)
+    return ret_array, ret_num
+
+
+def update_fukushu1(user_id, fukushuNo, result):
+    today = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
+    if result == "1":
+        fukushu = GK0S003D.check_shoriymd(user_id, fukushuNo)
+        print(fukushu)
+        bef_date = datetime.strptime(today, "%Y%m%d")
+        aft_date = datetime.strptime(fukushu[4], "%Y%m%d")
+        days_difference = (bef_date - aft_date).days
+        if days_difference >= 10:   
+            dummy = GK0S003D.delete_fukushu(user_id, fukushuNo)
+    else:
+        dummy = GK0S003D.update_fukushu(user_id, fukushuNo, today)

@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2025/06/15
+#最終更新日:2025/06/25
 
 from datetime import timedelta
 from datetime import datetime
@@ -71,6 +71,16 @@ def GK_menu01():
                 session[f'{user_id}_test'] = test
                 session[f'{user_id}_end'] = 0
             return redirect(url_for('GK_test01'))
+        elif shorikbn == "fukushu":
+            init05(user_id)
+            fukushu_num = request.form['fukushu_num']
+            fukushu_list, fukushu_num = GK1S0000.get_fukushuNum(user_id, fukushu_num)
+            print(fukushu_list)
+            session[f"{user_id}_fukushuList"] = fukushu_list
+            session[f"{user_id}_fukushuNum"] = fukushu_num
+            session[f"{user_id}_fukushu_ix1"] = 0
+            session[f"{user_id}_fukushu_eof"] = 0
+            return redirect(url_for('GK_fukushu01', err=""))
         elif shorikbn == "db_show":
             db_kbn = request.form['db_kbn1']
             if db_kbn == "1":
@@ -153,6 +163,60 @@ def GK_practice02():
             return redirect(url_for('GK_menu01'))  # 最後の問題の場合はメニューに戻る
 
     return render_template('GK_practice02.html', answer=answer, question=question, err=err)
+
+
+# 復習問題（問題表示）
+@app.route('/GK_fukushu01', methods=['GET', 'POST']) 
+def GK_fukushu01():
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    user_id = session.get('user_id')
+    if f"{user_id}_fukushuList" not in session:
+        print("$$$$")
+        return redirect(url_for('GK_menu01'))    
+
+    if session[f"{user_id}_fukushu_ix1"] + 1 == session[f'{user_id}_fukushuNum']:
+        err = "この問題が最終問題です。"
+        session[f"{user_id}_fukushu_eof"] = 1
+    else:
+        err = ""
+    question_index = session[f"{user_id}_fukushu_ix1"]
+    session[f'{user_id}_fukushuNo'] = session[f"{user_id}_fukushuList"][question_index][0] + session[f"{user_id}_fukushuList"][question_index][1] + session[f"{user_id}_fukushuList"][question_index][2]
+    question = session[f"{user_id}_fukushuList"][question_index][3].replace("\n", "<br>")  # 改行適用
+    if request.method == 'POST':
+        return redirect(url_for('GK_fukushu02', err=err))
+
+    return render_template('GK_fukushu01.html', question=question)
+
+
+# 復習問題（解答表示）
+@app.route('/GK_fukushu02', methods=['GET', 'POST'])
+def GK_fukushu02():
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))   
+    user_id = session.get('user_id')
+    if f"{user_id}_fukushuList" not in session:
+        print("@@@@")
+        return redirect(url_for('GK_menu01'))   
+    if session[f"{user_id}_fukushu_eof"] == 0:
+        err = ""
+    else:
+        err = "この問題が最終問題です。"     
+    question_index = session[f"{user_id}_fukushu_ix1"]
+    question = session[f"{user_id}_fukushuList"][question_index][3].replace("\n", "<br>")  # 改行適用
+    answer = session[f"{user_id}_fukushuList"][question_index][4].replace("\n", "<br>")  # 改行適用
+    if request.method == 'POST':
+        session[f"{user_id}_fukushu_ix1"] += 1 
+        result = request.form["result"]
+        GK1S0000.update_fukushu1(user_id,session[f'{user_id}_fukushuNo'],result)
+        if session[f"{user_id}_fukushu_eof"] == 0:
+            return redirect(url_for('GK_fukushu01'))
+        else:
+            init05(user_id)
+            return redirect(url_for('GK_menu01'))  # 最後の問題の場合はメニューに戻る
+
+    return render_template('GK_fukushu02.html', answer=answer, question=question,err=err)
+
 
 
 # 小テスト問題（問題表示）
@@ -416,10 +480,19 @@ def init03(user_id):
     session.pop(f"{user_id}_test", None)
     session.pop(f"{user_id}_end", None) 
 
+
 def init04(user_id):
     session.pop(f"{user_id}_gakuseiName", None)
     session.pop(f"{user_id}_gakuseiID", None)
     session.pop(f"{user_id}_rireki", None)
+
+
+def init05(user_id):
+    session.pop(f"{user_id}_fukushuList", None)
+    session.pop(f"{user_id}_fukushuNum", None)
+    session.pop(f'{user_id}_fukushuNo', None)
+    session.pop(f'{user_id}_fukushu_eof', None)
+
 
 
 if __name__ == "__main__":
