@@ -81,7 +81,7 @@ def update_rireki02(user_id, shoriYMD):
 
 
 def update_kaitoJyokyoCD(user_id):
-    ret_array = GK0S001D.get_rireki(user_id)
+    ret_array = GK0S002D.get_rireki(user_id)
     mikaito = 0
     for ix1 in range(len(ret_array)):
         if ret_array[ix1][2] == 0:
