@@ -64,12 +64,12 @@ def update_rireki01(user_id, shoriYMD, mondai_no,column, result):
         return 2
     
 
-def update_rireki02(user_id, shoriYMD):
+def update_rireki02(user_id, shoriYMD, kaito_ymd):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'UPDATE 履歴管理セグ SET 状況CD = 9 WHERE 学籍番号 = %s AND 処理年月日 = %s'
-            data = (user_id, shoriYMD) 
+            sql = 'UPDATE 履歴管理セグ SET 状況CD = 9, 解答日時 = %s WHERE 学籍番号 = %s AND 処理年月日 = %s'
+            data = (kaito_ymd, user_id, shoriYMD) 
             cur.execute(sql, data)
             conn.commit()
         conn.close()
@@ -107,6 +107,24 @@ def get_rirekiAll():
         with conn.cursor() as cur:
             sql = 'SELECT * FROM "履歴管理セグ"'
             cur.execute(sql)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
+
+
+def check_nigate(user_id):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT * FROM "履歴管理セグ" WHERE 学籍番号 = %s AND 状況CD = %s'
+            data = (user_id,9)
+            cur.execute(sql,data)
             result = cur.fetchall()  
         conn.close()
         return [list(row) for row in result]

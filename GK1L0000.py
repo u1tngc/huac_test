@@ -84,6 +84,9 @@ def GK_menu01():
             else:
                 flash("復習対象の問題がありません。")
                 return redirect(url_for('GK_menu01'))
+        elif shorikbn == "nigate":
+            ret_cd = GK1S0000.check_nigate(user_id)
+            return render_template('GK_nigate01')
         elif shorikbn == "db_show":
             db_kbn = request.form['db_kbn1']
             if db_kbn == "1":
@@ -273,7 +276,9 @@ def GK_test02():
         GK1S0000.update_rireki01(user_id, shoriYMD, mondai_no,column, result)
         if column == "解答結果５":
             session[f'{user_id}_end'] = 1
-            GK1S0000.update_rireki02(user_id, shoriYMD)
+            timezone = datetime.now(ZoneInfo("Asia/Tokyo"))
+            kaito_ymd = timezone.strftime('%Y%m%d%H%M')
+            GK1S0000.update_rireki02(user_id, shoriYMD, kaito_ymd)
         if session[f'{user_id}_end'] == 1:
             flash("今週のテストは完了しました。")
             return redirect(url_for('GK_menu01'))  
