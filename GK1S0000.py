@@ -128,33 +128,33 @@ def update_fukushu1(user_id, fukushuNo, result):
     else:
         dummy = GK0S003D.update_fukushu(user_id, fukushuNo, today)
 
-
-def check_nigate(use_id):
-    array = GK0S002D.check_nigate(use_id)
-    if array:
-        ret_array = []
-        for ix1 in range(len(array)):
-            eof_sw = 0
-            ix2 = 3
-            while eof_sw == 0:
-                if array[ix1][ix2 + 1] in [2,3]:
-                    ret_array.append([array[ix1][ix2][0:1],array[ix1][ix2][1:2]])
-                ix2 = ix2 + 2
-                if ix2 >= 12:
-                    eof_sw = 1
-        return ret_array
-    else:
-        return []
-
-
-def create_nigate(mondaiNo):
-    mondai = []
-    for ix1 in range(len(mondaiNo)):
-        ret_array = GK0S01XD.get_nigateMondai(mondaiNo[ix1][0], mondaiNo[ix1][1])
-        print(ret_array)
-        
-    return mondai
+"""
+    def check_nigate(use_id):
+        array = GK0S002D.check_nigate(use_id)
+        if array:
+            ret_array = []
+            for ix1 in range(len(array)):
+                eof_sw = 0
+                ix2 = 3
+                while eof_sw == 0:
+                    if array[ix1][ix2 + 1] in [2,3]:
+                        ret_array.append([array[ix1][ix2][0:1],array[ix1][ix2][1:2]])
+                    ix2 = ix2 + 2
+                    if ix2 >= 12:
+                        eof_sw = 1
+            return ret_array
+        else:
+            return []
 
 
-ret = check_nigate("22N2047")
-create_nigate(ret)
+    def create_nigate(mondaiNo):
+        mondai = []
+        for ix1 in range(len(mondaiNo)):
+            ret_array = GK0S01XD.get_nigateMondai(mondaiNo[ix1][0], mondaiNo[ix1][1])
+            print(ret_array)
+            
+        return mondai
+"""
+
+#ret = check_nigate("22N2047")
+#create_nigate(ret)

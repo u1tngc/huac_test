@@ -84,9 +84,11 @@ def GK_menu01():
             else:
                 flash("復習対象の問題がありません。")
                 return redirect(url_for('GK_menu01'))
-        elif shorikbn == "nigate":
-            ret_cd = GK1S0000.check_nigate(user_id)
-            return render_template('GK_nigate01')
+            """    
+            elif shorikbn == "nigate":
+                ret_cd = GK1S0000.check_nigate(user_id)
+                return render_template('GK_nigate01')
+            """
         elif shorikbn == "db_show":
             db_kbn = request.form['db_kbn1']
             if db_kbn == "1":
