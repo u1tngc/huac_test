@@ -71,3 +71,38 @@ def get_test(bunya, kubun, mondai_no):
     finally:
         if conn:
             conn.close()  # 接続を確実に閉じる
+
+
+def get_nigateMondai(bunya, kubun):
+    conn = None
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql_map = {
+                "A": 'SELECT * FROM "法規問題セグ" WHERE 区分 = %s',
+                "B": 'SELECT * FROM "工学問題セグ" WHERE 区分 = %s',
+                "C": 'SELECT * FROM "気象問題セグ" WHERE 区分 = %s',
+                "D": 'SELECT * FROM "情報問題セグ" WHERE 区分 = %s',
+                "E": 'SELECT * FROM "その他問題セグ" WHERE 区分 = %s',
+                "X": 'SELECT * FROM "赤帽問題セグ" WHERE 区分 = %s'
+            }
+            sql = sql_map.get(bunya)
+
+            if sql is None:
+                print(f"無効な分野指定: {bunya}")
+                return None  
+
+            cur.execute(sql, (kubun,))
+            result = cur.fetchall()
+            return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f"データベースエラー: {e}")
+        return None
+
+    except Exception as e:
+        print(f"予期せぬエラー: {e}")
+        return None
+
+    finally:
+        if conn:
+            conn.close()  # 接続を確実に閉じる

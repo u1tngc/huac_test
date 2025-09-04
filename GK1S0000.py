@@ -36,7 +36,8 @@ def get_mondai(bunya,mondai_num):
         "B":"工学",
         "C":"気象",
         "D":"情報",
-        "E":"その他"
+        "E":"その他",
+        "X":"赤帽"
     }
     bunya_name = bunya_list[bunya]
     ret_list = GK0S01XD.get_mondai(bunya_name)
