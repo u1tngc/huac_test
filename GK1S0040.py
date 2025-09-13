@@ -7,8 +7,8 @@ import re
 import GK0S001D
 import GK0S002D
 
-def get_gakusei(id,name, authority):
-    gakusei_list = GK0S001D.get_gakusei(id,name)
+def get_gakusei(id,authority):
+    gakusei_list = GK0S001D.get_gakusei(id)
     if gakusei_list:
         if gakusei_list[2] in [7,8,9] and authority in [0,1,2,3,4,5,6,7,8]:
             err = "当ユーザーの訂正は管理者のみが可能です"
@@ -50,14 +50,14 @@ def timestamp_to_date(timestamp):
     date_str = timestamp.strftime("%Y/%m/%d/%H:%M")
     return date_str
 
-
+"""
 def check01(id,name):
     if id == "" and name == "":
         err = "学生番号もしくは氏名を入力してください。"
     else:
         err = ""
     return err
-
+"""
 
 def check02(name,status,answer):
     if not name or not status or not answer:
@@ -174,10 +174,13 @@ def get_rirekiAll():
     return []
 
 
-def get_gakuseiInfo():
-    ret_array = GK0S001D.get_gakuseiInfo()
+def get_gakuseiInfo01():
+    ret_array = GK0S001D.get_gakuseiInfo01()
     return ret_array
 
+def get_gakuseiInfo00(authority):
+    ret_array = GK0S001D.get_gakuseiInfo00(authority)
+    return ret_array
 
 def get_gakuseiName(id):
     ret_array = GK0S001D.get_gakuseiName(id)

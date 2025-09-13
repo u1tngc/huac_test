@@ -20,6 +20,7 @@ DB_CONFIG = {
     "target_session_attrs": "read-write"
 }
 
+
 def insert_gakusei(id, name, status_cd,kanri_cd):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
@@ -61,16 +62,12 @@ def select_gakusei(id):
         return []
 
 
-def get_gakusei(id,name):
+def get_gakusei(id):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            if id:
-                sql = 'SELECT 学籍番号, 氏名, 状況CD, 出題区分, 解答状況CD FROM 学生管理セグ WHERE 学籍番号 = %s'
-                data = (id,)
-            else:
-                sql = 'SELECT 学籍番号, 氏名, 状況CD, 出題区分, 解答状況CD FROM 学生管理セグ WHERE 氏名 = %s'
-                data = (name,)
+            sql = 'SELECT 学籍番号, 氏名, 状況CD, 出題区分, 解答状況CD FROM 学生管理セグ WHERE 学籍番号 = %s'
+            data = (id,)
             cur.execute(sql,data)
             result = cur.fetchone()  
         conn.close()
@@ -176,7 +173,7 @@ def update_kaitoJyokyoCD(user_id):
         return 2
     
 
-def get_gakuseiInfo():
+def get_gakuseiInfo01():
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
@@ -184,6 +181,30 @@ def get_gakuseiInfo():
             cur.execute(sql)
             result = cur.fetchall()  
         conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return ""
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return ""
+    
+def get_gakuseiInfo00(authority):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        if authority == 9:
+            with conn.cursor() as cur:
+                sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ"'
+                cur.execute(sql)
+                result = cur.fetchall()  
+            conn.close()
+        else:
+            with conn.cursor() as cur:
+                sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ" WHERE 状況CD != %s AND 状況CD != %s'
+                data = (7,9)
+                cur.execute(sql,data)
+                result = cur.fetchall()  
+            conn.close()            
         return [list(row) for row in result]
     except psycopg2.Error as e:
         print(f'エラー内容：{e}')

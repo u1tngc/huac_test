@@ -97,7 +97,7 @@ def GK_menu01():
             elif db_kbn == "2":
                 init04(user_id)
                 if session.get('authority') in [7,8,9]:
-                    gakuseiName = GK1S0040.get_gakuseiInfo()
+                    gakuseiName = GK1S0040.get_gakuseiInfo01()
                     session[f"{user_id}_gakuseiName"] = gakuseiName
                     return render_template('GK_db021.html', gakuseiName=gakuseiName) 
                 else:
@@ -109,7 +109,9 @@ def GK_menu01():
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
-                return redirect(url_for('GK_db002',err=""))
+                gakuseiData = GK1S0040.get_gakuseiInfo00(session.get('authority'))
+                session[f"{user_id}_gakuseiData"] = gakuseiData
+                return render_template('GK_db002.html', gakuseiData=gakuseiData, err1="") 
             elif db_kbn == "2":
                 return redirect(url_for('GK_db004',err=""))
         elif shorikbn == "password":
@@ -312,15 +314,10 @@ def GK_db002():
         return redirect(url_for('GK_menu01'))
     
     if request.method == 'POST':
-        id = request.form['id']
-        name = request.form['name']
-        err = GK1S0040.check01(id,name)
-        if err:
-            return render_template('GK_db002.html', err=err)
-        gakusei_list, err = GK1S0040.get_gakusei(id,name,session.get('authority'))
-        if err:  
-            return render_template('GK_db002.html', err=err)
-        session[f'{user_id}_gakusei'] = gakusei_list
+        gakuseiInfo = request.form['selected_studentInfo']
+        session[f'{user_id}_gakuseiInfo'] = gakuseiInfo
+        ret_gakusei, err = GK1S0040.get_gakusei(gakuseiInfo,session.get('authority'))
+        session[f'{user_id}_gakusei'] = ret_gakusei
         return redirect(url_for('GK_db003', gakusei=session.get(f'{user_id}_gakusei'), err=""))
     
     return render_template('GK_db002.html')
@@ -347,9 +344,9 @@ def GK_db003():
         id = list[0]
         update_gakusei = [id, name, int(status_cd),int(kanri_cd),int(answer_cd)]
         err = GK1S0040.update_gakusei(update_gakusei)
-        flash("学生管理セグの訂正が完了しました。")
-        return redirect(url_for('GK_menu01'))
-
+        err = f"[{name}]の訂正が完了しました。"
+        gakuseiData = session.get(f"{user_id}_gakuseiData")
+        return render_template('GK_db002.html', gakuseiData=gakuseiData, err1=err) 
     return render_template('GK_db003.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")      
 
 

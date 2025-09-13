@@ -16,22 +16,40 @@
     <main>
         <section class="options">
             <h2>学生情報訂正</h2>
-            <a>訂正する学生の学籍番号もしくは氏名を入力してください。</a>
-            <br>
-            <br>
-            {% if err %}
-            <a class="err">{{err}}</a>
-            <br>
-            <br>
+            {% if err1 %}
+            <a class="err">{{ err1 }}</a>
+            <br><br>
             {% endif %}
+            <a>訂正する学生を選択してください。</a>
+            <br>
+            <br>
             <form method="post" action="/GK_db002">
-                <div class="input-group">
-                    <label for="id">学籍番号</label>
-                    <input type="text" id="id" name="id" placeholder="ここに入力してください">
-                </div>
-                <div class="input-group">
-                    <label for="name">氏名</label>
-                    <input type="text" id="name" name="name" placeholder="ここに入力してください">
+                <div class="data-section">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>選択</th>
+                                <th>学籍番号</th>
+                                <th>氏名</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in gakuseiData %}
+                            <tr>
+                                <td>
+                                    <input type="radio" name="selected_studentInfo" value="{{ student[0] }}"
+                                        id="student_{{ loop.index }}" {% if loop.first %}checked{% endif %}>
+                                </td>
+                                <td>
+                                    <label for="student_{{ loop.index }}">{{ student[0] }}</label>
+                                </td>
+                                <td>
+                                    <label for="student_{{ loop.index }}">{{ student[1] }}</label>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
                 <div class="button-group">
                     <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
