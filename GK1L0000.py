@@ -46,8 +46,8 @@ def GK_menu01():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))  
     user_id = session.get('user_id')  # ユーザーIDを取得
+    session.pop('_flashes', None)
     rireki_num = GK1S0000.check02(user_id)
-    print(type(rireki_num))
     if rireki_num != 0:
         flash("未解答の小テストがあります。")
     jizen(user_id)
@@ -287,7 +287,6 @@ def GK_test02():
             kaito_ymd = timezone.strftime('%Y%m%d%H%M')
             GK1S0000.update_rireki02(user_id, shoriYMD, kaito_ymd)
         if session[f'{user_id}_end'] == 1:
-            flash("今週のテストは完了しました。")
             return redirect(url_for('GK_menu01'))  
         else:
             return redirect(url_for('GK_test01'))
