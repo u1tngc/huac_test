@@ -308,7 +308,7 @@ footer {
 }
 
 .err {
-    color: black;
+    color: red;
 }
 
 button[value="1"] {

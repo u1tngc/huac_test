@@ -24,7 +24,7 @@ def GK_login():
     if request.method == 'POST':
         now = datetime.now(ZoneInfo("Asia/Tokyo"))
         if now.weekday() == 6 and now.hour == 0 and now.minute < 15:
-            flash("日曜日の午前0時から午前1時まではメンテナンス時間です。")
+            flash("日曜日の午前0時から午前0時15分まではメンテナンス時間です。")
             return redirect(url_for('GK_login'))
         in_password = request.form['password']
         in_user = request.form['user']
@@ -45,8 +45,11 @@ def GK_login():
 def GK_menu01():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))  
-    
     user_id = session.get('user_id')  # ユーザーIDを取得
+    rireki_num = GK1S0000.check02(user_id)
+    print(type(rireki_num))
+    if rireki_num != 0:
+        flash("未解答の小テストがあります。")
     jizen(user_id)
     init01(user_id)
     if request.method == 'POST':

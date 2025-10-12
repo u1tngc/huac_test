@@ -39,6 +39,24 @@ def check_rireki(user):
         return []
     
 
+def check_rireki_num(user):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  # 定数を展開して接続
+        with conn.cursor() as cur:
+            sql = 'SELECT COUNT(*) FROM "履歴管理セグ" WHERE 学籍番号 = %s AND 状況CD = %s'
+            data = (user,0,)  
+            cur.execute(sql, data)
+            result = cur.fetchone()  
+        conn.close()
+        return result[0] if result else 0
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 0
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 0  
+    
+
 def update_rireki01(user_id, shoriYMD, mondai_no,column, result):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
@@ -134,3 +152,7 @@ def check_nigate(user_id):
     except Exception as e:
         print(f'エラー内容：{e}')
         return []
+
+
+
+    

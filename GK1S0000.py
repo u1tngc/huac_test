@@ -29,6 +29,9 @@ def check01(user_id):
         return "現在発生している小テストはありません。", list
     return "", list
 
+def check02(user_id):
+    ret_num = GK0S002D.check_rireki_num(user_id)
+    return ret_num
 
 def get_mondai(bunya,mondai_num):
     bunya_list = {
