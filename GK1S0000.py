@@ -69,7 +69,7 @@ def get_testMondai(mondai):
     bunya = mondai[0:1]
     kubun = mondai[1:2]
     mondai_no = mondai[2:]
-    ret_list = GK0S01XD.get_test(bunya,kubun,mondai_no)
+    ret_list = GK0S01XD.get_test_jikayo(bunya,kubun,mondai_no)
     ret_list[3] = ret_list[3].replace("\\n", "\n").replace("\n", "<br>")
     ret_list[4] = ret_list[4].replace("\\n", "\n").replace("\n", "<br>")
     return ret_list

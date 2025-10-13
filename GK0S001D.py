@@ -177,7 +177,7 @@ def get_gakuseiInfo01():
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ" WHERE 出題区分 = 0'
+            sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ" WHERE 出題区分 != 0'
             cur.execute(sql)
             result = cur.fetchall()  
         conn.close()
@@ -230,3 +230,4 @@ def get_gakuseiName(id):
     except Exception as e:
         print(f'エラー内容：{e}')
         return ""
+    

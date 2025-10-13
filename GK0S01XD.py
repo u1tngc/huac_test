@@ -38,7 +38,7 @@ def get_mondai(bunya):
         return []
 
 
-def get_test(bunya, kubun, mondai_no):
+def get_test_jikayo(bunya, kubun, mondai_no):
     conn = None
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
@@ -48,7 +48,8 @@ def get_test(bunya, kubun, mondai_no):
                 "B": 'SELECT * FROM "工学問題セグ" WHERE 区分 = %s AND 問題番号 = %s',
                 "C": 'SELECT * FROM "気象問題セグ" WHERE 区分 = %s AND 問題番号 = %s',
                 "D": 'SELECT * FROM "情報問題セグ" WHERE 区分 = %s AND 問題番号 = %s',
-                "E": 'SELECT * FROM "その他問題セグ" WHERE 区分 = %s AND 問題番号 = %s'
+                "E": 'SELECT * FROM "その他問題セグ" WHERE 区分 = %s AND 問題番号 = %s',
+                "X": 'SELECT * FROM "赤帽問題セグ" WHERE 区分 = %s AND 問題番号 = %s'
             }
             sql = sql_map.get(bunya)
 

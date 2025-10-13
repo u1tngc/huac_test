@@ -16,6 +16,25 @@ def get_gakusei(id,authority):
             err = ""
     else:
         err = "DB相手無し"
+    status_dict = {
+        0: "養成中",
+        1: "養成完了",
+        2: "取得済",
+        3: "",
+        4: "",  # 🔥 値が未設定の場合は空文字
+        5: "退部済",
+        6: "学科班",
+        7: "学科班主任",
+        8: "教官",
+        9: "管理者"
+        }
+    kanri_dict = {
+            0 : "出題無",
+            1 : "自家用",
+            2 : "赤帽"       
+    }  
+    gakusei_list[2] = status_dict[gakusei_list[2]]
+    gakusei_list[3] = kanri_dict[gakusei_list[3]]
     return gakusei_list, err
 
 
@@ -33,8 +52,9 @@ def get_gakuseiAll():
     9: "管理者"
     }
     kanri_dict = {
-        0 : "テスト有",
-        1 : "テスト無"       
+        0 : "出題無",
+        1 : "自家用",
+        2 : "赤帽"       
     }    
     array = GK0S001D.get_gakuseiAll()
     for ix1 in range(len(array)):
