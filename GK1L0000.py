@@ -67,6 +67,7 @@ def GK_menu01():
         elif shorikbn == "test":
             err, test = GK1S0000.check01(user_id)
             if err:
+                session.pop('_flashes', None)
                 flash("今週の小テストは完了しています。")
                 return redirect(url_for('GK_menu01'))
             else:
