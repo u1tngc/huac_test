@@ -46,7 +46,7 @@ def GK_menu01():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))  
     user_id = session.get('user_id')  # ユーザーIDを取得
-    session.pop('_flashes', None)
+    #session.pop('_flashes', None)
     rireki_num = GK1S0000.check02(user_id)
     if rireki_num != 0:
         flash("未解答の小テストがあります。")
