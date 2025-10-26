@@ -22,21 +22,23 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)  # セッショ
 @app.route('/', methods=['GET', 'POST'])
 def GK_login():
     if request.method == 'POST':
-        now = datetime.now(ZoneInfo("Asia/Tokyo"))
-        if now.weekday() == 6 and now.hour == 0 and now.minute < 15:
-            flash("日曜日の午前0時から午前0時15分まではメンテナンス時間です。")
-            return redirect(url_for('GK_login'))
-        in_password = request.form['password']
-        in_user = request.form['user']
-        login_ret, info = GK1S0000.login_check(in_user, in_password)
-        if login_ret == 0:
-            session.permanent = True
-            session['logged_in'] = True
-            session['user_id'] = in_user
-            session['authority'] = info
-            return redirect(url_for('GK_menu01'))
-        else:
-            return 'ログイン失敗。ユーザー名またはパスワードが違います。'
+        flash("臨時メンテナンス中")
+        return redirect(url_for('GK_login'))
+        # now = datetime.now(ZoneInfo("Asia/Tokyo"))
+        # if now.weekday() == 6 and now.hour == 0 and now.minute < 15:
+        #     flash("日曜日の午前0時から午前0時15分まではメンテナンス時間です。")
+        #     return redirect(url_for('GK_login'))
+        # in_password = request.form['password']
+        # in_user = request.form['user']
+        # login_ret, info = GK1S0000.login_check(in_user, in_password)
+        # if login_ret == 0:
+        #     session.permanent = True
+        #     session['logged_in'] = True
+        #     session['user_id'] = in_user
+        #     session['authority'] = info
+        #     return redirect(url_for('GK_menu01'))
+        # else:
+        #     return 'ログイン失敗。ユーザー名またはパスワードが違います。'
     return render_template('GK_login.html')
 
 
