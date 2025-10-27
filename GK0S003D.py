@@ -1,6 +1,6 @@
 #PGM-ID:GK0S003D
 #PGM-NAME:GK復習問題セグ(オンライン)
-#最終更新日:2025/06/25
+#最終更新日:2025/10/27
 
 import os
 
@@ -20,13 +20,12 @@ DB_CONFIG = {
     "target_session_attrs": "read-write"
 }
 
-
 def check_fukushu(user_id, mondaiNo):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'SELECT * FROM "復習問題セグ" WHERE 学籍番号 = %s AND 分野 = %s AND 区分 = %s AND 問題番号 = %s'
-            data = (user_id, mondaiNo[0:1], mondaiNo[1:2], mondaiNo[2:])
+            sql = 'SELECT * FROM "復習問題セグ" WHERE 学籍番号 = %s AND 分野 = %s AND 区分 = %s AND 問題番号 = %s AND 復習状況 = %s'
+            data = (user_id, mondaiNo[0:1], mondaiNo[1:2], mondaiNo[2:], 0)
             cur.execute(sql, data)
             result = cur.fetchone()  
         conn.close()
@@ -39,12 +38,12 @@ def check_fukushu(user_id, mondaiNo):
         return ""
     
 
-def insert_fukushu(id, mondaiNo, today):
+def insert_fukushu(id, mondaiNo, today, kbn):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'INSERT INTO "復習問題セグ" (学籍番号, 分野, 区分, 問題番号, 処理年月日) VALUES (%s, %s, %s, %s, %s)'
-            data = (id, mondaiNo[0:1], mondaiNo[1:2], mondaiNo[2:], today)
+            sql = 'INSERT INTO "復習問題セグ" (学籍番号, 分野, 区分, 問題番号, 処理年月日, 出題区分, 復習状況) VALUES (%s, %s, %s, %s, %s,%s, %s)'
+            data = (id, mondaiNo[0:1], mondaiNo[1:2], mondaiNo[2:], today, kbn, 0)
             cur.execute(sql, data)
             conn.commit()
         return 0  
@@ -79,12 +78,12 @@ def update_fukushu(user_id, mondaiNo, today):
         return 2
     
 
-def select_fukushu(user_id):
+def select_fukushu(user_id, kbn):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'SELECT * FROM "復習問題セグ" WHERE 学籍番号 = %s'
-            data = (user_id,)
+            sql = 'SELECT * FROM "復習問題セグ" WHERE 学籍番号 = %s AND 出題区分 = %s AND 復習状況 = %s'
+            data = (user_id, kbn, 0)
             cur.execute(sql, data)
             result = cur.fetchall()  
         conn.close()
@@ -101,8 +100,8 @@ def delete_fukushu(user_id, fukushuNo):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'DELETE FROM "復習問題セグ" WHERE 学籍番号 = %s AND 分野 = %s AND 区分 = %s AND 問題番号 = %s'
-            data = (user_id, fukushuNo[0:1], fukushuNo[1:2], fukushuNo[2:])
+            sql = 'UPDATE "復習問題セグ" SET 復習状況 = %s WHERE 学籍番号 = %s AND 分野 = %s AND 区分 = %s AND 問題番号 = %s'
+            data = (1, user_id, fukushuNo[0:1], fukushuNo[1:2], fukushuNo[2:])
             cur.execute(sql, data)
             conn.commit()
         return 0  

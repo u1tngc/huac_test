@@ -1,6 +1,6 @@
 #PGM-ID:GK0S01XD
 #PGM-NAME:GK●●問題セグI/O(オンライン)
-#最終更新日:
+#最終更新日:2025/10/27
 
 import os
 
@@ -49,7 +49,8 @@ def get_test_jikayo(bunya, kubun, mondai_no):
                 "C": 'SELECT * FROM "気象問題セグ" WHERE 区分 = %s AND 問題番号 = %s',
                 "D": 'SELECT * FROM "情報問題セグ" WHERE 区分 = %s AND 問題番号 = %s',
                 "E": 'SELECT * FROM "その他問題セグ" WHERE 区分 = %s AND 問題番号 = %s',
-                "X": 'SELECT * FROM "赤帽問題セグ" WHERE 区分 = %s AND 問題番号 = %s'
+                "X": 'SELECT * FROM "赤帽問題セグ" WHERE 区分 = %s AND 問題番号 = %s',
+                "Z": 'SELECT * FROM "極秘問題セグ" WHERE 区分 = %s AND 問題番号 = %s'
             }
             sql = sql_map.get(bunya)
 
@@ -85,7 +86,8 @@ def get_nigateMondai(bunya, kubun):
                 "C": 'SELECT * FROM "気象問題セグ" WHERE 区分 = %s',
                 "D": 'SELECT * FROM "情報問題セグ" WHERE 区分 = %s',
                 "E": 'SELECT * FROM "その他問題セグ" WHERE 区分 = %s',
-                "X": 'SELECT * FROM "赤帽問題セグ" WHERE 区分 = %s'
+                "X": 'SELECT * FROM "赤帽問題セグ" WHERE 区分 = %s',
+                "Z": 'SELECT * FROM "極秘問題セグ" WHERE 区分 = %s'
             }
             sql = sql_map.get(bunya)
 

@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0000
 #PGM-NAME:GK自家用練習問題・テスト
-#最終更新日:2025/06/25
+#最終更新日:2025/10/27
 
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -40,7 +40,8 @@ def get_mondai(bunya,mondai_num):
         "C":"気象",
         "D":"情報",
         "E":"その他",
-        "X":"赤帽"
+        "X":"赤帽",
+        "Z":"極秘"
     }
     bunya_name = bunya_list[bunya]
     ret_list = GK0S01XD.get_mondai(bunya_name)
@@ -94,18 +95,28 @@ def update_kaitoJyokyoCD(user_id):
         ret_cd = GK0S001D.update_kaitoJyokyoCD(user_id)
 
 
-def update_fukushu(user_id, fukushu):
+def update_fukushu(user_id, fukushu, kbn):
+    today = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
+    if fukushu[0:1] != 'Z':
+        ret_array = GK0S003D.check_fukushu(user_id, fukushu)
+        if ret_array:
+            GK0S003D.update_fukushu(user_id, fukushu, today)
+        else:
+            GK0S003D.insert_fukushu(user_id, fukushu, today, kbn)
+
+
+def update_fukushu_test(user_id, fukushu, kbn):
     today = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
     for ix1 in range(len(fukushu)):
-        ret_array = GK0S003D.check_fukushu(user_id, fukushu[ix1])
+        ret_array = GK0S003D.check_fukushu(user_id, fukushu)
         if ret_array:
-            GK0S003D.update_fukushu(user_id, fukushu[ix1], today)
+            GK0S003D.update_fukushu(user_id, fukushu, today)
         else:
-            GK0S003D.insert_fukushu(user_id, fukushu[ix1], today)
+            GK0S003D.insert_fukushu(user_id, fukushu, today, kbn)
 
 
-def get_fukushuNum(user_id,num):
-    fukushu_array = GK0S003D.select_fukushu(user_id)
+def get_fukushuNum(user_id,num, kbn):
+    fukushu_array = GK0S003D.select_fukushu(user_id, kbn)
     random.shuffle(fukushu_array)
     if len(fukushu_array) < int(num):
         ret_num = len(fukushu_array)
@@ -113,7 +124,7 @@ def get_fukushuNum(user_id,num):
         ret_num = int(num)
     ret_array = []
     for ix1 in range(ret_num):
-        array = GK0S01XD.get_test(fukushu_array[ix1][1], fukushu_array[ix1][2], fukushu_array[ix1][3])
+        array = GK0S01XD.get_test_jikayo(fukushu_array[ix1][1], fukushu_array[ix1][2], fukushu_array[ix1][3])
         array[3] = array[3].replace("\\n", "\n").replace("\n", "<br>")
         array[4] = array[4].replace("\\n", "\n").replace("\n", "<br>")
         ret_array.append(array)

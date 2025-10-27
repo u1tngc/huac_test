@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2025/06/25
+#最終更新日:2025/10/27
 
 from datetime import timedelta
 from datetime import datetime
@@ -22,23 +22,21 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)  # セッショ
 @app.route('/', methods=['GET', 'POST'])
 def GK_login():
     if request.method == 'POST':
-        flash("臨時メンテナンス中")
-        return redirect(url_for('GK_login'))
-        # now = datetime.now(ZoneInfo("Asia/Tokyo"))
-        # if now.weekday() == 6 and now.hour == 0 and now.minute < 15:
-        #     flash("日曜日の午前0時から午前0時15分まではメンテナンス時間です。")
-        #     return redirect(url_for('GK_login'))
-        # in_password = request.form['password']
-        # in_user = request.form['user']
-        # login_ret, info = GK1S0000.login_check(in_user, in_password)
-        # if login_ret == 0:
-        #     session.permanent = True
-        #     session['logged_in'] = True
-        #     session['user_id'] = in_user
-        #     session['authority'] = info
-        #     return redirect(url_for('GK_menu01'))
-        # else:
-        #     return 'ログイン失敗。ユーザー名またはパスワードが違います。'
+        now = datetime.now(ZoneInfo("Asia/Tokyo"))
+        if now.weekday() == 6 and now.hour == 0 and now.minute < 15:
+            flash("日曜日の午前0時から午前0時15分まではメンテナンス時間です。")
+            return redirect(url_for('GK_login'))
+        in_password = request.form['password']
+        in_user = request.form['user']
+        login_ret, info = GK1S0000.login_check(in_user, in_password)
+        if login_ret == 0:
+            session.permanent = True
+            session['logged_in'] = True
+            session['user_id'] = in_user
+            session['authority'] = info
+            return redirect(url_for('GK_menu01'))
+        else:
+            return 'ログイン失敗。ユーザー名またはパスワードが違います。'
     return render_template('GK_login.html')
 
 
@@ -52,7 +50,6 @@ def GK_menu01():
     rireki_num = GK1S0000.check02(user_id)
     if rireki_num != 0:
         flash("未解答の小テストがあります。")
-    jizen(user_id)
     init01(user_id)
     if request.method == 'POST':
         shorikbn = request.form['selection']
@@ -80,7 +77,8 @@ def GK_menu01():
         elif shorikbn == "fukushu":
             init05(user_id)
             fukushu_num = request.form['fukushu_num']
-            fukushu_list, fukushu_num = GK1S0000.get_fukushuNum(user_id, fukushu_num)
+            fukushu_kbn = request.form['kbn']
+            fukushu_list, fukushu_num = GK1S0000.get_fukushuNum(user_id, fukushu_num, fukushu_kbn)
             if fukushu_list:
                 session[f"{user_id}_fukushuList"] = fukushu_list
                 session[f"{user_id}_fukushuNum"] = fukushu_num
@@ -134,7 +132,6 @@ def GK_practice01():
     user_id = session.get('user_id')
     if f"{user_id}_mondai_list" not in session:
         return redirect(url_for('GK_menu01'))    
-
     if session[f"{user_id}_ix1"] == session[f'{user_id}_mondaiNum']:
         end = 1
     else:
@@ -169,10 +166,10 @@ def GK_practice02():
     if request.method == 'POST':
         session[f"{user_id}_ix1"] += 1 
         result = request.form["result"]
-        fukushu = session.get(f"{user_id}_fukushu")
         if result != "1":
-            fukushu.append(session[f'{user_id}_mondaiNo'])
-            session[f"{user_id}_fukushu"] = fukushu
+            if session[f'{user_id}_mondaiNo'][0:1] != "Z":
+                GK1S0000.update_fukushu(user_id, session[f'{user_id}_mondaiNo'], 2)
+                session.pop(f"{user_id}_fukushu", None)
         if err == 0:
             return redirect(url_for('GK_practice01'))
         else:
@@ -284,6 +281,8 @@ def GK_test02():
         mondai_no = session[f'{user_id}_testList'][0] + session[f'{user_id}_testList'][1] + session[f'{user_id}_testList'][2]
         column =session[f'{user_id}_testList'][5]
         GK1S0000.update_rireki01(user_id, shoriYMD, mondai_no,column, result)
+        if result != "1":
+            GK1S0000.update_fukushu_test(user_id, mondai_no, 1)
         if column == "解答結果５":
             session[f'{user_id}_end'] = 1
             timezone = datetime.now(ZoneInfo("Asia/Tokyo"))
@@ -461,16 +460,6 @@ def refresh_session():
 def GK_logout():
     session.clear()
     return redirect(url_for('GK_login'))
-
-
-def jizen(user_id):
-    try:
-        fukushu = session.get(f"{user_id}_fukushu", [])
-        if fukushu:
-            GK1S0000.update_fukushu(user_id, fukushu)
-            session.pop(f"{user_id}_fukushu", None)
-    except:
-        pass
 
 
 def init01(user_id):
