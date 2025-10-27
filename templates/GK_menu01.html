@@ -42,6 +42,7 @@
                                     <option value="D">情報</option>
                                     <option value="E">その他</option>
                                     <option value="X">赤帽</option>
+                                    <option value="Z">極秘</option>
                                 </select>
                             </div>
                             <div class="form-group">
@@ -54,11 +55,20 @@
                     </div>
                     <div class="radio-section">
                         <label class="radio-group"><input type="radio" name="selection" value="fukushu">復習</label>
-                        <div class="form-group">
-                            <label for="fukushu_num">問題数(5~25問):</label>
-                            <input type="number" id="fukushu_num" name="fukushu_num" value="5" min="5" max="25"
-                                required>
-                            <small style="color: #666; font-size: 0.9em;"></small>
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label for="bunya">区分:</label>
+                                <select id="kbn" name="kbn">
+                                    <option value="1">小テスト</option>
+                                    <option value="2">練習問題</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="fukushu_num">問題数(5~25問):</label>
+                                <input type="number" id="fukushu_num" name="fukushu_num" value="5" min="5" max="25"
+                                    required>
+                                <small style="color: #666; font-size: 0.9em;"></small>
+                            </div>
                         </div>
                     </div>
                     {% if session['authority'] in [0, 1, 2, 3, 6, 7, 9] %}
@@ -69,51 +79,51 @@
                         <label class="radio-group"><input type="radio" name="selection" value="test">小テスト</label>
                     </div>
                     {% endif %}
-                </div>
-                <!-- {% if session['authority'] in [6,7,8,9] %}
+                    <!-- {% if session['authority'] in [6,7,8,9] %}
                 <div class="data-section">
                     <div class="radio-section">
                         <label class="radio-group"><input type="radio" name="selection" value="analysis">苦手分析</label>
                     </div>
                 </div>
                 {% endif %} -->
-                <div class="data-section">
-                    <div class="radio-section">
-                        <label class="radio-group"><input type="radio" name="selection" value="db_show">ＤＢ照会</label>
-                        <div class="form-group">
-                            <label for="db_kbn1"></label>
-                            <select id="db_kbn1" name="db_kbn1">
-                                {% if session['authority'] in [6, 7, 8, 9] %}
-                                <option value="1">学生情報照会</option>
-                                {% endif %}
-                                <option value="2">小テスト履歴照会</option>
-                            </select>
+                    <div class="data-section">
+                        <div class="radio-section">
+                            <label class="radio-group"><input type="radio" name="selection" value="db_show">ＤＢ照会</label>
+                            <div class="form-group">
+                                <label for="db_kbn1"></label>
+                                <select id="db_kbn1" name="db_kbn1">
+                                    {% if session['authority'] in [6, 7, 8, 9] %}
+                                    <option value="1">学生情報照会</option>
+                                    {% endif %}
+                                    <option value="2">小テスト履歴照会</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
-                {% if session['authority'] in [7, 9] %}
-                <div class="data-section">
-                    <div class="radio-section">
-                        <label class="radio-group"><input type="radio" name="selection"
-                                value="db_edit">ＤＢ登録・訂正・削除</label>
-                        <div class="form-group">
-                            <label for="db_kbn2"></label>
-                            <select id="db_kbn2" name="db_kbn2">
-                                <option value="1">学生情報訂正</option>
-                                <option value="2">学生情報登録</option>
-                            </select>
+                    {% if session['authority'] in [7, 9] %}
+                    <div class="data-section">
+                        <div class="radio-section">
+                            <label class="radio-group"><input type="radio" name="selection"
+                                    value="db_edit">ＤＢ登録・訂正・削除</label>
+                            <div class="form-group">
+                                <label for="db_kbn2"></label>
+                                <select id="db_kbn2" name="db_kbn2">
+                                    <option value="1">学生情報訂正</option>
+                                    <option value="2">学生情報登録</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
-                {% endif %}
-                <div class="data-section">
-                    <div class="radio-section">
-                        <label class="radio-group"><input type="radio" name="selection" value="password">パスワード変更</label>
+                    {% endif %}
+                    <div class="data-section">
+                        <div class="radio-section">
+                            <label class="radio-group"><input type="radio" name="selection"
+                                    value="password">パスワード変更</label>
+                        </div>
                     </div>
-                </div>
-                <div class="button-group">
-                    <button type="submit" class="execute-button">実行</button>
-                </div>
+                    <div class="button-group">
+                        <button type="submit" class="execute-button">実行</button>
+                    </div>
             </form>
         </section>
 
