@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0000
 #PGM-NAME:GK自家用練習問題・テスト
-#最終更新日:2025/10/27
+#最終更新日:2025/11/01
 
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -21,6 +21,19 @@ def login_check(user, password):
             return 0,user_info[2]
         else:
             return 2,0
+        
+
+def print_seg(shorikbn,id):
+    shorikbn_list = {
+        "practice":"練習問題",
+        "fukushu":"復習問題",
+        "test":"テスト",
+        "db_show":"DB照会",
+        "db_edit":"DB登訂削",
+        "password":"PW変更"
+    }
+    shoriName = shorikbn_list[shorikbn]
+    print(f"学籍番号：{id}, 処理名：{shoriName}")
         
 
 def check01(user_id):

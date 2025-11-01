@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2025/10/27
+#最終更新日:2025/11/01
 
 from datetime import timedelta
 from datetime import datetime
@@ -53,6 +53,7 @@ def GK_menu01():
     init01(user_id)
     if request.method == 'POST':
         shorikbn = request.form['selection']
+        GK1S0000.print_seg(shorikbn, session.get('user_id'))
         if shorikbn == "practice":
             bunya = request.form['bunya']
             mondai_num = int(request.form['mondai_num'])
@@ -493,7 +494,6 @@ def init05(user_id):
     session.pop(f"{user_id}_fukushuNum", None)
     session.pop(f'{user_id}_fukushuNo', None)
     session.pop(f'{user_id}_fukushu_eof', None)
-
 
 
 if __name__ == "__main__":
