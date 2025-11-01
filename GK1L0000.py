@@ -57,6 +57,8 @@ def GK_menu01():
             bunya = request.form['bunya']
             mondai_num = int(request.form['mondai_num'])
             init02(user_id)
+            if bunya == "Z":
+                print(f"学籍番号：{session.get('user_id')}")
             session[f"{user_id}_fukushu"] = []
             session[f"{user_id}_ix1"] = 0  
             session[f'{user_id}_mondaiNum'] = mondai_num
