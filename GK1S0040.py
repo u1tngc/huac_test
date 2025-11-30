@@ -151,7 +151,8 @@ def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
     err = GK0S001D.insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd)
     if err == 3:
         return "入力した学籍番号は登録済みです。"
-    err = GK0S021D.insert_data(id)
+    if shikaku_cd == 0:
+        err = GK0S021D.insert_data(id)
     return ""    
 
 
