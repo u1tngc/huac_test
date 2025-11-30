@@ -377,9 +377,9 @@ def GK_db004():
     if request.method == 'POST':  
         id = request.form['id']
         name = request.form['name']
-        status_cd = request.form['status_cd']
-        kanri_cd = request.form['kanri_cd']
-        shikaku_cd = request.form['shikaku_cd']
+        status_cd = int(request.form['status_cd'])
+        kanri_cd = int(request.form['kanri_cd'])
+        shikaku_cd = int(request.form['shikaku_cd'])
         err = GK1S0040.check04(id, name, status_cd, shikaku_cd)
         if err:
             return render_template('GK_db004.html', err =err)   
