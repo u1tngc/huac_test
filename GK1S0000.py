@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0000
 #PGM-NAME:GK自家用練習問題・テスト
-#最終更新日:2025/11/01
+#最終更新日:2025/12/01
 
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -95,17 +95,6 @@ def update_rireki01(user_id, shoriYMD, mondai_no,column, result):
 
 def update_rireki02(user_id, shoriYMD, kaito_ymd):
     GK0S002D.update_rireki02(user_id, shoriYMD, kaito_ymd)
-    update_kaitoJyokyoCD(user_id)
-
-
-def update_kaitoJyokyoCD(user_id):
-    ret_array = GK0S002D.get_rireki(user_id)
-    mikaito = 0
-    for ix1 in range(len(ret_array)):
-        if ret_array[ix1][2] == 0:
-            mikaito = mikaito + 1
-    if mikaito < 2:
-        ret_cd = GK0S001D.update_kaitoJyokyoCD(user_id)
 
 
 def update_fukushu(user_id, fukushu, kbn):
@@ -138,6 +127,7 @@ def get_fukushuNum(user_id,num, kbn):
     ret_array = []
     for ix1 in range(ret_num):
         array = GK0S01XD.get_test_jikayo(fukushu_array[ix1][1], fukushu_array[ix1][2], fukushu_array[ix1][3])
+        print(array)
         array[3] = array[3].replace("\\n", "\n").replace("\n", "<br>")
         array[4] = array[4].replace("\\n", "\n").replace("\n", "<br>")
         ret_array.append(array)

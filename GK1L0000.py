@@ -348,13 +348,13 @@ def GK_db003():
         name = request.form['name']
         status_cd = request.form['status_cd']
         kanri_cd = request.form['kanri_cd']
-        answer_cd = request.form['answer_cd']
-        err = GK1S0040.check02(name, status_cd, answer_cd)
+        shikaku_cd = request.form['shikaku_cd']
+        err = GK1S0040.check02(name, status_cd, shikaku_cd)
         if err:
             return render_template('GK_db003.html', gakusei=session.get(f'{user_id}_gakusei'), err =err)   
         list = session.get(f'{user_id}_gakusei')
         id = list[0]
-        update_gakusei = [id, name, int(status_cd),int(kanri_cd),int(answer_cd)]
+        update_gakusei = [id, name, int(status_cd),int(kanri_cd),int(shikaku_cd)]
         err = GK1S0040.update_gakusei(update_gakusei)
         err = f"[{name}]の訂正が完了しました。"
         gakuseiData = session.get(f"{user_id}_gakuseiData")
@@ -376,10 +376,11 @@ def GK_db004():
         name = request.form['name']
         status_cd = request.form['status_cd']
         kanri_cd = request.form['kanri_cd']
-        err = GK1S0040.check04(id, name, status_cd)
+        shikaku_cd = request.form['shikaku_cd']
+        err = GK1S0040.check04(id, name, status_cd, shikaku_cd)
         if err:
             return render_template('GK_db004.html', err =err)   
-        err = GK1S0040.insert_gakusei(id, name, status_cd, kanri_cd)
+        err = GK1S0040.insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd)
         if err:
             return render_template('GK_db004.html', err =err)   
         flash("学生管理セグの登録が完了しました。")

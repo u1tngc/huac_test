@@ -1,5 +1,5 @@
 #PGM-ID:GK0S003D
-#PGM-NAME:GK復習問題セグ(オンライン)
+#PGM-NAME:GK復習問題セグI/O(オンライン)
 #最終更新日:2025/10/27
 
 import os
@@ -19,6 +19,19 @@ DB_CONFIG = {
     "sslrootcert": "",
     "target_session_attrs": "read-write"
 }
+
+# DB_CONFIG = {
+#     "dbname": "huac_gakka", 
+#     "user": "taniguchi_tanglin_ic", 
+#     "password": "N6eEqr20vmfNV-_McGwfkA", 
+#     "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
+#     "port": 26257,
+#     "sslmode": "require",
+#     "sslcert": "",
+#     "sslkey": "",
+#     "sslrootcert": "",
+#     "target_session_attrs": "read-write"
+# }
 
 def check_fukushu(user_id, mondaiNo):
     try:

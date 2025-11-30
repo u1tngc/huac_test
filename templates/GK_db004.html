@@ -29,6 +29,7 @@
                                 <th>氏名</th>
                                 <th>状況CD</th>
                                 <th>出題区分</th>
+                                <th>資格</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -37,17 +38,13 @@
                                 <td><input type="text" name="name" class="table-input"></td>
                                 <td>
                                     <select name="status_cd" class="table-input">
-                                        <option value="0">0:養成中</option>
-                                        <option value="1">1:養成完了</option>
-                                        <option value="2">2:取得済</option>
-                                        <!--<option value="3">3:自家用取得済み</option> -->
-                                        <!-- <option value="4"></option> -->
-                                        <option value="5">5:退部済</option>
-                                        <option value="6">6:学科班</option>
+                                        <option value="0">学生</option>
+                                        <option value="1">自家用</option>
+                                        <option value="6">学科班</option>
                                         {% if session['authority'] == 9 %}
-                                        <option value="7">7:学科班主任</option>
-                                        <option value="8">8:教官</option>
-                                        <option value="9">9:管理者</option>
+                                        <option value="7">学科班主任</option>
+                                        <option value="8">教官</option>
+                                        <option value="9">管理者</option>
                                         {% endif %}
                                     </select>
                                 </td>
@@ -56,6 +53,15 @@
                                         <option value="0">出題無</option>
                                         <option value="1">自家用</option>
                                         <option value="2">赤帽</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="shikaku_cd" class="table-input">
+                                        <option value="0">練許生</option>
+                                        <option value="1">自家用</option>
+                                        {% if session['authority'] == 9 %}
+                                        <option value="2">教証</option>
+                                        {% endif %}
                                     </select>
                                 </td>
                             </tr>

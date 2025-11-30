@@ -1,11 +1,12 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:
+#最終更新日:2025/12/01
 
 import re
 
 import GK0S001D
 import GK0S002D
+import GK0S021D
 
 def get_gakusei(id,authority):
     gakusei_list = GK0S001D.get_gakusei(id)
@@ -17,12 +18,12 @@ def get_gakusei(id,authority):
     else:
         err = "DB相手無し"
     status_dict = {
-        0: "養成中",
-        1: "養成完了",
-        2: "取得済",
-        3: "",
+        0: "学生",
+        1: "自家用",
+        2: "卒部生",
+        3: "退部済",
         4: "",  # 🔥 値が未設定の場合は空文字
-        5: "退部済",
+        5: "",
         6: "学科班",
         7: "学科班主任",
         8: "教官",
@@ -33,33 +34,45 @@ def get_gakusei(id,authority):
             1 : "自家用",
             2 : "赤帽"       
     }  
+    shikaku_dict = {
+            0 : "練許生",
+            1 : "自家用",
+            2 : "教証"             
+    }
     gakusei_list[2] = status_dict[gakusei_list[2]]
     gakusei_list[3] = kanri_dict[gakusei_list[3]]
+    gakusei_list[4] = shikaku_dict[gakusei_list[4]]
     return gakusei_list, err
 
 
 def get_gakuseiAll():
     status_dict = {
-    0: "養成中",
-    1: "養成完了",
-    2: "取得済",
-    3: "",
-    4: "",  # 🔥 値が未設定の場合は空文字
-    5: "退部済",
-    6: "学科班",
-    7: "学科班主任",
-    8: "教官",
-    9: "管理者"
-    }
+        0: "学生",
+        1: "自家用",
+        2: "卒部生",
+        3: "退部済",
+        4: "",  # 🔥 値が未設定の場合は空文字
+        5: "",
+        6: "学科班",
+        7: "学科班主任",
+        8: "教官",
+        9: "管理者"
+        }
     kanri_dict = {
-        0 : "出題無",
-        1 : "自家用",
-        2 : "赤帽"       
-    }    
+            0 : "出題無",
+            1 : "自家用",
+            2 : "赤帽"       
+    }  
+    shikaku_dict = {
+            0 : "練許生",
+            1 : "自家用",
+            2 : "教証"             
+    }  
     array = GK0S001D.get_gakuseiAll()
     for ix1 in range(len(array)):
         array[ix1][2] = status_dict[array[ix1][2]]
         array[ix1][3] = kanri_dict[array[ix1][3]]
+        array[ix1][4] = shikaku_dict[array[ix1][4]]
         array[ix1][6] = timestamp_to_date(array[ix1][6])
     return array
 
@@ -114,7 +127,7 @@ def check03(pass1,pass2):
         return ""
 
 
-def check04(id, name, status_cd):
+def check04(id, name, status_cd, shikaku_cd):
     if len(id) != 7:
         return "学籍番号が不正な値です。"
     pattern = r'^\d{2}[A-Z]\d{4}$'
@@ -128,16 +141,17 @@ def check04(id, name, status_cd):
 
 
 def update_gakusei(update_gakusei):
-    if update_gakusei[2] == 2:
-        update_gakusei[3] = 1
+    if update_gakusei[4] == 1:
+        update_gakusei[3] = 0
     err = GK0S001D.update_gakusei(update_gakusei)
     return ""
 
 
-def insert_gakusei(id, name, status_cd, kanri_cd):
-    err = GK0S001D.insert_gakusei(id, name, status_cd, kanri_cd)
+def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
+    err = GK0S001D.insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd)
     if err == 3:
         return "入力した学籍番号は登録済みです。"
+    err = GK0S021D.insert_data(id)
     return ""    
 
 
