@@ -1,30 +1,17 @@
 #PGM-ID:GK0S001D
 #PGM-NAME:GK学科試験管理セグI/O(オンライン)
-#最終更新日:
+#最終更新日:2025/12/01
 
 import os
 
 import psycopg2
 
 
-# DB_CONFIG = {
-#     "dbname": os.getenv("DB_NAME"),
-#     "user": os.getenv("DB_USER"),
-#     "password": os.getenv("DB_PASSWORD"),
-#     "host": os.getenv("DB_HOST"),
-#     "port": 26257,
-#     "sslmode": "require",
-#     "sslcert": "",
-#     "sslkey": "",
-#     "sslrootcert": "",
-#     "target_session_attrs": "read-write"
-# }
-
 DB_CONFIG = {
-    "dbname": "huac_gakka", 
-    "user": "taniguchi_tanglin_ic", 
-    "password": "N6eEqr20vmfNV-_McGwfkA", 
-    "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
+    "dbname": os.getenv("DB_NAME"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "host": os.getenv("DB_HOST"),
     "port": 26257,
     "sslmode": "require",
     "sslcert": "",
@@ -32,6 +19,19 @@ DB_CONFIG = {
     "sslrootcert": "",
     "target_session_attrs": "read-write"
 }
+
+# DB_CONFIG = {
+#     "dbname": "huac_gakka", 
+#     "user": "taniguchi_tanglin_ic", 
+#     "password": "N6eEqr20vmfNV-_McGwfkA", 
+#     "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
+#     "port": 26257,
+#     "sslmode": "require",
+#     "sslcert": "",
+#     "sslkey": "",
+#     "sslrootcert": "",
+#     "target_session_attrs": "read-write"
+# }
 
 def insert_data(id):
     try:
