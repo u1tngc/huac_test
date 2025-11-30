@@ -140,7 +140,7 @@ def check04(id, name, status_cd, shikaku_cd):
     return ""
 
 def check05(old, new):
-    if old[4] == 0 and new[4] == 1:
+    if old[4] == "練許生" and new[4] == 1:
         ret_cd = 1
     else:
         ret_cd = 0
@@ -228,5 +228,6 @@ def get_gakuseiName(id):
     ret_array = GK0S001D.get_gakuseiName(id)
     return ret_array
 
-def update_jikayo(id):
+def delete_data(id):
     err = GK0S021D.delete_data(id)
+    return err
