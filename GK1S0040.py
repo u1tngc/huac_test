@@ -139,11 +139,18 @@ def check04(id, name, status_cd, shikaku_cd):
         return "氏名は空白を入れずに入力してください。"
     return ""
 
+def check05(old, new):
+    if old[4] == 0 and new[4] == 1:
+        ret_cd = 1
+    else:
+        ret_cd = 0
+    return ret_cd
+
 
 def update_gakusei(update_gakusei):
     if update_gakusei[4] == 1:
         update_gakusei[3] = 0
-    err = GK0S001D.update_gakusei(update_gakusei)
+    err = GK0S001D.update_gakusei(update_gakusei)       
     return ""
 
 
@@ -220,3 +227,6 @@ def get_gakuseiInfo00(authority):
 def get_gakuseiName(id):
     ret_array = GK0S001D.get_gakuseiName(id)
     return ret_array
+
+def update_jikayo(id):
+    err = GK0S021D.delete_data(id)

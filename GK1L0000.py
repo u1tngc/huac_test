@@ -356,6 +356,9 @@ def GK_db003():
         id = list[0]
         update_gakusei = [id, name, int(status_cd),int(kanri_cd),int(shikaku_cd)]
         err = GK1S0040.update_gakusei(update_gakusei)
+        gakkaShiken = GK1S0040.check05(list, update_gakusei)
+        if gakkaShiken == 1:
+            err1 = GK1S0040.delete_data(id) 
         err = f"[{name}]の訂正が完了しました。"
         gakuseiData = session.get(f"{user_id}_gakuseiData")
         return render_template('GK_db002.html', gakuseiData=gakuseiData, err1=err) 
