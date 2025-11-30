@@ -170,9 +170,11 @@ def GK_practice02():
         session[f"{user_id}_ix1"] += 1 
         result = request.form["result"]
         if result != "1":
-            if session[f'{user_id}_mondaiNo'][0:1] != "Z":
+            if session[f'{user_id}_mondaiNo'][0:1] == "Z":
+                GK1S0000.update_fukushu(user_id, session[f'{user_id}_mondaiNo'], 3)         
+            else:
                 GK1S0000.update_fukushu(user_id, session[f'{user_id}_mondaiNo'], 2)
-                session.pop(f"{user_id}_fukushu", None)
+            session.pop(f"{user_id}_fukushu", None)
         if err == 0:
             return redirect(url_for('GK_practice01'))
         else:
