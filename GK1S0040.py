@@ -1,12 +1,14 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2025/12/01
+#最終更新日:2025/12/02
 
+from datetime import datetime
+from zoneinfo import ZoneInfo
 import re
 
 import GK0S001D
 import GK0S002D
-import GK0S021D
+import GK0S031D
 
 def get_gakusei(id,authority):
     gakusei_list = GK0S001D.get_gakusei(id)
@@ -146,6 +148,14 @@ def check05(old, new):
         ret_cd = 0
     return ret_cd
 
+def check06(kekka):
+    if kekka[5] == "" and (kekka[0] != 0 or kekka[1] != 0 or kekka[2] != 0 or kekka[3] != 0 ):
+        return "有効期間を入力してください。"
+    elif kekka[5] != "" and (kekka[0] == 0 and kekka[1] == 0 and kekka[2] == 0 and kekka[3] == 0 ):
+        return "学科試験結果を入力してください。"
+    else:
+        return ""
+
 
 def update_gakusei(update_gakusei):
     if update_gakusei[4] == 1:
@@ -159,7 +169,7 @@ def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
     if err == 3:
         return "入力した学籍番号は登録済みです。"
     if shikaku_cd == 0:
-        err = GK0S021D.insert_data(id)
+        err = GK0S031D.insert_data(id)
     return ""    
 
 
@@ -229,5 +239,36 @@ def get_gakuseiName(id):
     return ret_array
 
 def delete_data(id):
-    err = GK0S021D.delete_data(id)
+    err = GK0S031D.delete_data(id)
     return err
+
+def get_gakkaShiken(id):
+    gakkaShiken = GK0S031D.get_gakkaShiken(id)
+    return gakkaShiken
+
+
+def update_gakkaShiken(id,kekka):
+    dt = datetime.now(ZoneInfo("Asia/Tokyo"))
+    ymd = dt.strftime("%Y%m%d")
+    updateInfo=[id,kekka[0],kekka[1],kekka[2],kekka[3],kekka[4],kekka[5], ymd]
+    err1 = GK0S031D.update_gakkaShiken(updateInfo)
+
+
+def get_gakkaShikenAll():
+    kekka_dict = {
+            0 : "未受験",
+            1 : "合格",
+            2 : "不合格"             
+    }  
+    array = GK0S031D.get_gakkaShikenAll()
+    for ix1 in range(len(array)):
+        array[ix1][1] = kekka_dict[array[ix1][1]]
+        array[ix1][2] = kekka_dict[array[ix1][2]]
+        array[ix1][3] = kekka_dict[array[ix1][3]]
+        array[ix1][4] = kekka_dict[array[ix1][4]]
+        array[ix1][5] = kekka_dict[array[ix1][5]]
+        if array[ix1][6]:
+            array[ix1][6] = f'{array[ix1][6][0:4]}/{array[ix1][6][4:6]}/{array[ix1][6][6:]}'
+        if array[ix1][7]:
+            array[ix1][7] = f'{array[ix1][7][4:6]}/{array[ix1][7][6:]}'
+    return array

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 学科試験更新</title>
+    <link rel="stylesheet" href="../static/GK1C0041.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>学科試験更新</h2>
+            {% if err %}
+            <a class="err">{{ err }}</a>
+            <br><br>
+            {% endif %}
+            <form method="post" action="/GK_db032">
+                <div class="data-section">
+                    <h3>変更前</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>法規</th>
+                                <th>工学</th>
+                                <th>気象</th>
+                                <th>航法</th>
+                                <th>航特</th>
+                                <th>有効期間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{% if gakkaShiken1[1]==0 %}未受験{% elif gakkaShiken1[1]==1 %}合格{% else %}不合格{% endif
+                                    %}</td>
+                                <td>{% if gakkaShiken1[2]==0 %}未受験{% elif gakkaShiken1[2]==1 %}合格{% else %}不合格{% endif
+                                    %}</td>
+                                <td>{% if gakkaShiken1[3]==0 %}未受験{% elif gakkaShiken1[3]==1 %}合格{% else %}不合格{% endif
+                                    %}</td>
+                                <td>{% if gakkaShiken1[4]==0 %}未受験{% elif gakkaShiken1[4]==1 %}合格{% else %}不合格{% endif
+                                    %}</td>
+                                <td>{% if gakkaShiken1[5]==0 %}未受験{% elif gakkaShiken1[5]==1 %}合格{% else %}不合格{% endif
+                                    %}</td>
+                                <td>{{ limitdate1 }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="data-section">
+                    <h3>変更後</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>法規</th>
+                                <th>工学</th>
+                                <th>気象</th>
+                                <th>航法</th>
+                                <th>航特</th>
+                                <th>有効期間</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <select name="hoki" class="table-input">
+                                        <option value="0" {% if gakkaShiken2[1]==0 %}selected{% endif %}>未受験</option>
+                                        <option value="1" {% if gakkaShiken2[1]==1 %}selected{% endif %}>合格</option>
+                                        <option value="2" {% if gakkaShiken2[1]==2 %}selected{% endif %}>不合格</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="kogaku" class="table-input">
+                                        <option value="0" {% if gakkaShiken2[2]==0 %}selected{% endif %}>未受験</option>
+                                        <option value="1" {% if gakkaShiken2[2]==1 %}selected{% endif %}>合格</option>
+                                        <option value="2" {% if gakkaShiken2[2]==2 %}selected{% endif %}>不合格</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="kisho" class="table-input">
+                                        <option value="0" {% if gakkaShiken2[3]==0 %}selected{% endif %}>未受験</option>
+                                        <option value="1" {% if gakkaShiken2[3]==1 %}selected{% endif %}>合格</option>
+                                        <option value="2" {% if gakkaShiken2[3]==2 %}selected{% endif %}>不合格</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="koho" class="table-input">
+                                        <option value="0" {% if gakkaShiken2[4]==0 %}selected{% endif %}>未受験</option>
+                                        <option value="1" {% if gakkaShiken2[4]==1 %}selected{% endif %}>合格</option>
+                                        <option value="2" {% if gakkaShiken2[4]==2 %}selected{% endif %}>不合格</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select name="kotoku" class="table-input">
+                                        <option value="0" {% if gakkaShiken2[5]==0 %}selected{% endif %}>未受験</option>
+                                        <option value="1" {% if gakkaShiken2[5]==1 %}selected{% endif %}>合格</option>
+                                        <option value="2" {% if gakkaShiken2[5]==2 %}selected{% endif %}>不合格</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="date" id="date" name="limit" value="{{ limitdate2 }}">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                    <button type="submit" class="execute-button">訂正</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

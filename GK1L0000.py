@@ -1,10 +1,12 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2025/11/01
+#最終更新日:2025/12/02
 
+import csv
 from datetime import timedelta
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
+import io
 import os
 from zoneinfo import ZoneInfo
 
@@ -115,7 +117,11 @@ def GK_menu01():
                     if not array:
                         flash("照会するデータがありません。")
                         return redirect(url_for('GK_menu01')) 
-                    return render_template('GK_db020.html',rireki=array)       
+                    return render_template('GK_db020.html',rireki=array)    
+            elif db_kbn == "3":
+                gakkaShikenList = GK1S0040.get_gakkaShikenAll()
+                session[f"{user_id}_gakkaShikenList"] = gakkaShikenList
+                return render_template('GK_db031.html',gakkaShikenList=gakkaShikenList)  
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
@@ -124,6 +130,20 @@ def GK_menu01():
                 return render_template('GK_db002.html', gakuseiData=gakuseiData, err1="") 
             elif db_kbn == "2":
                 return redirect(url_for('GK_db004',err=""))
+            elif db_kbn == "3":
+                gakkaShiken_data = GK1S0040.get_gakkaShiken(session.get('user_id'))
+                if gakkaShiken_data:
+                    session[f"{user_id}_gakkaShiken_data"] = gakkaShiken_data
+                    date_str = gakkaShiken_data[6]
+                    if date_str == None:
+                        limitdate = ""
+                    else:
+                        limitdate = f"{date_str[0:4]}-{date_str[4:6]}-{date_str[6:8]}"
+                    session[f"{user_id}_limitdate"] = limitdate
+                    return render_template('GK_db032.html', gakkaShiken1=gakkaShiken_data,limitdate1=limitdate, gakkaShiken2=gakkaShiken_data,limitdate2=limitdate, err1="") 
+                else:
+                    flash("学科試験のデータがありません。学科班に確認してください。")
+                    return redirect(url_for('GK_menu01'))                     
         elif shorikbn == "password":
                 return redirect(url_for('GK_db010',err=""))
 
@@ -235,7 +255,6 @@ def GK_fukushu02():
             return redirect(url_for('GK_menu01'))  # 最後の問題の場合はメニューに戻る
 
     return render_template('GK_fukushu02.html', answer=answer, question=question,err=err)
-
 
 
 # 小テスト問題（問題表示）
@@ -461,6 +480,60 @@ def GK_db022():
     return render_template('GK_db022.html', gakuseiName=gakuseiName, rireki=rireki)
 
 
+#学科試験管理セグ・照会
+@app.route('/GK_db031', methods=['GET', 'POST'])
+def GK_db031():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,8,9]:
+        return redirect(url_for('GK_menu01'))
+    if f"{user_id}_gakkaShikenList" not in session:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':
+        gakkaShikenList = session.get(f'{user_id}_gakkaShikenList')
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(['氏名', '法規', '工学', '気象', '航法', '航特', '有効期間', '更新日'])
+        for row in gakkaShikenList:
+            writer.writerow(row[:8])
+        csv_data = output.getvalue()
+        output.close()
+        return Response(
+            csv_data,
+            mimetype='text/csv',
+            headers={'Content-Disposition': 'attachment; filename=学科試験結果.csv'}
+        )
+    
+    gakkaShikenList = session.get(f'{user_id}_gakkaShikenList')
+    return render_template('GK_db031.html', gakkaShikenList=gakkaShikenList)
+
+
+#学科試験管理セグ・訂正
+@app.route('/GK_db032', methods=['GET', 'POST'])
+def GK_db032():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if request.method == 'POST':  
+        limitDate = request.form['limit']
+        kekka = [int(request.form['hoki']), int(request.form['kogaku']), int(request.form['kisho']), int(request.form['koho']),int(request.form['kotoku']), limitDate.replace("-", "")]
+        print(kekka)
+        err = GK1S0040.check06(kekka)
+        gakkaShiken_old = session.get(f'{user_id}_gakkaShiken_data')
+        limitdate_old =session.get(f'{user_id}_limitdate')
+        gakkaShiken_new = [gakkaShiken_old[0],kekka[0],kekka[1],kekka[2],kekka[3],kekka[4],gakkaShiken_old[6]]
+        limitdate_new = limitDate
+        if err:
+            return render_template('GK_db032.html', gakkaShiken1=gakkaShiken_old,limitdate1=limitdate_old, gakkaShiken2=gakkaShiken_new,limitdate2=limitdate_new,err=err)   
+        err1 = GK1S0040.update_gakkaShiken(user_id,kekka)
+        session.pop('_flashes', None)
+        flash("学科試験結果の訂正が完了しました。")
+        init06(user_id)
+        return redirect(url_for('GK_menu01')) 
+    return render_template('GK_db032.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")      
+
+
 # セッションの有効期限をリセット
 @app.before_request
 def refresh_session():
@@ -503,6 +576,11 @@ def init05(user_id):
     session.pop(f"{user_id}_fukushuNum", None)
     session.pop(f'{user_id}_fukushuNo', None)
     session.pop(f'{user_id}_fukushu_eof', None)
+
+
+def init06(user_id):
+    session.pop(f"{user_id}_gakkaShiken_data", None)
+    session.pop(f"{user_id}_limitdate", None)
 
 
 if __name__ == "__main__":

@@ -42,7 +42,9 @@
                                     <option value="D">情報</option>
                                     <option value="E">その他</option>
                                     <option value="X">赤帽</option>
+                                    {% if session['authority'] in [0, 1, 6, 7, 9] %}
                                     <option value="Z">極秘</option>
+                                    {% endif %}
                                 </select>
                             </div>
                             <div class="form-group">
@@ -71,7 +73,7 @@
                             </div>
                         </div>
                     </div>
-                    {% if session['authority'] in [0, 1, 2, 3, 6, 7, 9] %}
+                    {% if session['authority'] in [0, 1, 6, 7, 9] %}
                     <!-- <div class="radio-section">
                         <label class="radio-group"><input type="radio" name="selection" value="nigate">苦手克服</label>
                     </div> -->
@@ -92,15 +94,16 @@
                             <div class="form-group">
                                 <label for="db_kbn1"></label>
                                 <select id="db_kbn1" name="db_kbn1">
+                                    <option value="2">小テスト履歴照会</option>
                                     {% if session['authority'] in [6, 7, 8, 9] %}
                                     <option value="1">学生情報照会</option>
+                                    <option value="3">学科試験照会</option>
                                     {% endif %}
-                                    <option value="2">小テスト履歴照会</option>
                                 </select>
                             </div>
                         </div>
                     </div>
-                    {% if session['authority'] in [7, 9] %}
+                    {% if session['authority'] in [0, 1, 6, 7, 9] %}
                     <div class="data-section">
                         <div class="radio-section">
                             <label class="radio-group"><input type="radio" name="selection"
@@ -108,8 +111,13 @@
                             <div class="form-group">
                                 <label for="db_kbn2"></label>
                                 <select id="db_kbn2" name="db_kbn2">
+                                    {% if session['authority'] in [7, 9] %}
                                     <option value="1">学生情報訂正</option>
                                     <option value="2">学生情報登録</option>
+                                    {% endif %}
+                                    {% if session['authority'] in [0, 1, 6, 7, 9] %}
+                                    <option value="3">学科試験更新</option>
+                                    {% endif %}
                                 </select>
                             </div>
                         </div>
