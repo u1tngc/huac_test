@@ -497,12 +497,12 @@ def GK_db031():
         writer.writerow(['氏名', '法規', '工学', '気象', '航法', '航特', '有効期間', '更新日'])
         for row in gakkaShikenList:
             writer.writerow(row[:8])
-        csv_data = output.getvalue()
+        csv_data = '\ufeff' + output.getvalue()
         output.close()
         return Response(
-            csv_data,
-            mimetype='text/csv',
-            headers={'Content-Disposition': 'attachment; filename=学科試験結果.csv'}
+            csv_data.encode('utf-8'),
+            mimetype='text/csv; charset=utf-8',
+            headers={'Content-Disposition': "attachment; filename*=UTF-8''%E5%AD%A6%E7%A7%91%E8%A9%A6%E9%A8%93%E7%B5%90%E6%9E%9C.csv"}
         )
     
     gakkaShikenList = session.get(f'{user_id}_gakkaShikenList')
