@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2025/12/02
+#最終更新日:2025/12/11
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -9,6 +9,7 @@ import re
 import GK0S001D
 import GK0S002D
 import GK0S031D
+import GK0S041D
 
 def get_gakusei(id,authority):
     gakusei_list = GK0S001D.get_gakusei(id)
@@ -170,6 +171,8 @@ def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
         return "入力した学籍番号は登録済みです。"
     if shikaku_cd == 0:
         err = GK0S031D.insert_data(id)
+        err = GK0S041D.insert_chkList(id,1)
+        err = GK0S041D.insert_chkList(id,2)
     return ""    
 
 
@@ -272,3 +275,17 @@ def get_gakkaShikenAll():
         if array[ix1][7]:
             array[ix1][7] = f'{array[ix1][7][4:6]}/{array[ix1][7][6:]}'
     return array
+
+
+def get_chkListAll():
+    temp_array1 = GK0S041D.get_chkListAll()
+    ret_array = []
+    
+    for ix1 in range(0, len(temp_array1) - 1, 2):
+        if temp_array1[ix1][0] == temp_array1[ix1 + 1][0]:
+            # 1行目: index 0, 2以外を取得（氏名、法規～教官chk）
+            row = [v for i, v in enumerate(temp_array1[ix1]) if i not in (0, 2)]
+            # 2行目: index 0, 1, 2以外を追加（法規～教官chk）
+            row += [v for i, v in enumerate(temp_array1[ix1 + 1]) if i not in (0, 1, 2)]
+            ret_array.append(row)    
+    return ret_array 

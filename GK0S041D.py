@@ -1,0 +1,87 @@
+#PGM-ID:GK0S001D
+#PGM-NAME:GK各種CHK管理セグI/O(オンライン)
+#最終更新日:2025/12/11
+
+import os
+
+import psycopg2
+
+
+DB_CONFIG = {
+    "dbname": os.getenv("DB_NAME"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "host": os.getenv("DB_HOST"),
+    "port": 26257,
+    "sslmode": "require",
+    "sslcert": "",
+    "sslkey": "",
+    "sslrootcert": "",
+    "target_session_attrs": "read-write"
+}
+
+# DB_CONFIG = {
+#     "dbname": "huac_gakka", 
+#     "user": "taniguchi_tanglin_ic", 
+#     "password": "N6eEqr20vmfNV-_McGwfkA", 
+#     "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
+#     "port": 26257,
+#     "sslmode": "require",
+#     "sslcert": "",
+#     "sslkey": "",
+#     "sslrootcert": "",
+#     "target_session_attrs": "read-write"
+# }
+
+def insert_chkList(id, datakbn):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = "INSERT INTO 各種chk管理セグ (学籍番号, データ種類) VALUES (%s, %s)"
+            data = (id, datakbn)
+            cur.execute(sql, data)
+            conn.commit()
+        return 0  
+    except psycopg2.IntegrityError as e:
+        print(f'エラー内容：{e}')
+        return 3  # 主キー衝突エラー
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1  
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 2   
+    finally:
+        if conn:
+            conn.close() 
+    
+
+def get_chkListAll():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = '''
+                SELECT 
+                    c.学籍番号,
+                    s.氏名,
+                    c.データ種類,
+                    c.法規,
+                    c.気象,
+                    c.工学,
+                    c.情報,
+                    c.学生chk,
+                    c.教官chk
+                FROM "各種chk管理セグ" c
+                JOIN "学生管理セグ" s ON c.学籍番号 = s.学籍番号
+                ORDER BY c.学籍番号, c.データ種類
+            '''
+            cur.execute(sql)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []

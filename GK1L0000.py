@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2025/12/02
+#最終更新日:2025/12/11
 
 import csv
 from datetime import timedelta
@@ -122,6 +122,9 @@ def GK_menu01():
                 gakkaShikenList = GK1S0040.get_gakkaShikenAll()
                 session[f"{user_id}_gakkaShikenList"] = gakkaShikenList
                 return render_template('GK_db031.html',gakkaShikenList=gakkaShikenList)  
+            elif db_kbn == "4":
+                chklist = GK1S0040.get_chkListAll()
+                return render_template('GK_db041.html',chklist=chklist)                
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
@@ -532,6 +535,18 @@ def GK_db032():
         init06(user_id)
         return redirect(url_for('GK_menu01')) 
     return render_template('GK_db032.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")      
+
+
+#各種CHK管理セグ
+@app.route('/GK_db041', methods=['GET', 'POST'])
+def GK_db041():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,8,9]:
+        return redirect(url_for('GK_menu01'))
+    
+    return render_template('GK_db041.html')
 
 
 # セッションの有効期限をリセット
