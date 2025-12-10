@@ -71,6 +71,8 @@ main {
     margin-top: 20px;
     table-layout: fixed;
     /* 🔥 列幅を固定 */
+    font-size: clamp(10px, 2vw, 16px);
+    /* 🔥 画面サイズに応じて文字サイズ調整（最小10px、最大16px） */
 }
 
 /* 列幅の指定 */
@@ -90,8 +92,11 @@ main {
 .data-table td {
     border: 2px solid black;
     /* 🔥 2pxの黒枠を追加 */
-    padding: 10px;
+    padding: clamp(5px, 1.5vw, 10px);
+    /* 🔥 画面サイズに応じてpadding調整 */
     text-align: center;
+    word-break: break-all;
+    /* 🔥 長い文字列を折り返し */
 }
 
 .data-table th {
@@ -170,4 +175,35 @@ footer {
 
 .err {
     color: red;
+}
+
+/* 🔥 レスポンシブ対応 */
+@media screen and (max-width: 600px) {
+    .data-table {
+        font-size: 11px;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 5px 2px;
+    }
+
+    .options {
+        padding: 15px;
+    }
+
+    .options a {
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .data-table {
+        font-size: 9px;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 3px 1px;
+    }
 }
