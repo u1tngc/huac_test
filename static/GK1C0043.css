@@ -67,12 +67,12 @@ main {
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    /* 🔥 枠線を統一 */
+    /*  枠線を統一 */
     margin-top: 20px;
     table-layout: fixed;
-    /* 🔥 列幅を固定 */
+    /*  列幅を固定 */
     font-size: clamp(10px, 2vw, 16px);
-    /* 🔥 画面サイズに応じて文字サイズ調整（最小10px、最大16px） */
+    /*  画面サイズに応じて文字サイズ調整（最小10px、最大16px） */
 }
 
 /* 列幅の指定 */
@@ -91,17 +91,17 @@ main {
 .data-table th,
 .data-table td {
     border: 2px solid black;
-    /* 🔥 2pxの黒枠を追加 */
+    /*  2pxの黒枠を追加 */
     padding: clamp(5px, 1.5vw, 10px);
-    /* 🔥 画面サイズに応じてpadding調整 */
+    /*  画面サイズに応じてpadding調整 */
     text-align: center;
     word-break: break-all;
-    /* 🔥 長い文字列を折り返し */
+    /*  長い文字列を折り返し */
 }
 
 .data-table th {
     background-color: #f2f2f2;
-    /* 🔥 ヘッダーの背景色 */
+    /*  ヘッダーの背景色 */
 }
 
 /* 入力グループ */
@@ -177,7 +177,7 @@ footer {
     color: red;
 }
 
-/* 🔥 レスポンシブ対応 */
+/*  レスポンシブ対応 */
 @media screen and (max-width: 600px) {
     .data-table {
         font-size: 11px;

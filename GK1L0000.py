@@ -123,8 +123,14 @@ def GK_menu01():
                 session[f"{user_id}_gakkaShikenList"] = gakkaShikenList
                 return render_template('GK_db031.html',gakkaShikenList=gakkaShikenList)  
             elif db_kbn == "4":
-                chklist = GK1S0040.get_chkListAll()
-                return render_template('GK_db041.html',chklist=chklist)                
+                if session.get('authority') in [7,8,9]:
+                    chklist = GK1S0040.get_chkListAll()
+                    return render_template('GK_db041.html',chklist=chklist)  
+                else:
+                    id = session.get('user_id')
+                    chklist = GK1S0040.get_chkList(id)
+                    return render_template('GK_db042.html',chklist=chklist)                         
+                           
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
@@ -537,7 +543,7 @@ def GK_db032():
     return render_template('GK_db032.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")      
 
 
-#各種CHK管理セグ
+#各種CHK管理セグ・照会（管理者用）
 @app.route('/GK_db041', methods=['GET', 'POST'])
 def GK_db041():
     user_id = session.get('user_id')
@@ -545,8 +551,18 @@ def GK_db041():
         return redirect(url_for('GK_login'))
     if not session.get('authority') in [6,7,8,9]:
         return redirect(url_for('GK_menu01'))
-    
     return render_template('GK_db041.html')
+
+
+#各種CHK管理セグ・照会（練許生用）
+@app.route('/GK_db042', methods=['GET', 'POST'])
+def GK_db042():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [0]:
+        return redirect(url_for('GK_menu01'))
+    return render_template('GK_db042.html')
 
 
 # セッションの有効期限をリセット

@@ -85,3 +85,36 @@ def get_chkListAll():
     except Exception as e:
         print(f'エラー内容：{e}')
         return []
+
+
+def get_chkList(id):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = '''
+                SELECT 
+                    c.学籍番号,
+                    s.氏名,
+                    c.データ種類,
+                    c.法規,
+                    c.気象,
+                    c.工学,
+                    c.情報,
+                    c.学生chk,
+                    c.教官chk
+                FROM "各種chk管理セグ" c
+                JOIN "学生管理セグ" s ON c.学籍番号 = s.学籍番号
+                WHERE c.学籍番号 = %s
+                ORDER BY c.学籍番号, c.データ種類
+            '''
+            data = (id,)
+            cur.execute(sql, data)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []

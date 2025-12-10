@@ -25,7 +25,7 @@ def get_gakusei(id,authority):
         1: "自家用",
         2: "卒部生",
         3: "退部済",
-        4: "",  # 🔥 値が未設定の場合は空文字
+        4: "",
         5: "",
         6: "学科班",
         7: "学科班主任",
@@ -54,7 +54,7 @@ def get_gakuseiAll():
         1: "自家用",
         2: "卒部生",
         3: "退部済",
-        4: "",  # 🔥 値が未設定の場合は空文字
+        4: "", 
         5: "",
         6: "学科班",
         7: "学科班主任",
@@ -280,7 +280,6 @@ def get_gakkaShikenAll():
 def get_chkListAll():
     temp_array1 = GK0S041D.get_chkListAll()
     ret_array = []
-    
     for ix1 in range(0, len(temp_array1) - 1, 2):
         if temp_array1[ix1][0] == temp_array1[ix1 + 1][0]:
             # 1行目: index 0, 2以外を取得（氏名、法規～教官chk）
@@ -288,4 +287,16 @@ def get_chkListAll():
             # 2行目: index 0, 1, 2以外を追加（法規～教官chk）
             row += [v for i, v in enumerate(temp_array1[ix1 + 1]) if i not in (0, 1, 2)]
             ret_array.append(row)    
+    return ret_array 
+
+
+def get_chkList(id):
+    temp_array1 = GK0S041D.get_chkList(id)
+    ret_array = []
+    for ix1 in range(0, len(temp_array1) - 1, 2):
+        if temp_array1[ix1][0] == temp_array1[ix1 + 1][0]:
+            # 1行目: index 0, 2以外を取得（氏名、法規～教官chk）
+            ret_array = [v for i, v in enumerate(temp_array1[ix1]) if i not in (0, 2)]
+            # 2行目: index 0, 1, 2以外を追加（法規～教官chk）
+            ret_array += [v for i, v in enumerate(temp_array1[ix1 + 1]) if i not in (0, 1, 2)]   
     return ret_array 
