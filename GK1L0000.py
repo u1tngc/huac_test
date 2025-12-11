@@ -108,7 +108,7 @@ def GK_menu01():
                 return render_template('GK_db001.html',gakuseiList=gakuseiList)     
             elif db_kbn == "2":
                 init04(user_id)
-                if session.get('authority') in [7,8,9]:
+                if session.get('authority') in [4,7,8,9]:
                     gakuseiName = GK1S0040.get_gakuseiInfo01()
                     session[f"{user_id}_gakuseiName"] = gakuseiName
                     return render_template('GK_db021.html', gakuseiName=gakuseiName) 
