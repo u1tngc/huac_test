@@ -110,7 +110,17 @@ main {
 }
 
 /* テーブル内の入力フィールド */
-.data-table input[type="date"],
+.data-table input[type="date"] {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 2px;
+    font-size: clamp(6px, 1.2vw, 10px);
+    /* 日付は2サイズ小さく */
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
+}
+
 .data-table input[type="text"],
 .data-table .table-input {
     width: 100%;
@@ -211,7 +221,11 @@ footer {
         padding: 5px 2px;
     }
 
-    .data-table input[type="date"],
+    .data-table input[type="date"] {
+        font-size: 7px;
+        padding: 1px;
+    }
+
     .data-table input[type="text"],
     .data-table .table-input {
         font-size: 9px;
@@ -241,7 +255,11 @@ footer {
         padding: 3px 1px;
     }
 
-    .data-table input[type="date"],
+    .data-table input[type="date"] {
+        font-size: 6px;
+        padding: 0;
+    }
+
     .data-table input[type="text"],
     .data-table .table-input {
         font-size: 8px;
