@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 各種CHK状況更新</title>
+    <link rel="stylesheet" href="../static/GK1C0043.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>各種CHK状況更新</h2>
+            {% if err1 %}
+            <a class="err">{{ err1 }}</a>
+            <br><br>
+            {% endif %}
+            <div class="student-info">
+                <p><strong>氏名:</strong> {{ stu_name }}</p>
+            </div>
+            <form method="post" action="/GK_db044">
+                <div class=" data-section">
+                    <h3>変更前</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>法規</th>
+                                <th>気象</th>
+                                <th>工学</th>
+                                <th>情報</th>
+                                <th>学生CHK</th>
+                                <th>教官CHK</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>合格日</th>
+                                <td>{{ chkData1[1] }}</td>
+                                <td>{{ chkData1[2] }}</td>
+                                <td>{{ chkData1[3] }}</td>
+                                <td>{{ chkData1[4] }}</td>
+                                <td>{{ chkData1[5] }}</td>
+                                <td>{{ chkData1[6] }}</td>
+                            </tr>
+                            <tr>
+                                <th>担当者</th>
+                                <td>{{ chkData1[7] }}</td>
+                                <td>{{ chkData1[8] }}</td>
+                                <td>{{ chkData1[9] }}</td>
+                                <td>{{ chkData1[10] }}</td>
+                                <td>{{ chkData1[11] }}</td>
+                                <td>{{ chkData1[12] }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="data-section">
+                    <h3>変更後</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>法規</th>
+                                <th>気象</th>
+                                <th>工学</th>
+                                <th>情報</th>
+                                <th>学生CHK</th>
+                                <th>教官CHK</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th>合格日</th>
+                                <td>
+                                    <input type="date" id="date" name="hoki_date" value="{{ chkData2[1] }}">
+                                </td>
+                                <td>
+                                    <input type="date" id="date" name="kishou_date" value="{{ chkData2[2] }}">
+                                </td>
+                                <td>
+                                    <input type="date" id="date" name="kogaku_date" value="{{ chkData2[3] }}">
+                                </td>
+                                <td>
+                                    <input type="date" id="date" name="joho_date" value="{{ chkData2[4] }}">
+                                </td>
+                                <td>
+                                    <input type="date" id="date" name="gakuseiCHK_date" value="{{ chkData2[5] }}">
+                                </td>
+                                <td>
+                                    <input type="date" id="date" name="kyoukanCHK_date" value="{{ chkData2[6] }}">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>担当者</th>
+                                <td>
+                                    <input type="text" name="hoki_name" value="{{ chkData2[7] }}" class="table-input">
+                                </td>
+                                <td>
+                                    <input type="text" name="kisho_name" value="{{ chkData2[8] }}" class="table-input">
+                                </td>
+                                <td>
+                                    <input type="text" name="kogaku_name" value="{{ chkData2[9] }}" class="table-input">
+                                </td>
+                                <td>
+                                    <input type="text" name="joho_name" value="{{ chkData2[10] }}" class="table-input">
+                                </td>
+                                <td>
+                                    <input type="text" name="gakuseiCHK_name" value="{{ chkData2[11] }}"
+                                        class="table-input">
+                                </td>
+                                <td>
+                                    <input type="text" name="kyoukanCHK_name" value="{{ chkData2[12] }}"
+                                        class="table-input">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                    <button type="submit" class="execute-button">訂正</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

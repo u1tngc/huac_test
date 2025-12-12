@@ -99,8 +99,6 @@
                                     {% if session['authority'] in [6, 7, 8, 9] %}
                                     <option value="1">学生情報照会</option>
                                     <option value="3">学科試験照会</option>
-                                    {% endif %}
-                                    {% if session['authority'] not in [1] %}
                                     <option value="4">各種CHK状況照会</option>
                                     {% endif %}
                                 </select>
@@ -122,6 +120,9 @@
                                     {% endif %}
                                     {% if session['authority'] in [0, 1, 6, 7, 9] %}
                                     <option value="3">学科試験更新</option>
+                                    {% endif %}
+                                    {% if session['authority'] in [6, 7, 9] %}
+                                    <option value="4">各種CHK状況更新</option>
                                     {% endif %}
                                 </select>
                             </div>

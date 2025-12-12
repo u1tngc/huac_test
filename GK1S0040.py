@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2025/12/11
+#最終更新日:2025/12/12
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -157,6 +157,21 @@ def check06(kekka):
     else:
         return ""
 
+def check07(date, name):
+    has_gakusei_chk = date[4] != ""
+    
+    for ix1 in range(5):  # 0～4をチェック
+        if has_gakusei_chk and date[ix1] == "":
+            return "中間CHKの状況を入力してください。"
+        if (date[ix1] == "") != (name[ix1] == ""):
+            return "日付未入力のCHKがあります。" if date[ix1] == "" else "担当者未入力のCHKがあります。"
+        if len(name[ix1]) > 8:
+            return "担当者名は8字以内で入力してください。"
+    if date[5] != "" and not has_gakusei_chk:
+        return "学生CHKが未入力です。"
+    
+    return ""
+
 
 def update_gakusei(update_gakusei):
     if update_gakusei[4] == 1:
@@ -237,6 +252,10 @@ def get_gakuseiInfo00(authority):
     ret_array = GK0S001D.get_gakuseiInfo00(authority)
     return ret_array
 
+def get_gakuseiInfo02():
+    ret_array = GK0S001D.get_gakuseiInfo02()
+    return ret_array
+
 def get_gakuseiName(id):
     ret_array = GK0S001D.get_gakuseiName(id)
     return ret_array
@@ -259,9 +278,9 @@ def update_gakkaShiken(id,kekka):
 
 def get_gakkaShikenAll():
     kekka_dict = {
-            0 : "未受験",
-            1 : "合格",
-            2 : "不合格"             
+            0 : "未",
+            1 : "●",
+            2 : "×"             
     }  
     array = GK0S031D.get_gakkaShikenAll()
     for ix1 in range(len(array)):
@@ -290,13 +309,18 @@ def get_chkListAll():
     return ret_array 
 
 
-def get_chkList(id):
-    temp_array1 = GK0S041D.get_chkList(id)
-    ret_array = []
-    for ix1 in range(0, len(temp_array1) - 1, 2):
-        if temp_array1[ix1][0] == temp_array1[ix1 + 1][0]:
-            # 1行目: index 0, 2以外を取得（氏名、法規～教官chk）
-            ret_array = [v for i, v in enumerate(temp_array1[ix1]) if i not in (0, 2)]
-            # 2行目: index 0, 1, 2以外を追加（法規～教官chk）
-            ret_array += [v for i, v in enumerate(temp_array1[ix1 + 1]) if i not in (0, 1, 2)]   
-    return ret_array 
+def get_chkList(id,kbn):
+        temp_array1 = GK0S041D.get_chkList(id)
+        ret_array = []
+        for ix1 in range(0, len(temp_array1) - 1, 2):
+            if temp_array1[ix1][0] == temp_array1[ix1 + 1][0]:
+                # 1行目: index 0, 2以外を取得（氏名、法規～教官chk）
+                ret_array = [v for i, v in enumerate(temp_array1[ix1]) if i not in (0, 2)]
+                # 2行目: index 0, 1, 2以外を追加（法規～教官chk）
+                ret_array += [v for i, v in enumerate(temp_array1[ix1 + 1]) if i not in (0, 1, 2)]   
+        return ret_array 
+
+def update_chkList(date_array, name_array):
+    err = GK0S041D.update_chkList(date_array)
+    err = GK0S041D.update_chkList(name_array)
+    return err

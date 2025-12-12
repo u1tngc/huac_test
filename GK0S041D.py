@@ -1,6 +1,6 @@
 #PGM-ID:GK0S001D
 #PGM-NAME:GK各種CHK管理セグI/O(オンライン)
-#最終更新日:2025/12/11
+#最終更新日:2025/12/12
 
 import os
 
@@ -118,3 +118,42 @@ def get_chkList(id):
     except Exception as e:
         print(f'エラー内容：{e}')
         return []
+    
+
+def update_chkList(update_chkList):
+    print(update_chkList)
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = '''
+                UPDATE "各種chk管理セグ"
+                SET 法規 = %s,
+                    気象 = %s,
+                    工学 = %s,
+                    情報 = %s,
+                    学生chk = %s,
+                    教官chk = %s
+                WHERE 学籍番号 = %s AND データ種類 = %s
+            '''
+            data = (
+                update_chkList[2],
+                update_chkList[3],
+                update_chkList[4],
+                update_chkList[5],
+                update_chkList[6],
+                update_chkList[7],
+                update_chkList[0],
+                update_chkList[1]
+            )
+            cur.execute(sql, data)
+            conn.commit()
+        return 0  
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1  
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 2   
+    finally:
+        if conn:
+            conn.close()

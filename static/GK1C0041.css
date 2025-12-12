@@ -130,11 +130,26 @@ footer {
     color: red;
 }
 
+.data-section {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
 .data-table {
     width: 100%;
     border-collapse: collapse;
     /* 枠線を統一 */
     margin-top: 20px;
+}
+
+.data-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.data-table thead th {
+    background-color: #f2f2f2;
 }
 
 .data-table th,

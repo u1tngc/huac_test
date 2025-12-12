@@ -104,6 +104,19 @@ main {
     /*  ヘッダーの背景色 */
 }
 
+/* テーブル内の入力フィールド */
+.data-table input[type="date"],
+.data-table input[type="text"],
+.data-table .table-input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 2px;
+    font-size: clamp(8px, 1.5vw, 12px);
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
+}
+
 /* 入力グループ */
 .input-group {
     text-align: left;
@@ -175,6 +188,7 @@ footer {
 
 .err {
     color: red;
+    text-align: center
 }
 
 /*  レスポンシブ対応 */
@@ -186,6 +200,13 @@ footer {
     .data-table th,
     .data-table td {
         padding: 5px 2px;
+    }
+
+    .data-table input[type="date"],
+    .data-table input[type="text"],
+    .data-table .table-input {
+        font-size: 9px;
+        padding: 1px;
     }
 
     .options {
@@ -205,5 +226,12 @@ footer {
     .data-table th,
     .data-table td {
         padding: 3px 1px;
+    }
+
+    .data-table input[type="date"],
+    .data-table input[type="text"],
+    .data-table .table-input {
+        font-size: 8px;
+        padding: 0;
     }
 }

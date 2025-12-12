@@ -91,16 +91,36 @@ main {
 }
 
 /* 列幅の指定 */
-.data-table th:first-child,
-.data-table td:first-child {
-    width: 10%;
-    /* 最初の列（学生名/行ラベル） */
+.data-table th:nth-child(1),
+.data-table td:nth-child(1) {
+    width: 15%;
+    /* 氏名 */
 }
 
-.data-table th:not(:first-child),
-.data-table td:not(:first-child) {
-    width: 13.3%;
-    /* 残り6列を均等に */
+.data-table th:nth-child(2),
+.data-table td:nth-child(2),
+.data-table th:nth-child(3),
+.data-table td:nth-child(3),
+.data-table th:nth-child(4),
+.data-table td:nth-child(4),
+.data-table th:nth-child(5),
+.data-table td:nth-child(5),
+.data-table th:nth-child(6),
+.data-table td:nth-child(6) {
+    width: 10%;
+    /* 法規/工学/気象/航法/航特 */
+}
+
+.data-table th:nth-child(7),
+.data-table td:nth-child(7) {
+    width: 15%;
+    /* 有効期間 */
+}
+
+.data-table th:nth-child(8),
+.data-table td:nth-child(8) {
+    width: 10%;
+    /* 更新日 */
 }
 
 .data-table th,

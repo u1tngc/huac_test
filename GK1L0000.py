@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2025/12/11
+#最終更新日:2025/12/12
 
 import csv
 from datetime import timedelta
@@ -123,14 +123,13 @@ def GK_menu01():
                 session[f"{user_id}_gakkaShikenList"] = gakkaShikenList
                 return render_template('GK_db031.html',gakkaShikenList=gakkaShikenList)  
             elif db_kbn == "4":
-                if session.get('authority') in [7,8,9]:
+                if session.get('authority') in [6,7,8,9]:
                     chklist = GK1S0040.get_chkListAll()
                     return render_template('GK_db041.html',chklist=chklist)  
                 else:
                     id = session.get('user_id')
-                    chklist = GK1S0040.get_chkList(id)
-                    return render_template('GK_db042.html',chklist=chklist)                         
-                           
+                    chklist = GK1S0040.get_chkList(id,1)
+                    return render_template('GK_db042.html',chklist=chklist)                                             
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
@@ -152,7 +151,11 @@ def GK_menu01():
                     return render_template('GK_db032.html', gakkaShiken1=gakkaShiken_data,limitdate1=limitdate, gakkaShiken2=gakkaShiken_data,limitdate2=limitdate, err1="") 
                 else:
                     flash("学科試験のデータがありません。学科班に確認してください。")
-                    return redirect(url_for('GK_menu01'))                     
+                    return redirect(url_for('GK_menu01'))               
+            elif db_kbn == "4":
+                gakuseiCHK = GK1S0040.get_gakuseiInfo02()
+                session[f"{user_id}_gakuseiCHK"] = gakuseiCHK
+                return render_template('GK_db043.html', gakuseiCHK=gakuseiCHK, err1="") 
         elif shorikbn == "password":
                 return redirect(url_for('GK_db010',err=""))
 
@@ -527,7 +530,6 @@ def GK_db032():
     if request.method == 'POST':  
         limitDate = request.form['limit']
         kekka = [int(request.form['hoki']), int(request.form['kogaku']), int(request.form['kisho']), int(request.form['koho']),int(request.form['kotoku']), limitDate.replace("-", "")]
-        print(kekka)
         err = GK1S0040.check06(kekka)
         gakkaShiken_old = session.get(f'{user_id}_gakkaShiken_data')
         limitdate_old =session.get(f'{user_id}_limitdate')
@@ -563,6 +565,74 @@ def GK_db042():
     if not session.get('authority') in [0]:
         return redirect(url_for('GK_menu01'))
     return render_template('GK_db042.html')
+
+#各種CHK管理セグ訂正・照会
+@app.route('/GK_db043', methods=['GET', 'POST'])
+def GK_db043():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,9]:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':
+        chk_id = request.form['selected_chk']
+        ret_array, err = GK1S0040.get_gakusei(chk_id,session.get('authority'))
+        session[f'{user_id}_chk_id'] = chk_id
+        session[f'{user_id}_chk_name'] = ret_array[1]
+        chkData = GK1S0040.get_chkList(chk_id,2)
+        if chkData:
+            for ix1 in range(len(chkData)):
+                if ix1 in [1,2,3,4,5,6]:
+                    if chkData[ix1] == "":
+                        chkdate = ""
+                    else:
+                        chkdate = f"{chkData[ix1][0:4]}-{chkData[ix1][4:6]}-{chkData[ix1][6:8]}"
+                    chkData[ix1] = chkdate
+            session[f"{user_id}_chkData1"] = chkData
+            return render_template('GK_db044.html', chkData1=chkData, chkData2=chkData,stu_name=ret_array[1],err1="")
+        else:
+            flash("各種CHKのデータがありません。学科班に確認してください。")    
+            return redirect(url_for('GK_menu01'))   
+    return render_template('GK_db043.html')
+
+
+#各種CHK管理セグ訂正・訂正
+@app.route('/GK_db044', methods=['GET', 'POST'])
+def GK_db044():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,9]:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':
+        hoki_date = request.form['hoki_date']
+        kisho_date = request.form['kishou_date']
+        kogaku_date = request.form['kogaku_date']
+        joho_date = request.form['joho_date']
+        gakuseiCHK_date = request.form['gakuseiCHK_date']
+        kyoukanCHK_date = request.form['kyoukanCHK_date']
+        hoki_name = request.form['hoki_name']
+        kisho_name = request.form['kisho_name']
+        kogaku_name = request.form['kogaku_name']
+        joho_name = request.form['joho_name']
+        gakuseiCHK_name = request.form['gakuseiCHK_name']
+        kyoukanCHK_name = request.form['kyoukanCHK_name']
+        date_array = [hoki_date, kisho_date, kogaku_date, joho_date, gakuseiCHK_date, kyoukanCHK_date]
+        name_array = [hoki_name, kisho_name, kogaku_name, joho_name, gakuseiCHK_name, kyoukanCHK_name]
+        bef_array = session.get(f"{user_id}_chkData1")
+        err = GK1S0040.check07(date_array, name_array)
+        kekka = [bef_array[0], hoki_date, kisho_date, kogaku_date, joho_date, gakuseiCHK_date, 
+                 kyoukanCHK_date,hoki_name, kisho_name, kogaku_name, joho_name, gakuseiCHK_name, kyoukanCHK_name]
+        if err:
+            return render_template('GK_db044.html', chkData1=bef_array, chkData2=kekka,stu_name=session.get(f'{user_id}_chk_name'),err1=err)
+        else:
+            aft_array1 = [session.get(f'{user_id}_chk_id'), 1,hoki_date.replace("-", ""), kisho_date.replace("-", ""), 
+                          kogaku_date.replace("-", ""), joho_date.replace("-", ""), gakuseiCHK_date.replace("-", ""), kyoukanCHK_date.replace("-", "")]
+            aft_array2 = [session.get(f'{user_id}_chk_id'), 2,hoki_name, kisho_name, kogaku_name, joho_name, gakuseiCHK_name, kyoukanCHK_name]
+            err = GK1S0040.update_chkList(aft_array1, aft_array2)
+            err1 = f"{session.get(f'{user_id}_chk_name')}の訂正が完了しました。"
+            return render_template('GK_db043.html', gakuseiCHK=session.get(f"{user_id}_gakuseiCHK"), err1=err1) 
+
 
 
 # セッションの有効期限をリセット

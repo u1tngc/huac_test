@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 各種CHK状況更新</title>
+    <link rel="stylesheet" href="../static/GK1C0041.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>各種CHK状況更新</h2>
+            {% if err1 %}
+            <a class="err">{{ err1 }}</a>
+            <br><br>
+            {% endif %}
+            <a>更新する学生を選択してください。</a>
+            <br>
+            <br>
+            <form method="post" action="/GK_db043">
+                <div class="data-section">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>選択</th>
+                                <th>学籍番号</th>
+                                <th>氏名</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for gakuseiCHK in gakuseiCHK %}
+                            <tr>
+                                <td>
+                                    <input type="radio" name="selected_chk" value="{{ gakuseiCHK[0] }}"
+                                        id="gakuseiCHK_{{ loop.index }}" {% if loop.first %}checked{% endif %}>
+                                </td>
+                                <td>
+                                    <label for="gakuseiCHK_{{ loop.index }}">{{ gakuseiCHK[0] }}</label>
+                                </td>
+                                <td>
+                                    <label for="gakuseiCHK_{{ loop.index }}">{{ gakuseiCHK[1] }}</label>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                    <button type="submit" class="execute-button">次へ</button>
+                </div>
+
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>
