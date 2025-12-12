@@ -104,6 +104,11 @@ main {
     /*  ヘッダーの背景色 */
 }
 
+.data-table td {
+    font-size: clamp(8px, 1.6vw, 14px);
+    /*  データセルのフォントを1段階小さく */
+}
+
 /* テーブル内の入力フィールド */
 .data-table input[type="date"],
 .data-table input[type="text"],
@@ -197,6 +202,10 @@ footer {
         font-size: 11px;
     }
 
+    .data-table td {
+        font-size: 9px;
+    }
+
     .data-table th,
     .data-table td {
         padding: 5px 2px;
@@ -221,6 +230,10 @@ footer {
 @media screen and (max-width: 400px) {
     .data-table {
         font-size: 9px;
+    }
+
+    .data-table td {
+        font-size: 7px;
     }
 
     .data-table th,
