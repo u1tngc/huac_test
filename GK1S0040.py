@@ -252,8 +252,8 @@ def get_gakuseiInfo00(authority):
     ret_array = GK0S001D.get_gakuseiInfo00(authority)
     return ret_array
 
-def get_gakuseiInfo02():
-    ret_array = GK0S001D.get_gakuseiInfo02()
+def get_renkyosei():
+    ret_array = GK0S001D.get_renkyosei()
     return ret_array
 
 def get_gakuseiName(id):
@@ -262,6 +262,7 @@ def get_gakuseiName(id):
 
 def delete_data(id):
     err = GK0S031D.delete_data(id)
+    err = GK0S041D.delete_data(id)
     return err
 
 def get_gakkaShiken(id):

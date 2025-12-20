@@ -108,7 +108,7 @@ def GK_menu01():
                 return render_template('GK_db001.html',gakuseiList=gakuseiList)     
             elif db_kbn == "2":
                 init04(user_id)
-                if session.get('authority') in [6,7,8,9]:
+                if session.get('authority') in [7,8,9]:
                     gakuseiName = GK1S0040.get_gakuseiInfo01()
                     session[f"{user_id}_gakuseiName"] = gakuseiName
                     return render_template('GK_db021.html', gakuseiName=gakuseiName) 
@@ -153,7 +153,7 @@ def GK_menu01():
                     flash("学科試験のデータがありません。学科班に確認してください。")
                     return redirect(url_for('GK_menu01'))               
             elif db_kbn == "4":
-                gakuseiCHK = GK1S0040.get_gakuseiInfo02()
+                gakuseiCHK = GK1S0040.get_renkyosei()
                 session[f"{user_id}_gakuseiCHK"] = gakuseiCHK
                 return render_template('GK_db043.html', gakuseiCHK=gakuseiCHK, err1="") 
         elif shorikbn == "password":
@@ -387,9 +387,9 @@ def GK_db003():
         id = list[0]
         update_gakusei = [id, name, int(status_cd),int(kanri_cd),int(shikaku_cd)]
         err = GK1S0040.update_gakusei(update_gakusei)
-        gakkaShiken = GK1S0040.check05(list, update_gakusei)
-        if gakkaShiken == 1:
-            err1 = GK1S0040.delete_data(id) 
+        change_chk = GK1S0040.check05(list, update_gakusei)
+        if change_chk == 1:
+            err1 = GK1S0040.delete_data(id)
         err = f"[{name}]の訂正が完了しました。"
         gakuseiData = session.get(f"{user_id}_gakuseiData")
         return render_template('GK_db002.html', gakuseiData=gakuseiData, err1=err) 

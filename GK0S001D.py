@@ -1,6 +1,6 @@
 #PGM-ID:GK0S001D
 #PGM-NAME:GK学生管理セグI/O(オンライン)
-#最終更新日:2025/12/01
+#最終更新日:2025/12/20
 
 import os
 
@@ -37,7 +37,7 @@ def insert_gakusei(id, name, status_cd,kanri_cd, shikaku_cd):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = "INSERT INTO 学生管理セグ (学籍番号, 氏名, 状況CD, 出題区分, 解答状況CD, パスワード) VALUES (%s, %s, %s, %s, %s, %s)"
+            sql = "INSERT INTO 学生管理セグ (学籍番号, 氏名, 権限, 出題区分, 資格, パスワード) VALUES (%s, %s, %s, %s, %s, %s)"
             data = (id, name, status_cd, kanri_cd, shikaku_cd, '245422kz')
             cur.execute(sql, data)
             conn.commit()
@@ -78,7 +78,7 @@ def get_gakusei(id):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'SELECT 学籍番号, 氏名, 状況CD, 出題区分, 解答状況CD FROM 学生管理セグ WHERE 学籍番号 = %s'
+            sql = 'SELECT 学籍番号, 氏名, 権限, 出題区分, 資格 FROM 学生管理セグ WHERE 学籍番号 = %s'
             data = (id,)
             cur.execute(sql,data)
             result = cur.fetchone()  
@@ -96,7 +96,7 @@ def update_gakusei(list):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'UPDATE 学生管理セグ SET 氏名 = %s, 状況CD = %s, 出題区分 = %s,解答状況CD = %s WHERE 学籍番号 = %s'
+            sql = 'UPDATE 学生管理セグ SET 氏名 = %s, 権限 = %s, 出題区分 = %s,資格 = %s WHERE 学籍番号 = %s'
             data = (list[1], list[2], list[3], list[4], list[0]) 
             cur.execute(sql, data)
             conn.commit()
@@ -194,7 +194,7 @@ def get_gakuseiInfo00(authority):
             conn.close()
         else:
             with conn.cursor() as cur:
-                sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ" WHERE 状況CD != %s AND 状況CD != %s'
+                sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ" WHERE 権限 != %s AND 権限 != %s'
                 data = (7,9)
                 cur.execute(sql,data)
                 result = cur.fetchall()  
@@ -207,11 +207,11 @@ def get_gakuseiInfo00(authority):
         print(f'エラー内容：{e}')
         return ""
     
-def get_gakuseiInfo02():
+def get_renkyosei():
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ" WHERE 解答状況CD = %s'
+            sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ" WHERE 資格 = %s'
             data = (0,)
             cur.execute(sql,data)
             result = cur.fetchall()  
