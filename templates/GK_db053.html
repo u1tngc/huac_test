@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 養成状況一括照会</title>
+    <link rel="stylesheet" href="../static/GK1C0045.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>養成状況一括照会</h2>
+            <form method="post" action="/GK_db053">
+                <div class="data-section">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>学生名</th>
+                                <th>法規</th>
+                                <th>工学</th>
+                                <th>気象</th>
+                                <th>情報</th>
+                                <th>衛生</th>
+                                <th>六項目</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for yoseiJokyo in wk53yoseiSumAll %}
+                            <tr>
+                                <th>{{ yoseiJokyo[0] }}</th>
+                                <td>{{ yoseiJokyo[1] }}</td>
+                                <td>{{ yoseiJokyo[2] }}</td>
+                                <td>{{ yoseiJokyo[3] }}</td>
+                                <td>{{ yoseiJokyo[4] }}</td>
+                                <td>{{ yoseiJokyo[5] }}</td>
+                                <td>{{ yoseiJokyo[6] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">戻る</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

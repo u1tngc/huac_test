@@ -354,3 +354,30 @@ def get_yoseiJokyo(id):
         ret_array2.append(["六項目", summary_array[5]])
         return ret_array1, ret_array2
     return [], []
+
+
+def get_yoseiSumAll():
+    rows = GK0S051D.get_yoseiSumAll()
+    if not rows:
+        return []
+    
+    result_map = {}
+    for row in rows:
+        name, bunya, ratio = row
+        if name not in result_map:
+            result_map[name] = {'法規': 0, '工学': 0, '気象': 0, '情報': 0, '衛生': 0, '六項目': 0}
+        result_map[name][bunya] = int(ratio) if ratio is not None else 0
+    
+    ret_array = []
+    for name, bunya_data in result_map.items():
+        ret_array.append([
+            name,
+            f"{bunya_data['法規']}%",
+            f"{bunya_data['工学']}%",
+            f"{bunya_data['気象']}%",
+            f"{bunya_data['情報']}%",
+            f"{bunya_data['衛生']}%",
+            f"{bunya_data['六項目']}%"
+        ])
+    
+    return ret_array

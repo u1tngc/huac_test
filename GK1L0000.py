@@ -135,6 +135,9 @@ def GK_menu01():
                 wk51studentList = GK1S0040.get_renkyosei()
                 session[f"{user_id}_wk51studentList"] = wk51studentList
                 return render_template('GK_db051.html', studentList=wk51studentList,err1="")
+            elif db_kbn == "6":
+                wk53yoseiSumAll = GK1S0040.get_yoseiSumAll()
+                return render_template('GK_db053.html', wk53yoseiSumAll=wk53yoseiSumAll) 
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
@@ -674,6 +677,17 @@ def GK_db052():
                            wk51yoseiJokyo=session.get(f'{user_id}_wk51yoseiJokyo'),
                            gakuseiName=session.get(f'{user_id}_wk51gakuseiName'),
                            wk51sum=session.get(f'{user_id}_wk51sum'))
+
+#養成状況管理セグ一括照会
+@app.route('/GK_db053', methods=['GET', 'POST'])
+def GK_db053():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,8,9]:
+        return redirect(url_for('GK_menu01'))
+    
+    return render_template('GK_db053.html')
 
 
 # セッションの有効期限をリセット
