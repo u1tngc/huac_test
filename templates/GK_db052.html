@@ -22,12 +22,14 @@
             <form method="post" action="/GK_db052">
                 <div class="data-section">
                     <table class="data-table">
-                        <tbody>
+                        <thead>
                             <tr>
                                 <th>分野</th>
                                 <th>養成名</th>
                                 <th>養成日</th>
                             </tr>
+                        </thead>
+                        <tbody>
                             {% for yoseiJokyo in wk51yoseiJokyo %}
                             <tr>
                                 <th>{{ yoseiJokyo[0] }}</th>
@@ -39,7 +41,7 @@
                     </table>
                 </div>
                 <br>
-                <h1>■サマリー</h1>
+                <h3>■サマリー</h3>
                 <div class="data-section">
                     <table class="data-table">
                         <tbody>
