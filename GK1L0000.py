@@ -668,7 +668,7 @@ def GK_db052():
     user_id = session.get('user_id')
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
-    if not session.get('authority') in [6,7,8,9]:
+    if not session.get('authority') in [0,1,6,7,8,9]:
         return redirect(url_for('GK_menu01'))
     
     return render_template('GK_db052.html',
