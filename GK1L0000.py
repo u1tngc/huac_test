@@ -648,8 +648,6 @@ def GK_db051():
     user_id = session.get('user_id')
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
-    if not session.get('authority') in [6,7,8,9]:
-        return redirect(url_for('GK_menu01'))
     if request.method == 'POST':
         wk51gakuseiID = request.form['selected_studentInfo']
         wk51gakuseiName = GK1S0040.get_gakuseiName(wk51gakuseiID)
