@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2025/12/12
+#最終更新日:2025/12/21
 
 import csv
 from datetime import timedelta
@@ -57,6 +57,7 @@ def GK_menu01():
         flash("未解答の小テストがあります。")
     init01(user_id)
     if request.method == 'POST':
+        init07(user_id)
         shorikbn = request.form['selection']
         GK1S0000.print_seg(shorikbn, session.get('user_id'))
         if shorikbn == "practice":
@@ -129,7 +130,11 @@ def GK_menu01():
                 else:
                     id = session.get('user_id')
                     chklist = GK1S0040.get_chkList(id,1)
-                    return render_template('GK_db042.html',chklist=chklist)                                             
+                    return render_template('GK_db042.html',chklist=chklist)    
+            elif db_kbn == "5":
+                wk51studentList = GK1S0040.get_renkyosei()
+                session[f"{user_id}_wk51studentList"] = wk51studentList
+                return render_template('GK_db051.html', studentList=wk51studentList,err1="")
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
@@ -634,6 +639,42 @@ def GK_db044():
             return render_template('GK_db043.html', gakuseiCHK=session.get(f"{user_id}_gakuseiCHK"), err1=err1) 
 
 
+#養成状況管理セグ照会１
+@app.route('/GK_db051', methods=['GET', 'POST'])
+def GK_db051():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,8,9]:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':
+        wk51gakuseiID = request.form['selected_studentInfo']
+        wk51gakuseiName = GK1S0040.get_gakuseiName(wk51gakuseiID)
+        session[f'{user_id}_wk51gakuseiID'] = wk51gakuseiID
+        session[f'{user_id}_wk51gakuseiName'] = wk51gakuseiName
+        wk51yoseiJokyo, wk51sum = GK1S0040.get_yoseiJokyo(wk51gakuseiID)
+        if not wk51yoseiJokyo:
+            err = "照会するデータがありません。"
+            return render_template('GK_db051.html', studentList=session.get(f"{user_id}_wk51studentList"), err1=err) 
+        session[f'{user_id}_wk51yoseiJokyo'] = wk51yoseiJokyo
+        session[f'{user_id}_wk51sum'] = wk51sum
+        return redirect(url_for('GK_db052'))
+    return render_template('GK_db051.html', studentList=session.get(f"{user_id}_wk51studentList"), err1="")
+
+#養成状況管理セグ照会２
+@app.route('/GK_db052', methods=['GET', 'POST'])
+def GK_db052():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,8,9]:
+        return redirect(url_for('GK_menu01'))
+    
+    return render_template('GK_db052.html',
+                           wk51yoseiJokyo=session.get(f'{user_id}_wk51yoseiJokyo'),
+                           gakuseiName=session.get(f'{user_id}_wk51gakuseiName'),
+                           wk51sum=session.get(f'{user_id}_wk51sum'))
+
 
 # セッションの有効期限をリセット
 @app.before_request
@@ -682,6 +723,13 @@ def init05(user_id):
 def init06(user_id):
     session.pop(f"{user_id}_gakkaShiken_data", None)
     session.pop(f"{user_id}_limitdate", None)
+
+
+def init07(user_id):
+    session.pop(f"{user_id}_wk51gakuseiID", None)
+    session.pop(f"{user_id}_wk51gakuseiName", None)
+    session.pop(f"{user_id}_wk51yoseiJokyo", None)
+    session.pop(f"{user_id}_wk51sum", None)
 
 
 if __name__ == "__main__":

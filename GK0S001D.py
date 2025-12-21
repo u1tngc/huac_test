@@ -240,4 +240,3 @@ def get_gakuseiName(id):
     except Exception as e:
         print(f'エラー内容：{e}')
         return ""
-    
