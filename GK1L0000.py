@@ -687,6 +687,22 @@ def GK_db053():
     if not session.get('authority') in [6,7,8,9]:
         return redirect(url_for('GK_menu01'))
     
+    if request.method == 'POST':
+        csv_data = GK1S0040.get_yoseiAllDataForCSV()
+        if not csv_data:
+            flash("データの取得に失敗しました。")
+            return redirect(url_for('GK_menu01'))  
+        output = io.StringIO()
+        writer = csv.writer(output)
+        for row in csv_data:
+            writer.writerow(row)
+        csv_content = '\ufeff' + output.getvalue()
+        output.close()
+        return Response(
+            csv_content.encode('utf-8'),
+            mimetype='text/csv; charset=utf-8',
+            headers={'Content-Disposition': "attachment; filename*=UTF-8''%E9%A4%8A%E6%88%90%E7%8A%B6%E6%B3%81%E4%B8%80%E8%A6%A7.csv"}
+        )
     return render_template('GK_db053.html')
 
 

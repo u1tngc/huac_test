@@ -384,3 +384,61 @@ def get_yoseiSumAll():
         ])
     
     return ret_array
+
+
+def get_yoseiAllDataForCSV():
+    """全学生の養成状況データをCSV用に整形"""
+    data = GK0S051D.get_yoseiAllData()
+    if not data:
+        return None
+    
+    items = data['items']  # [(養成cd, 分野, 養成名), ...]
+    students = data['students']  # [(学籍番号, 氏名), ...]
+    statuses = data['statuses']  # [(学籍番号, 養成cd, 養成日), ...]
+    progress = data['progress']  # [(学籍番号, 分野, 割合), ...]
+    
+    # 養成状況を辞書化（キー: (学籍番号, 養成cd) -> 養成日）
+    status_dict = {(s[0], s[1]): s[2] for s in statuses}
+    
+    # 進捗率を辞書化（キー: (学籍番号, 分野) -> 割合）
+    progress_dict = {(p[0], p[1]): int(p[2]) if p[2] else 0 for p in progress}
+    
+    # CSVデータ構築
+    csv_data = []
+    
+    # ヘッダー行（1行目）
+    header = ['分野', '養成名'] + [s[1] for s in students]  # 氏名のみ
+    csv_data.append(header)
+    
+    # データ行
+    for item in items:
+        yosei_cd = item[0]
+        bunya = item[1]  # 分野
+        yosei_name = item[2]
+        
+        row = [bunya, yosei_name]
+        
+        # 各学生の養成日を追加
+        for student in students:
+            gakuseki = student[0]
+            yosei_date = status_dict.get((gakuseki, yosei_cd), '')
+            # 養成日をフォーマット (YYYYMMDD -> YYYY/MM/DD)
+            if yosei_date and len(yosei_date) == 8:
+                formatted_date = f"{yosei_date[0:4]}/{yosei_date[4:6]}/{yosei_date[6:8]}"
+                row.append(formatted_date)
+            else:
+                row.append('')
+        
+        csv_data.append(row)
+    
+    # 進捗率の行を追加
+    分野リスト = ['法規', '工学', '気象', '情報', '衛生', '六項目']
+    for 分野 in 分野リスト:
+        row = [分野, f'{分野}進捗率']
+        for student in students:
+            gakuseki = student[0]
+            ratio = progress_dict.get((gakuseki, 分野), 0)
+            row.append(f'{ratio}%')
+        csv_data.append(row)
+    
+    return csv_data

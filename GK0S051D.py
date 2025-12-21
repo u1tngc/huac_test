@@ -108,3 +108,64 @@ def get_yoseiSumAll():
     except Exception as e:
         print(f'エラー内容：{e}')
         return ""
+    
+def get_yoseiAllData():
+    """全学生の養成状況データを取得"""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            # 養成項目一覧を取得
+            sql_items = """
+                SELECT 養成cd, 分野, 養成名 
+                FROM 養成項目管理セグ 
+                ORDER BY 養成cd
+            """
+            cur.execute(sql_items)
+            items = cur.fetchall()
+            
+            # 学生一覧を取得（資格=0の練許生のみ）
+            sql_students = """
+                SELECT 学籍番号, 氏名 
+                FROM 学生管理セグ 
+                WHERE 資格 = 0
+                ORDER BY 学籍番号
+            """
+            cur.execute(sql_students)
+            students = cur.fetchall()
+            
+            # 全養成状況データを取得
+            sql_status = """
+                SELECT 学籍番号, 養成cd, 養成日 
+                FROM 養成状況管理セグ
+            """
+            cur.execute(sql_status)
+            statuses = cur.fetchall()
+            
+            # 各学生の進捗率を取得
+            sql_progress = """
+                SELECT 
+                    y.学籍番号,
+                    k.分野,
+                    ROUND(COUNT(CASE WHEN y.養成日 <> '' THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0)) AS 割合
+                FROM 養成状況管理セグ y
+                JOIN 養成項目管理セグ k ON y.養成cd = k.養成cd
+                JOIN 学生管理セグ g ON y.学籍番号 = g.学籍番号
+                WHERE g.資格 = 0
+                GROUP BY y.学籍番号, k.分野
+            """
+            cur.execute(sql_progress)
+            progress = cur.fetchall()
+            
+        conn.close()
+        return {
+            'items': [list(row) for row in items],
+            'students': [list(row) for row in students],
+            'statuses': [list(row) for row in statuses],
+            'progress': [list(row) for row in progress]
+        }
+    except psycopg2.Error as e:
+        print(f'エラー内容:{e}')
+        return None
+    except Exception as e:
+        print(f'エラー内容:{e}')
+        return None
