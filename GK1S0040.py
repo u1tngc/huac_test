@@ -338,12 +338,15 @@ def get_yoseiJokyo(id):
         for ix1 in range(len(yosei)):
             temp_name = yosei[ix1][2]
             temp_date = ""
+            temp_bunya = ""
             for ix2 in range(len(yoseiJokyo)):
                 if yosei[ix1][0] == yoseiJokyo[ix2][1]:
                     temp_date = yoseiJokyo[ix2][3]
-                    temp_date = temp_date[0:4] + "/" + temp_date[4:6] + "/" + temp_date[6:8]
+                    temp_bunya = yosei[ix1][1]
+                    if temp_date != "":
+                        temp_date = temp_date[0:4] + "/" + temp_date[4:6] + "/" + temp_date[6:8]
                     break
-            temp_array = [temp_name, temp_date]
+            temp_array = [temp_bunya, temp_name, temp_date]
             ret_array1.append(temp_array)
         summary_array = GK0S051D.get_yoseiJokyoSum(id)
         ret_array2.append(["法　規", summary_array[0]])

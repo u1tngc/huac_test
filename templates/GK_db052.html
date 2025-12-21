@@ -24,13 +24,15 @@
                     <table class="data-table">
                         <tbody>
                             <tr>
+                                <th>分野</th>
                                 <th>養成名</th>
                                 <th>養成日</th>
                             </tr>
                             {% for yoseiJokyo in wk51yoseiJokyo %}
                             <tr>
                                 <th>{{ yoseiJokyo[0] }}</th>
-                                <td>{{ yoseiJokyo[1] }}</td>
+                                <th>{{ yoseiJokyo[1] }}</th>
+                                <td>{{ yoseiJokyo[2] }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
