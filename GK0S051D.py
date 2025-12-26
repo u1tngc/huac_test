@@ -191,7 +191,10 @@ def update_yoseiJokyo(yoseiKamoku,id,yoseidate):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'UPDATE 養成状況管理セグ SET 養成日 = %s, 状況 = 1 WHERE 養成cd = %s AND 学籍番号 = %s'
+            if yoseidate == "":
+                sql = 'UPDATE 養成状況管理セグ SET 養成日 = %s, 状況 = 0 WHERE 養成cd = %s AND 学籍番号 = %s'
+            else:
+                sql = 'UPDATE 養成状況管理セグ SET 養成日 = %s, 状況 = 1 WHERE 養成cd = %s AND 学籍番号 = %s'
             data = (yoseidate, yoseiKamoku, id) 
             cur.execute(sql, data)
             conn.commit()

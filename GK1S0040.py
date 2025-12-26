@@ -450,16 +450,16 @@ def get_yoseiKamokuAll():
         ret_array.append([temp_array[ix1][0], f"{temp_array[ix1][1]}：{temp_array[ix1][2]}"])
     return ret_array
 
-def get_youseiJyokyo(yoseiKamoku, yoseiStudent):
+def get_youseiJyokyo(yoseiKamoku, yoseiStudent, yoseiDateNew):
     ret_array = []
     for ix1 in range(len(yoseiStudent)):
         yoseiDateOld = GK0S051D.get_yoseiDate(yoseiStudent[ix1], yoseiKamoku)
         name = GK0S001D.get_gakuseiName(yoseiStudent[ix1])
         dt = datetime.now(ZoneInfo("Asia/Tokyo"))
-        yoseiDateNew = dt.strftime("%Y%m%d")
         if yoseiDateOld:
             yoseiDateOld = f'{yoseiDateOld[0:4]}/{yoseiDateOld[4:6]}/{yoseiDateOld[6:]}'
-        yoseiDateNew = f'{yoseiDateNew[0:4]}/{yoseiDateNew[4:6]}/{yoseiDateNew[6:]}'
+        if yoseiDateNew:
+            yoseiDateNew = f'{yoseiDateNew[0:4]}/{yoseiDateNew[4:6]}/{yoseiDateNew[6:]}'
         ret_array.append([yoseiStudent[ix1], name, yoseiDateOld, yoseiDateNew])
     return ret_array
 
