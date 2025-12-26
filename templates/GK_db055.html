@@ -22,16 +22,17 @@
             {% endif %}
             <form method="post" action="/GK_db055">
                 <a>更新内容を確認してください。</a>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>名前</th>
+                            <th>更新前</th>
+                            <th>更新後</th>
+                        </tr>
+                    </thead>
+                </table>
                 <div class="data-section">
-
                     <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>名前</th>
-                                <th>更新前</th>
-                                <th>更新後</th>
-                            </tr>
-                        </thead>
                         <tbody>
                             {% for wk54updateInfo in wk54updateInfo %}
                             <tr>
@@ -46,8 +47,6 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                    <br><br>
-
                 </div>
                 <div class="button-group">
                     <button type="submit" name="action" value="back" class="menu-button">戻る</button>

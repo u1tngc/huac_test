@@ -62,26 +62,20 @@ main {
 
 /* テーブル */
 .data-section {
-    max-height: 400px;
+    max-height: 300px;
     overflow-y: auto;
+    margin-top: -2px;
 }
 
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
     table-layout: fixed;
     font-size: clamp(10px, 2vw, 16px);
 }
 
-.data-table thead {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-}
-
-.data-table thead th {
-    background-color: #f2f2f2;
+.data-table+.data-section .data-table {
+    margin-top: 0;
 }
 
 .data-table th,
@@ -112,6 +106,10 @@ main {
 }
 
 /* セレクトボックス */
+.select-section {
+    margin-top: 10px;
+}
+
 .table-input {
     width: 100%;
     max-width: 100%;
@@ -152,7 +150,19 @@ main {
     transition: background-color 0.3s ease;
 }
 
+.clear-button {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #464443;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
 .execute-button:hover,
+.clear-button:hover,
 .menu-button:hover {
     opacity: 0.8;
 }
