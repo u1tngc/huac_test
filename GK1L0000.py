@@ -715,7 +715,7 @@ def GK_db054():
     user_id = session.get('user_id')
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
-    if not session.get('authority') in [6,7,8,9]:
+    if not session.get('authority') in [1,6,7,9]:
         return redirect(url_for('GK_menu01'))
     if request.method == 'POST':
         yoseiKamoku = request.form['yoseiKamoku']
@@ -732,7 +732,7 @@ def GK_db055():
     user_id = session.get('user_id')
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
-    if not session.get('authority') in [6,7,8,9]:
+    if not session.get('authority') in [1,6,7,9]:
         return redirect(url_for('GK_menu01'))
     if request.method == 'POST':
         action = request.form.get('action')
