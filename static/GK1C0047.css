@@ -86,6 +86,12 @@ main {
     word-break: break-all;
 }
 
+.data-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
 .data-table th {
     background-color: #f2f2f2;
 }
