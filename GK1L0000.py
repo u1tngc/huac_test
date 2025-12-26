@@ -721,7 +721,7 @@ def GK_db054():
         yoseiKamoku = request.form['yoseiKamoku']
         yoseiStudent = request.form.getlist('yoseiStudent')
         yoseiDate = request.form['yoseiDate']
-        if yoseiDate == "":
+        if yoseiDate:
             yoseiDate = yoseiDate.replace("-", "")
         wk54updateInfo = GK1S0040.get_youseiJyokyo(yoseiKamoku, yoseiStudent, yoseiDate)
         session[f'{user_id}_wk54updateInfo'] = wk54updateInfo
