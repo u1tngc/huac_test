@@ -60,6 +60,10 @@ main {
     margin-bottom: 10px;
 }
 
+.err {
+    color: red;
+}
+
 /* テーブル */
 .data-section {
     max-height: 300px;
