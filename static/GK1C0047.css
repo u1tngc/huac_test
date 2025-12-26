@@ -49,6 +49,11 @@ main {
     text-align: center;
 }
 
+.options a {
+    display: block;
+    text-align: left;
+}
+
 .options h2 {
     color: #333;
     margin-top: 0;
@@ -75,6 +80,10 @@ main {
     z-index: 1;
 }
 
+.data-table thead th {
+    background-color: #f2f2f2;
+}
+
 .data-table th,
 .data-table td {
     border: 2px solid black;
@@ -87,15 +96,19 @@ main {
     background-color: #f2f2f2;
 }
 
+.data-table td {
+    font-size: clamp(8px, 1.6vw, 14px);
+}
+
 /* 列幅 */
 .data-table th:first-child,
 .data-table td:first-child {
-    width: 25%;
+    width: 30%;
 }
 
 .data-table th:not(:first-child),
 .data-table td:not(:first-child) {
-    width: 12.5%;
+    width: 35%;
 }
 
 /* ボタン */
@@ -142,10 +155,19 @@ footer {
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
 }
 
+.err {
+    color: red;
+    text-align: center;
+}
+
 /* レスポンシブ */
 @media screen and (max-width: 600px) {
     .data-table {
         font-size: 11px;
+    }
+
+    .data-table td {
+        font-size: 9px;
     }
 
     .data-table th,
@@ -156,11 +178,19 @@ footer {
     .options {
         padding: 15px;
     }
+
+    .options a {
+        font-size: 14px;
+    }
 }
 
 @media screen and (max-width: 400px) {
     .data-table {
         font-size: 9px;
+    }
+
+    .data-table td {
+        font-size: 7px;
     }
 
     .data-table th,

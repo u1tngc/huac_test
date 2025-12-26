@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2025/12/12
+#最終更新日:2025/12/26
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -442,3 +442,30 @@ def get_yoseiAllDataForCSV():
         csv_data.append(row)
     
     return csv_data
+
+def get_yoseiKamokuAll():
+    temp_array = GK0S052D.get_yoseiAll()
+    ret_array = []
+    for ix1 in range(len(temp_array)):
+        ret_array.append([temp_array[ix1][0], f"{temp_array[ix1][1]}：{temp_array[ix1][2]}"])
+    return ret_array
+
+def get_youseiJyokyo(yoseiKamoku, yoseiStudent):
+    ret_array = []
+    for ix1 in range(len(yoseiStudent)):
+        yoseiDateOld = GK0S051D.get_yoseiDate(yoseiStudent[ix1], yoseiKamoku)
+        name = GK0S001D.get_gakuseiName(yoseiStudent[ix1])
+        dt = datetime.now(ZoneInfo("Asia/Tokyo"))
+        yoseiDateNew = dt.strftime("%Y%m%d")
+        if yoseiDateOld:
+            yoseiDateOld = f'{yoseiDateOld[0:4]}/{yoseiDateOld[4:6]}/{yoseiDateOld[6:]}'
+        yoseiDateNew = f'{yoseiDateNew[0:4]}/{yoseiDateNew[4:6]}/{yoseiDateNew[6:]}'
+        ret_array.append([yoseiStudent[ix1], name, yoseiDateOld, yoseiDateNew])
+    return ret_array
+
+
+def update_yoseiJokyo(wk54updateInfo, yoseiKamoku):
+    for ix1 in range(len(wk54updateInfo)):
+        wk54updateInfo[ix1][3] = wk54updateInfo[ix1][3].replace("/","")
+        err = GK0S051D.update_yoseiJokyo(yoseiKamoku, wk54updateInfo[ix1][0], wk54updateInfo[ix1][3])
+    return err

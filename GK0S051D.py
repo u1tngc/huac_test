@@ -1,6 +1,6 @@
 #PGM-ID:GK0S051D
 #PGM-NAME:GK養成状況管理セグI/O(オンライン)
-#最終更新日:2025/12/21
+#最終更新日:2025/12/26
 
 import os
 
@@ -169,3 +169,37 @@ def get_yoseiAllData():
     except Exception as e:
         print(f'エラー内容:{e}')
         return None
+
+def get_yoseiDate(id,code):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = "SELECT 養成日 FROM 養成状況管理セグ WHERE 学籍番号 = %s AND 養成cd = %s"
+            data = (id,code,)
+            cur.execute(sql,data)
+            result = cur.fetchone()  
+        conn.close()
+        return result[0] if result else ""
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
+
+def update_yoseiJokyo(yoseiKamoku,id,yoseidate):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'UPDATE 養成状況管理セグ SET 養成日 = %s, 状況 = 1 WHERE 養成cd = %s AND 学籍番号 = %s'
+            data = (yoseidate, yoseiKamoku, id) 
+            cur.execute(sql, data)
+            conn.commit()
+        conn.close()
+        return ""  
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return "養成状況の更新に失敗しました。"
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return "養成状況の更新に失敗しました。"

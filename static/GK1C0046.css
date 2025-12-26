@@ -49,6 +49,11 @@ main {
     text-align: center;
 }
 
+.options a {
+    display: block;
+    text-align: left;
+}
+
 .options h2 {
     color: #333;
     margin-top: 0;
@@ -75,6 +80,10 @@ main {
     z-index: 1;
 }
 
+.data-table thead th {
+    background-color: #f2f2f2;
+}
+
 .data-table th,
 .data-table td {
     border: 2px solid black;
@@ -87,15 +96,30 @@ main {
     background-color: #f2f2f2;
 }
 
+.data-table td {
+    font-size: clamp(8px, 1.6vw, 14px);
+}
+
 /* 列幅 */
 .data-table th:first-child,
 .data-table td:first-child {
-    width: 25%;
+    width: 20%;
 }
 
 .data-table th:not(:first-child),
 .data-table td:not(:first-child) {
-    width: 12.5%;
+    width: 80%;
+}
+
+/* セレクトボックス */
+.table-input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: clamp(2px, 1vw, 6px);
+    font-size: clamp(10px, 2vw, 16px);
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
 }
 
 /* ボタン */
@@ -148,13 +172,26 @@ footer {
         font-size: 11px;
     }
 
+    .data-table td {
+        font-size: 9px;
+    }
+
     .data-table th,
     .data-table td {
         padding: 5px 2px;
     }
 
+    .table-input {
+        font-size: 11px;
+        padding: 2px;
+    }
+
     .options {
         padding: 15px;
+    }
+
+    .options a {
+        font-size: 14px;
     }
 }
 
@@ -163,8 +200,17 @@ footer {
         font-size: 9px;
     }
 
+    .data-table td {
+        font-size: 7px;
+    }
+
     .data-table th,
     .data-table td {
         padding: 3px 1px;
+    }
+
+    .table-input {
+        font-size: 9px;
+        padding: 1px;
     }
 }

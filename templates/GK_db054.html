@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 養成状況更新</title>
+    <link rel="stylesheet" href="../static/GK1C0046.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>養成状況更新</h2>
+            <form method="post" action="/GK_db054" id="yoseiForm">
+                <h3>■養成課目■</h3>
+                <a>養成を行った課目を選択してください。</a>
+                <div class="data-section">
+                    <select name="yoseiKamoku" class="table-input" id="yoseiKamoku">
+                        <option value="">-- 選択してください --</option>
+                        {% for wk54yoseiKamoku in wk54yoseiKamoku %}
+                        <option value="{{ wk54yoseiKamoku[0] }}">{{ wk54yoseiKamoku[1] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <br>
+                <h3>■訂正対象学生■</h3>
+                <a>養成した学生を選択してください。</a>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>✓</th>
+                            <th>学生名</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for wk54yoseiStudent in wk54yoseiStudent %}
+                        <tr>
+                            <td><input type="checkbox" name="yoseiStudent" value="{{ wk54yoseiStudent[0] }}"
+                                    class="item-checkbox"></td>
+                            <td>{{ wk54yoseiStudent[1] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">戻る</button>
+                    <button type="submit" class="execute-button">次へ</button>
+                    <button type="button" onclick="toggleAll(false)" class="menu-button">全解除</button>
+                </div>
+            </form>
+            <script>
+                function toggleAll(checked) {
+                    document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = checked);
+                }
+
+                document.getElementById('yoseiForm').addEventListener('submit', function (e) {
+                    const kamoku = document.getElementById('yoseiKamoku').value;
+                    if (kamoku === '') {
+                        alert('養成課目を選択してください。');
+                        e.preventDefault();
+                        return;
+                    }
+
+                    const checked = document.querySelectorAll('.item-checkbox:checked');
+                    if (checked.length === 0) {
+                        alert('学生を1名以上選択してください。');
+                        e.preventDefault();
+                    }
+                });
+            </script>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

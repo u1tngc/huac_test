@@ -42,7 +42,7 @@
                                     <option value="D">情報</option>
                                     <option value="E">その他</option>
                                     <option value="X">赤帽</option>
-                                    {% if session['authority'] in [0, 1, 6, 7, 9] %}
+                                    {% if session['authority'] in [0, 6, 7, 9] %}
                                     <option value="Z">極秘</option>
                                     {% endif %}
                                 </select>
@@ -120,11 +120,14 @@
                                     <option value="1">学生情報訂正</option>
                                     <option value="2">学生情報登録</option>
                                     {% endif %}
-                                    {% if session['authority'] in [0, 1, 6, 7, 9] %}
+                                    {% if session['authority'] in [0, 6, 7, 9] %}
                                     <option value="3">学科試験更新</option>
                                     {% endif %}
                                     {% if session['authority'] in [6, 7, 9] %}
                                     <option value="4">各種CHK状況更新</option>
+                                    {% endif %}
+                                    {% if session['authority'] in [1, 6, 7, 9] %}
+                                    <option value="5">養成状況更新</option>
                                     {% endif %}
                                 </select>
                             </div>

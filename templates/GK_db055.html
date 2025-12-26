@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 養成状況更新</title>
+    <link rel="stylesheet" href="../static/GK1C0047.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>養成状況更新</h2>
+            {% if err1 %}
+            <a class="err">{{ err1 }}</a>
+            <br><br>
+            {% endif %}
+            <form method="post" action="/GK_db055">
+                <a>更新内容を確認してください。</a>
+                <div class="data-section">
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>名前</th>
+                                <th>更新前</th>
+                                <th>更新後</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for wk54updateInfo in wk54updateInfo %}
+                            <tr>
+                                <td>{{ wk54updateInfo[1] }}</td>
+                                {% if wk54updateInfo[2] == '' %}
+                                <td>未</td>
+                                {% else %}
+                                <td>{{ wk54updateInfo[2] }}</td>
+                                {% endif %}
+                                <td>{{ wk54updateInfo[3] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br><br>
+
+                </div>
+                <div class="button-group">
+                    <button type="submit" name="action" value="back" class="menu-button">戻る</button>
+                    <button type="submit" name="action" value="next" class="execute-button">登録</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>
