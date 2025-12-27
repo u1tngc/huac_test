@@ -175,7 +175,7 @@ def check07(date, name):
     return ""
 
 def check08(date,id):
-    kamoku = ["法規", "工学", "気象", "情報"]
+    kamoku = ["法規", "気象", "工学", "情報"]
     flg = [0,0,0,0,0,0]
     for ix1 in range(len(kamoku)):
         if date[ix1] != "":
@@ -184,10 +184,6 @@ def check08(date,id):
                 return f"{kamoku[ix1]}の養成進捗率が100%未満です。"
             flg[ix1] = 1
     if date[4] != "":
-        flg[4] = 1
-    if date[5] != "":
-        flg[5] = 1
-    if date[6] != "":
         for ix1 in range(len(flg)):
             if flg[ix1] == 0:
                 return "学生チェックの結果は、全科目の養成進捗率が100%でないと入力できません。" 
