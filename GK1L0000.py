@@ -635,6 +635,8 @@ def GK_db044():
         name_array = [hoki_name, kisho_name, kogaku_name, joho_name, gakuseiCHK_name, kyoukanCHK_name]
         bef_array = session.get(f"{user_id}_chkData1")
         err = GK1S0040.check07(date_array, name_array)
+        if not err:
+            err = GK1S0040.check08(date_array, session.get(f'{user_id}_chk_id'))
         kekka = [bef_array[0], hoki_date, kisho_date, kogaku_date, joho_date, gakuseiCHK_date, 
                  kyoukanCHK_date,hoki_name, kisho_name, kogaku_name, joho_name, gakuseiCHK_name, kyoukanCHK_name]
         if err:
