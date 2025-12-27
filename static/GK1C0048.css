@@ -14,13 +14,11 @@ form {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
 }
 
 /* ヘッダー */
 header {
     background-color: #1e3a8a;
-    /* PANTONE280 */
     color: white;
     padding: 20px;
     text-align: center;
@@ -51,7 +49,6 @@ main {
     text-align: center;
 }
 
-/* リンクを左寄せ */
 .options a {
     display: block;
     text-align: left;
@@ -63,102 +60,58 @@ main {
     margin-bottom: 10px;
 }
 
-/* テーブル（表） */
+/* テーブル */
+.data-section {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-top: -2px;
+}
+
 .data-table {
     width: 100%;
     border-collapse: collapse;
-    /*  枠線を統一 */
-    margin-top: 20px;
     table-layout: fixed;
-    /*  列幅を固定 */
     font-size: clamp(10px, 2vw, 16px);
-    /*  画面サイズに応じて文字サイズ調整（最小10px、最大16px） */
 }
 
-/* 列幅の指定 */
-.data-table th:first-child,
-.data-table td:first-child {
-    width: 10%;
-    /* 最初の列（学生名/行ラベル） */
-}
-
-.data-table th:not(:first-child),
-.data-table td:not(:first-child) {
-    width: 13.3%;
-    /* 残り6列を均等に */
+.data-table+.data-section .data-table {
+    margin-top: 0;
 }
 
 .data-table th,
 .data-table td {
     border: 2px solid black;
-    /*  2pxの黒枠を追加 */
     padding: clamp(5px, 1.5vw, 10px);
-    /*  画面サイズに応じてpadding調整 */
     text-align: center;
     word-break: break-all;
-    /*  長い文字列を折り返し */
+}
+
+.data-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
 }
 
 .data-table th {
     background-color: #f2f2f2;
-    /*  ヘッダーの背景色 */
 }
 
 .data-table td {
     font-size: clamp(8px, 1.6vw, 14px);
-    /*  データセルのフォントを1段階小さく */
 }
 
-/* テーブル内の入力フィールド */
-.data-table input[type="date"] {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    padding: 2px;
-    font-size: clamp(6px, 1.2vw, 10px);
-    /* 日付は2サイズ小さく */
-    border: 1px solid #bdc3c7;
-    border-radius: 3px;
+/* 列幅 */
+.data-table th:first-child,
+.data-table td:first-child {
+    width: 30%;
 }
 
-.data-table input[type="text"],
-.data-table .table-input {
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    padding: 2px;
-    font-size: clamp(8px, 1.5vw, 12px);
-    border: 1px solid #bdc3c7;
-    border-radius: 3px;
+.data-table th:not(:first-child),
+.data-table td:not(:first-child) {
+    width: 35%;
 }
 
-/* 入力グループ */
-.input-group {
-    text-align: left;
-    margin-bottom: 20px;
-}
-
-.input-group label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    font-size: 1.1em;
-    color: #555;
-}
-
-.input-group input {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px;
-    border: 1px solid #bdc3c7;
-    border-radius: 5px;
-    font-size: 16px;
-    color: #333;
-    background-color: white;
-    transition: border-color 0.3s ease;
-}
-
-/* ボタングループ */
+/* ボタン */
 .button-group {
     display: flex;
     justify-content: center;
@@ -166,25 +119,26 @@ main {
     margin-top: 30px;
 }
 
-.execute-button,
+.execute-button {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #3498db;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
 .menu-button {
     padding: 12px 30px;
     border: none;
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    margin: 0 10px;
-}
-
-.execute-button {
-    background-color: #3498db;
-    color: white;
-}
-
-.menu-button {
     background-color: #e67e22;
     color: white;
+    transition: background-color 0.3s ease;
 }
 
 .execute-button:hover,
@@ -203,10 +157,10 @@ footer {
 
 .err {
     color: red;
-    text-align: center
+    text-align: center;
 }
 
-/*  レスポンシブ対応 */
+/* レスポンシブ */
 @media screen and (max-width: 600px) {
     .data-table {
         font-size: 11px;
@@ -219,17 +173,6 @@ footer {
     .data-table th,
     .data-table td {
         padding: 5px 2px;
-    }
-
-    .data-table input[type="date"] {
-        font-size: 7px;
-        padding: 1px;
-    }
-
-    .data-table input[type="text"],
-    .data-table .table-input {
-        font-size: 9px;
-        padding: 1px;
     }
 
     .options {
@@ -253,16 +196,5 @@ footer {
     .data-table th,
     .data-table td {
         padding: 3px 1px;
-    }
-
-    .data-table input[type="date"] {
-        font-size: 6px;
-        padding: 0;
-    }
-
-    .data-table input[type="text"],
-    .data-table .table-input {
-        font-size: 8px;
-        padding: 0;
     }
 }

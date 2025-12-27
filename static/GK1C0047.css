@@ -60,6 +60,10 @@ main {
     margin-bottom: 10px;
 }
 
+.err {
+    color: red;
+}
+
 /* テーブル */
 .data-section {
     max-height: 300px;
@@ -103,12 +107,27 @@ main {
 /* 列幅 */
 .data-table th:first-child,
 .data-table td:first-child {
-    width: 30%;
+    width: 20%;
 }
 
 .data-table th:not(:first-child),
 .data-table td:not(:first-child) {
-    width: 35%;
+    width: 80%;
+}
+
+/* セレクトボックス */
+.select-section {
+    margin-top: 10px;
+}
+
+.table-input {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: clamp(2px, 1vw, 6px);
+    font-size: clamp(10px, 2vw, 16px);
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
 }
 
 /* ボタン */
@@ -141,7 +160,19 @@ main {
     transition: background-color 0.3s ease;
 }
 
+.clear-button {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #464443;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
 .execute-button:hover,
+.clear-button:hover,
 .menu-button:hover {
     opacity: 0.8;
 }
@@ -153,11 +184,6 @@ footer {
     text-align: center;
     padding: 10px;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
-}
-
-.err {
-    color: red;
-    text-align: center;
 }
 
 /* レスポンシブ */
@@ -173,6 +199,11 @@ footer {
     .data-table th,
     .data-table td {
         padding: 5px 2px;
+    }
+
+    .table-input {
+        font-size: 11px;
+        padding: 2px;
     }
 
     .options {
@@ -196,5 +227,10 @@ footer {
     .data-table th,
     .data-table td {
         padding: 3px 1px;
+    }
+
+    .table-input {
+        font-size: 9px;
+        padding: 1px;
     }
 }
