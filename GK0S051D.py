@@ -206,3 +206,26 @@ def update_yoseiJokyo(yoseiKamoku,id,yoseidate):
     except Exception as e:
         print(f'エラー内容：{e}')
         return "養成状況の更新に失敗しました。"
+    
+def get_yoreiRate(yoseiKamoku, id):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = """
+                SELECT 
+                ROUND(COUNT(CASE WHEN y.状況 = 1 THEN 1 END) * 100.0 / NULLIF(COUNT(*), 0)) AS 割合
+                FROM 養成項目管理セグ k
+                LEFT JOIN 養成状況管理セグ y ON k.養成cd = y.養成cd AND y.学籍番号 = %s
+                WHERE k.分野 = %s
+            """
+            data = (id, yoseiKamoku,)
+            cur.execute(sql, data)
+            result = cur.fetchone()  
+        conn.close()
+        return int(result[0]) if result and result[0] is not None else 0
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 0
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 0
