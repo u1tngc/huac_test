@@ -174,13 +174,30 @@ def check07(date, name):
     
     return ""
 
+def check08(date,id):
+    kamoku = ["法規", "工学", "気象", "情報"]
+    flg = [0,0,0,0,0,0]
+    for ix1 in range(len(kamoku)):
+        if date[ix1] != "":
+            rate = GK0S051D.get_yoreiRate(kamoku[ix1], id)
+            if rate != 100:
+                return f"{kamoku[ix1]}の養成進捗率が100%未満です。"
+            flg[ix1] = 1
+    if date[4] != "":
+        flg[4] = 1
+    if date[5] != "":
+        flg[5] = 1
+    if date[6] != "":
+        for ix1 in range(len(flg)):
+            if flg[ix1] == 0:
+                return "学生チェックの結果は、全科目の養成進捗率が100%でないと入力できません。" 
+    return ""
 
 def update_gakusei(update_gakusei):
     if update_gakusei[4] == 1:
         update_gakusei[3] = 0
     err = GK0S001D.update_gakusei(update_gakusei)       
     return ""
-
 
 def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
     err = GK0S001D.insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd)
@@ -192,11 +209,9 @@ def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
         err = GK0S041D.insert_chkList(id,2)
     return ""    
 
-
 def update_password(user_id,password):
     err = GK0S001D.update_password(user_id,password)
     return ""        
-
 
 def get_rireki(user_id):
     list = GK0S002D.get_rireki(user_id)
@@ -221,7 +236,6 @@ def get_rireki(user_id):
 
     return []
 
-
 def get_rirekiAll():
     list = GK0S002D.get_rirekiAll()
     number = [4,6,8,10,12]
@@ -244,7 +258,6 @@ def get_rirekiAll():
         return ret_list
 
     return []
-
 
 def get_gakuseiInfo01():
     ret_array = GK0S001D.get_gakuseiInfo01()
@@ -271,13 +284,11 @@ def get_gakkaShiken(id):
     gakkaShiken = GK0S031D.get_gakkaShiken(id)
     return gakkaShiken
 
-
 def update_gakkaShiken(id,kekka):
     dt = datetime.now(ZoneInfo("Asia/Tokyo"))
     ymd = dt.strftime("%Y%m%d")
     updateInfo=[id,kekka[0],kekka[1],kekka[2],kekka[3],kekka[4],kekka[5], ymd]
     err1 = GK0S031D.update_gakkaShiken(updateInfo)
-
 
 def get_gakkaShikenAll():
     kekka_dict = {
@@ -298,7 +309,6 @@ def get_gakkaShikenAll():
             array[ix1][7] = f'{array[ix1][7][4:6]}/{array[ix1][7][6:]}'
     return array
 
-
 def get_chkListAll():
     temp_array1 = GK0S041D.get_chkListAll()
     ret_array = []
@@ -310,7 +320,6 @@ def get_chkListAll():
             row += [v for i, v in enumerate(temp_array1[ix1 + 1]) if i not in (0, 1, 2)]
             ret_array.append(row)    
     return ret_array 
-
 
 def get_chkList(id,kbn):
         temp_array1 = GK0S041D.get_chkList(id)
@@ -358,7 +367,6 @@ def get_yoseiJokyo(id):
         return ret_array1, ret_array2
     return [], []
 
-
 def get_yoseiSumAll():
     rows = GK0S051D.get_yoseiSumAll()
     if not rows:
@@ -384,7 +392,6 @@ def get_yoseiSumAll():
         ])
     
     return ret_array
-
 
 def get_yoseiAllDataForCSV():
     """全学生の養成状況データをCSV用に整形"""
