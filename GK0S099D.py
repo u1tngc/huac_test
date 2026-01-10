@@ -33,7 +33,7 @@ DB_CONFIG = {
 #     "target_session_attrs": "read-write"
 # }
 
-def insert_log(gakuseki, shobuncd, shobun_datetime, biko):
+def insertLog(gakuseki, shobuncd, shobun_datetime, biko):
     """ログ管理セグにデータを登録"""
     try:
         conn = psycopg2.connect(**DB_CONFIG)
