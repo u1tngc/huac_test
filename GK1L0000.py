@@ -798,7 +798,7 @@ def GK_db060():
         return Response(
             csv_content.encode('utf-8'),
             mimetype='text/csv; charset=utf-8',
-            headers={'Content-Disposition': "attachment; filename*=UTF-8''%E5%85%8D%E8%A8%B1%E5%8F%96%E5%BE%97%E8%B3%87%E6%96%99.csv"}
+            headers={'Content-Disposition': "attachment; filename*=UTF-8''MT%E8%B3%87%E6%96%99.csv"}
         )
     return render_template('GK_db060.html')
 
