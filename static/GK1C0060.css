@@ -83,15 +83,15 @@ main {
     left: 0;
     background-color: #f2f2f2;
     z-index: 3;
-    width: 180px;
-    min-width: 180px;
+    width: 150px;
+    min-width: 150px;
 }
 
 /* 有効期限列（最終列）幅調整 */
 .data-table th:last-child,
 .data-table td:last-child {
-    width: 160px;
-    min-width: 160px;
+    width: 100px;
+    min-width: 100px;
 }
 
 /* ボタン */

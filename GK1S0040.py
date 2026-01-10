@@ -533,6 +533,8 @@ def create_mtShiryo():
         chk_joho = "済" if chk_info[3] else ""
         chk_gakusei = "済" if chk_info[4] else ""
         chk_kyokan = "済" if chk_info[5] else ""
+
+        yukokigen = f'{yukokigen[0:4]}/{yukokigen[4:6]}/{yukokigen[6:]}'
         
         student_data = [
             gakuseki,       # 学籍番号
