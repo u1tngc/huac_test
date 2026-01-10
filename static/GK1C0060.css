@@ -43,7 +43,6 @@ main {
 .table-wrapper {
     overflow: auto;
     max-height: 500px;
-    max-width: 100%;
     border: 1px solid #ccc;
 }
 
@@ -52,6 +51,7 @@ main {
     border-collapse: separate;
     border-spacing: 0;
     table-layout: fixed;
+    width: max-content;
 }
 
 .data-table th,
@@ -62,6 +62,9 @@ main {
     font-size: 14px;
     background-color: white;
     width: 45px;
+    min-width: 45px;
+    max-width: 45px;
+    white-space: nowrap;
 }
 
 /* ===== ヘッダー固定（1行目 & 2行目）===== */
@@ -85,6 +88,8 @@ main {
 .data-table th:first-child,
 .data-table td:first-child {
     width: 100px;
+    min-width: 100px;
+    max-width: 100px;
 }
 
 /* ===== 1列目 横スクロール固定 ===== */
@@ -107,6 +112,8 @@ main {
 .data-table th:last-child,
 .data-table td:last-child {
     width: 90px;
+    min-width: 90px;
+    max-width: 90px;
 }
 
 /* ボタン */
