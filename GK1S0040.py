@@ -12,6 +12,7 @@ import GK0S031D
 import GK0S041D
 import GK0S051D
 import GK0S052D
+import GK0S099D
 
 def get_gakusei(id,authority):
     gakusei_list = GK0S001D.get_gakusei(id)
@@ -495,4 +496,4 @@ def insertLog(user,shobuncd,biko):
         biko = bunya_array.get(bunyacd, "")
     if shobuncd == "A021":
         biko = kbn_array.get(biko,"")
-    err = insertLog(user,shobuncd,ymd,biko)
+    err = GK0S099D.insertLog(user,shobuncd,ymd,biko)
