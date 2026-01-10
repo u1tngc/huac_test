@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2025/12/26
+#最終更新日:2026/01/10
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -472,3 +472,27 @@ def update_yoseiJokyo(wk54updateInfo, yoseiKamoku):
         wk54updateInfo[ix1][3] = wk54updateInfo[ix1][3].replace("/","")
         err = GK0S051D.update_yoseiJokyo(yoseiKamoku, wk54updateInfo[ix1][0], wk54updateInfo[ix1][3])
     return err
+
+
+def insertLog(user,shobuncd,biko):
+    dt = datetime.now(ZoneInfo("Asia/Tokyo"))
+    ymd = dt.strftime("%Y%m%d%H%M")
+    bunya_array = {
+        "A" : "法規",
+        "B" : "工学",
+        "C" : "気象",
+        "D" : "情報",
+        "E" : "その他",
+        "Z" : "赤帽",
+        "X" : "極秘"
+    }
+    kbn_array = {
+        "1" : "小テスト",
+        "2" : "練習問題"
+    }
+    if shobuncd == "A0001":
+        bunyacd = biko[0:1]
+        biko = bunya_array.get(bunyacd, "")
+    if shobuncd == "A021":
+        biko = kbn_array.get(biko,"")
+    err = insertLog(user,shobuncd,ymd,biko)

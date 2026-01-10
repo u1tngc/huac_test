@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2025/12/26
+#最終更新日:2026/01/10
 
 import csv
 from datetime import timedelta
@@ -64,6 +64,7 @@ def GK_menu01():
             bunya = request.form['bunya']
             mondai_num = int(request.form['mondai_num'])
             init02(user_id)
+            GK1S0040.insertLog(user_id,"A001",bunya)
             if bunya == "Z":
                 print(f"学籍番号：{session.get('user_id')}")
             session[f"{user_id}_fukushu"] = []
@@ -82,6 +83,7 @@ def GK_menu01():
                 init03(user_id)
                 session[f'{user_id}_test'] = test
                 session[f'{user_id}_end'] = 0
+                GK1S0040.insertLog(user_id,"A011",bunya)
             return redirect(url_for('GK_test01'))
         elif shorikbn == "fukushu":
             init05(user_id)
@@ -93,6 +95,7 @@ def GK_menu01():
                 session[f"{user_id}_fukushuNum"] = fukushu_num
                 session[f"{user_id}_fukushu_ix1"] = 0
                 session[f"{user_id}_fukushu_eof"] = 0
+                GK1S0040.insertLog(user_id,"A021",fukushu_kbn)
                 return redirect(url_for('GK_fukushu01', err=""))
             else:
                 flash("復習対象の問題がありません。")
@@ -105,10 +108,12 @@ def GK_menu01():
         elif shorikbn == "db_show":
             db_kbn = request.form['db_kbn1']
             if db_kbn == "1":
+                GK1S0040.insertLog(user_id,"B001","")
                 gakuseiList = GK1S0040.get_gakuseiAll()
                 return render_template('GK_db001.html',gakuseiList=gakuseiList)     
             elif db_kbn == "2":
                 init04(user_id)
+                GK1S0040.insertLog(user_id,"B011","")
                 if session.get('authority') in [7,8,9]:
                     gakuseiName = GK1S0040.get_gakuseiInfo01()
                     session[f"{user_id}_gakuseiName"] = gakuseiName
@@ -120,10 +125,12 @@ def GK_menu01():
                         return redirect(url_for('GK_menu01')) 
                     return render_template('GK_db020.html',rireki=array)    
             elif db_kbn == "3":
+                GK1S0040.insertLog(user_id,"B021","")
                 gakkaShikenList = GK1S0040.get_gakkaShikenAll()
                 session[f"{user_id}_gakkaShikenList"] = gakkaShikenList
                 return render_template('GK_db031.html',gakkaShikenList=gakkaShikenList)  
             elif db_kbn == "4":
+                GK1S0040.insertLog(user_id,"B031","")
                 if session.get('authority') in [6,7,8,9]:
                     chklist = GK1S0040.get_chkListAll()
                     return render_template('GK_db041.html',chklist=chklist)  
@@ -132,21 +139,26 @@ def GK_menu01():
                     chklist = GK1S0040.get_chkList(id,1)
                     return render_template('GK_db042.html',chklist=chklist)    
             elif db_kbn == "5":
+                GK1S0040.insertLog(user_id,"B004","")
                 wk51studentList = GK1S0040.get_renkyosei()
                 session[f"{user_id}_wk51studentList"] = wk51studentList
                 return render_template('GK_db051.html', studentList=wk51studentList,err1="")
             elif db_kbn == "6":
+                GK1S0040.insertLog(user_id,"B005","")
                 wk53yoseiSumAll = GK1S0040.get_yoseiSumAll()
                 return render_template('GK_db053.html', wk53yoseiSumAll=wk53yoseiSumAll) 
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
+                GK1S0040.insertLog(user_id,"C001","")
                 gakuseiData = GK1S0040.get_gakuseiInfo00(session.get('authority'))
                 session[f"{user_id}_gakuseiData"] = gakuseiData
                 return render_template('GK_db002.html', gakuseiData=gakuseiData, err1="") 
             elif db_kbn == "2":
+                GK1S0040.insertLog(user_id,"C011","")
                 return redirect(url_for('GK_db004',err=""))
             elif db_kbn == "3":
+                GK1S0040.insertLog(user_id,"C021","")
                 gakkaShiken_data = GK1S0040.get_gakkaShiken(session.get('user_id'))
                 if gakkaShiken_data:
                     session[f"{user_id}_gakkaShiken_data"] = gakkaShiken_data
@@ -161,10 +173,12 @@ def GK_menu01():
                     flash("学科試験のデータがありません。学科班に確認してください。")
                     return redirect(url_for('GK_menu01'))               
             elif db_kbn == "4":
+                GK1S0040.insertLog(user_id,"C031","")
                 gakuseiCHK = GK1S0040.get_renkyosei()
                 session[f"{user_id}_gakuseiCHK"] = gakuseiCHK
                 return render_template('GK_db043.html', gakuseiCHK=gakuseiCHK, err1="") 
             elif db_kbn == "5":
+                GK1S0040.insertLog(user_id,"C041","")
                 wk54yoseiKamoku = GK1S0040.get_yoseiKamokuAll()
                 wk54yoseiStudent = GK1S0040.get_renkyosei()
                 session[f"{user_id}_wk54yoseiKamoku"] = wk54yoseiKamoku
