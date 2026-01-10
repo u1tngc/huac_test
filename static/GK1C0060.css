@@ -51,7 +51,7 @@ main {
 .data-table {
     border-collapse: separate;
     border-spacing: 0;
-    width: max-content;
+    table-layout: fixed;
 }
 
 .data-table th,
@@ -60,9 +60,8 @@ main {
     padding: 8px;
     text-align: center;
     font-size: 14px;
-    word-break: keep-all;
-    white-space: nowrap;
     background-color: white;
+    width: 45px;
 }
 
 /* ===== ヘッダー固定（1行目 & 2行目）===== */
@@ -79,19 +78,24 @@ main {
 
 /* 2行目のヘッダー */
 .data-table thead tr:nth-child(2) th {
-    top: 37px;
+    top: 39px;
 }
 
-/* ===== 1列目（氏名）横スクロール固定 ===== */
+/* ===== 1列目（氏名）===== */
+.data-table th:first-child,
+.data-table td:first-child {
+    width: 100px;
+}
+
+/* ===== 1列目 横スクロール固定 ===== */
 .data-table tbody td:first-child {
     position: sticky;
     left: 0;
     z-index: 5;
     background-color: #e8e8e8;
-    min-width: 100px;
 }
 
-/* ===== 左上コーナー（ヘッダー1行目 × 1列目）===== */
+/* ===== 左上コーナー ===== */
 .data-table thead tr:first-child th:first-child {
     position: sticky;
     left: 0;
@@ -99,18 +103,10 @@ main {
     z-index: 20;
 }
 
-/* ===== 左上コーナー（ヘッダー2行目は1列目がrowspanで無いため不要）===== */
-
-/* 有効期限列（最終列）幅調整 */
+/* 有効期限列（最終列） */
 .data-table th:last-child,
 .data-table td:last-child {
-    min-width: 90px;
-}
-
-/* 氏名列幅 */
-.data-table th:first-child,
-.data-table td:first-child {
-    min-width: 100px;
+    width: 90px;
 }
 
 /* ボタン */
