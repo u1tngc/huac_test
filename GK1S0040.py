@@ -491,7 +491,7 @@ def insertLog(user,shobuncd,biko):
         "1" : "小テスト",
         "2" : "練習問題"
     }
-    if shobuncd == "A0001":
+    if shobuncd == "A001":
         bunyacd = biko[0:1]
         biko = bunya_array.get(bunyacd, "")
     if shobuncd == "A021":
