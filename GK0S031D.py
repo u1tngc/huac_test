@@ -1,6 +1,6 @@
 #PGM-ID:GK0S031D
 #PGM-NAME:GK学科試験管理セグI/O(オンライン)
-#最終更新日:2025/12/02
+#最終更新日:2026/01/10
 
 import os
 
@@ -32,6 +32,7 @@ DB_CONFIG = {
 #     "sslrootcert": "",
 #     "target_session_attrs": "read-write"
 # }
+
 
 def insert_data(id):
     try:
@@ -138,3 +139,21 @@ def get_gakkaShikenAll():
     except Exception as e:
         print(f'エラー内容：{e}')
         return []
+
+
+def get_shiken_info(gakuseki):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = 'SELECT 法規, 工学, 気象, 航法, 有効期限 FROM 学科試験管理セグ WHERE 学籍番号 = %s'
+            data = (gakuseki,)
+            cur.execute(sql, data)
+            result = cur.fetchone()
+        conn.close()
+        return list(result) if result else [0, 0, 0, 0, '']
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return [0, 0, 0, 0, '']
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return [0, 0, 0, 0, '']

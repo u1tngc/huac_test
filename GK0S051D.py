@@ -222,6 +222,7 @@ def get_yoreiRate(yoseiKamoku, id):
             cur.execute(sql, data)
             result = cur.fetchone()  
         conn.close()
+        print(result)
         return int(result[0]) if result and result[0] is not None else 0
     except psycopg2.Error as e:
         print(f'エラー内容：{e}')

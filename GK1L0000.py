@@ -139,14 +139,19 @@ def GK_menu01():
                     chklist = GK1S0040.get_chkList(id,1)
                     return render_template('GK_db042.html',chklist=chklist)    
             elif db_kbn == "5":
-                GK1S0040.insertLog(user_id,"B004","")
+                GK1S0040.insertLog(user_id,"B041","")
                 wk51studentList = GK1S0040.get_renkyosei()
                 session[f"{user_id}_wk51studentList"] = wk51studentList
                 return render_template('GK_db051.html', studentList=wk51studentList,err1="")
             elif db_kbn == "6":
-                GK1S0040.insertLog(user_id,"B005","")
+                GK1S0040.insertLog(user_id,"B051","")
                 wk53yoseiSumAll = GK1S0040.get_yoseiSumAll()
                 return render_template('GK_db053.html', wk53yoseiSumAll=wk53yoseiSumAll) 
+            elif db_kbn == "7":
+                GK1S0040.insertLog(user_id,"B061","")
+                mtShiryo = GK1S0040.create_mtShiryo()
+                session[f"{user_id}_mtShiryo"] = mtShiryo
+                return render_template('GK_db060.html',meshiryo=mtShiryo)
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
@@ -183,7 +188,7 @@ def GK_menu01():
                 wk54yoseiStudent = GK1S0040.get_renkyosei()
                 session[f"{user_id}_wk54yoseiKamoku"] = wk54yoseiKamoku
                 session[f"{user_id}_wk54yoseiStudent"] = wk54yoseiStudent
-                return render_template('GK_db054.html', wk54yoseiKamoku=wk54yoseiKamoku, wk54yoseiStudent=wk54yoseiStudent, err1="")
+                return render_template('GK_db054.html', wk54yoseiKamoku=wk54yoseiKamoku, wk54yoseiStudent=wk54yoseiStudent, err1="")        
         elif shorikbn == "password":
                 return redirect(url_for('GK_db010',err=""))
 
@@ -725,6 +730,7 @@ def GK_db053():
         )
     return render_template('GK_db053.html')
 
+
 #養成状況管理セグ更新１
 @app.route('/GK_db054', methods=['GET', 'POST'])
 def GK_db054():
@@ -767,6 +773,34 @@ def GK_db055():
         err1 = "養成状況の更新が完了しました。"
         return render_template('GK_db054.html', wk54yoseiKamoku=session.get(f'{user_id}_wk54yoseiKamoku'), wk54yoseiStudent=session.get(f'{user_id}_wk54yoseiStudent'), err1=err1)
     return render_template('GK_db055.html', wk54updateInfo=session.get(f'{user_id}_wk54updateInfo'), err1="")
+
+
+#ＭＴ資料作成
+@app.route('/GK_db060', methods=['GET', 'POST'])
+def GK_db060():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,8,9]:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':
+        data = session.get(f"{user_id}_mtShiryo")
+        csv_data = GK1S0040.get_mtShiryoForCSV(data)
+        if not csv_data:
+            flash("データの取得に失敗しました。")
+            return redirect(url_for('GK_menu01'))
+        output = io.StringIO()
+        writer = csv.writer(output)
+        for row in csv_data:
+            writer.writerow(row)
+        csv_content = '\ufeff' + output.getvalue()
+        output.close()
+        return Response(
+            csv_content.encode('utf-8'),
+            mimetype='text/csv; charset=utf-8',
+            headers={'Content-Disposition': "attachment; filename*=UTF-8''%E5%85%8D%E8%A8%B1%E5%8F%96%E5%BE%97%E8%B3%87%E6%96%99.csv"}
+        )
+    return render_template('GK_db060.html')
 
 
 # セッションの有効期限をリセット

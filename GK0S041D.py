@@ -33,6 +33,7 @@ DB_CONFIG = {
 #     "target_session_attrs": "read-write"
 # }
 
+
 def insert_chkList(id, datakbn):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
@@ -157,3 +158,41 @@ def update_chkList(update_chkList):
     finally:
         if conn:
             conn.close()
+
+
+def delete_data(id):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = "DELETE FROM 各種chk管理セグ WHERE 学籍番号 = %s"
+            data = (id,)
+            cur.execute(sql, data)
+            conn.commit()
+        return 0  
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1  
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 2   
+    finally:
+        if conn:
+            conn.close()
+
+
+def get_chk_info(gakuseki):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = 'SELECT 法規, 気象, 工学, 情報, 学生chk, 教官chk FROM 各種chk管理セグ WHERE 学籍番号 = %s AND データ種類 = %s'
+            data = (gakuseki, 2)
+            cur.execute(sql, data)
+            result = cur.fetchone()
+        conn.close()
+        return list(result) if result else ['', '', '', '', '', '']
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return ['', '', '', '', '', '']
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return ['', '', '', '', '', '']

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール MT資料作成</title>
+    <link rel="stylesheet" href="../static/GK1C0060.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>MT資料作成</h2>
+            <form method="post" action="/GK_db060">
+                <div class="data-section">
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">氏名</th>
+                                    <th colspan="4">学科試験</th>
+                                    <th colspan="6">養成状況</th>
+                                    <th colspan="4">中間チェック</th>
+                                    <th colspan="2">チェック</th>
+                                    <th rowspan="2">有効期限</th>
+                                </tr>
+                                <tr>
+                                    <th>法規</th>
+                                    <th>工学</th>
+                                    <th>気象</th>
+                                    <th>航法</th>
+                                    <th>法規</th>
+                                    <th>気象</th>
+                                    <th>工学</th>
+                                    <th>情報</th>
+                                    <th>衛生</th>
+                                    <th>六項目</th>
+                                    <th>法規</th>
+                                    <th>気象</th>
+                                    <th>工学</th>
+                                    <th>情報</th>
+                                    <th>学生</th>
+                                    <th>教官</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for mtShiryo in meshiryo %}
+                                <tr>
+                                    {% for i in range(1, mtShiryo|length) %}
+                                    <td>{{ mtShiryo[i] }}</td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">戻る</button>
+                    <button type="submit" class="execute-button">csv出力</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

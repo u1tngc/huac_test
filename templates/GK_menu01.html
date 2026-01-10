@@ -88,7 +88,7 @@
                     </div>
                 </div>
                 {% endif %} -->
-                    {% if session['authority'] in [0, 1, 6, 7, 9] %}
+                    {% if session['authority'] in [0, 1, 6, 7, 8, 9] %}
                     <div class="data-section">
                         <div class="radio-section">
                             <label class="radio-group"><input type="radio" name="selection" value="db_show">ＤＢ照会</label>
@@ -103,6 +103,9 @@
                                     <option value="6">養成状況一括照会</option>
                                     {% endif %}
                                     <option value="5">養成状況照会</option>
+                                    {% if session['authority'] in [6, 7, 8, 9] %}
+                                    <option value="7">MT資料作成</option>
+                                    {% endif %}
                                 </select>
                             </div>
                         </div>

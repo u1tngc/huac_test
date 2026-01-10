@@ -497,3 +497,86 @@ def insertLog(user,shobuncd,biko):
     if shobuncd == "A021":
         biko = kbn_array.get(biko,"")
     err = GK0S099D.insertLog(user,shobuncd,ymd,biko)
+
+
+def create_mtShiryo():
+    # 資格=0の学生一覧を取得 ※既存関数を共用
+    gakusei_list = GK0S001D.get_renkyosei()
+    if not gakusei_list:
+        return []   
+    result_array = []    
+    for gakusei in gakusei_list:
+        gakuseki = gakusei[0]  # 学籍番号
+        shimei = gakusei[1]    # 氏名  
+        shiken_info = GK0S031D.get_shiken_info(gakuseki) 
+        
+        shiken_dict = {0: "未", 1: "〇", 2: "×"}
+        houki_shiken = shiken_dict.get(shiken_info[0], "未")
+        kogaku_shiken = shiken_dict.get(shiken_info[1], "未")
+        kisho_shiken = shiken_dict.get(shiken_info[2], "未")
+        koho_shiken = shiken_dict.get(shiken_info[3], "未")
+        yukokigen = shiken_info[4]
+        
+        yosei_rate = GK0S051D.get_yoseiJokyoSum(gakuseki)
+        houki_rate = f"{yosei_rate[0]}%" if yosei_rate else "0%"
+        kogaku_rate = f"{yosei_rate[1]}%" if yosei_rate else "0%"
+        kisho_rate = f"{yosei_rate[2]}%" if yosei_rate else "0%"
+        joho_rate = f"{yosei_rate[3]}%" if yosei_rate else "0%"
+        eisei_rate = f"{yosei_rate[4]}%" if yosei_rate else "0%"
+        rokkomo_rate = f"{yosei_rate[5]}%" if yosei_rate else "0%"
+        
+        chk_info = GK0S041D.get_chk_info(gakuseki)
+        
+        chk_houki = "済" if chk_info[0] else ""
+        chk_kisho = "済" if chk_info[1] else ""
+        chk_kogaku = "済" if chk_info[2] else ""
+        chk_joho = "済" if chk_info[3] else ""
+        chk_gakusei = "済" if chk_info[4] else ""
+        chk_kyokan = "済" if chk_info[5] else ""
+        
+        student_data = [
+            gakuseki,       # 学籍番号
+            shimei,         # 氏名
+            houki_shiken,   # 法規（学科試験）
+            kogaku_shiken,  # 工学（学科試験）
+            kisho_shiken,   # 気象（学科試験）
+            koho_shiken,    # 航法（学科試験）
+            houki_rate,     # 法規（養成完了率）
+            kogaku_rate,    # 工学（養成完了率）
+            kisho_rate,     # 気象（養成完了率）
+            joho_rate,      # 情報（養成完了率）
+            eisei_rate,     # 衛生（養成完了率）
+            rokkomo_rate,   # 六項目（養成完了率）
+            chk_houki,      # CHK法規
+            chk_kisho,      # CHK気象
+            chk_kogaku,     # CHK工学
+            chk_joho,       # CHK情報
+            chk_gakusei,    # CHK学生
+            chk_kyokan,     # CHK教官
+            yukokigen       # 有効期限
+        ] 
+        result_array.append(student_data)
+    return result_array
+
+
+def get_mtShiryoForCSV(data):
+    if not data:
+        return None
+    
+    csv_data = []
+    
+    # ヘッダー行
+    header = [
+        '学籍番号', '氏名',
+        '法規(試験)', '工学(試験)', '気象(試験)', '航法(試験)',
+        '法規(養成)', '工学(養成)', '気象(養成)', '情報(養成)', '衛生(養成)', '六項目(養成)',
+        'CHK法規', 'CHK気象', 'CHK工学', 'CHK情報', 'CHK学生', 'CHK教官',
+        '有効期限'
+    ]
+    csv_data.append(header)
+    
+    # データ行
+    for row in data:
+        csv_data.append(row)
+    
+    return csv_data
