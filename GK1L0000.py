@@ -83,7 +83,7 @@ def GK_menu01():
                 init03(user_id)
                 session[f'{user_id}_test'] = test
                 session[f'{user_id}_end'] = 0
-                GK1S0040.insertLog(user_id,"A011",bunya)
+                GK1S0040.insertLog(user_id,"A011","")
             return redirect(url_for('GK_test01'))
         elif shorikbn == "fukushu":
             init05(user_id)
