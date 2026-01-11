@@ -484,8 +484,8 @@ def insertLog(user,shobuncd,biko):
         "C" : "気象",
         "D" : "情報",
         "E" : "その他",
-        "Z" : "赤帽",
-        "X" : "極秘"
+        "X" : "赤帽",
+        "Z" : "極秘"
     }
     kbn_array = {
         "1" : "小テスト",
