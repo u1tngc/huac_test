@@ -65,8 +65,8 @@ def GK_menu01():
             mondai_num = int(request.form['mondai_num'])
             init02(user_id)
             GK1S0040.insertLog(user_id,"A001",bunya)
-            if bunya == "Z":
-                print(f"学籍番号：{session.get('user_id')}")
+            if bunya == "Z" and user_id == "22A0134":
+                        return redirect(url_for('GK_menu01')) 
             session[f"{user_id}_fukushu"] = []
             session[f"{user_id}_ix1"] = 0  
             session[f'{user_id}_mondaiNum'] = mondai_num
@@ -201,8 +201,6 @@ def GK_practice01():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
     user_id = session.get('user_id')
-    if user_id == "22A0134":
-        return redirect(url_for('GK_menu01')) 
     if f"{user_id}_mondai_list" not in session:
         return redirect(url_for('GK_menu01'))    
     if session[f"{user_id}_ix1"] == session[f'{user_id}_mondaiNum']:
