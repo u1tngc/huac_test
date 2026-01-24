@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 養成進捗ガントチャート</title>
+    <link rel="stylesheet" href="../static/GK1C0061.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>養成進捗ガントチャート</h2>
+            <div class="gantt-container">
+                <table class="gantt-table">
+                    <thead>
+                        <tr>
+                            <th class="gantt-task-col">タスク</th>
+                            <th class="gantt-tantou-col">担当者</th>
+                            <th class="gantt-progress-col">進捗</th>
+                            {% for month in months %}
+                            <th class="gantt-month-col {% if month == current_month %}current-month{% endif %}">{{
+                                month[4:] }}月</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in gantt_data %}
+                        <tr>
+                            <td class="gantt-task">チーム{{ item.team }}・{{ item.bunnya }}</td>
+                            <td class="gantt-tantou">{{ item.tantousha }}</td>
+                            <td class="gantt-progress-cell">{{ item.progress }}%</td>
+                            {% for month in months %}
+                            <td class="gantt-cell {% if month == current_month %}current-month-cell{% endif %}">
+                                {% if item.start_month and item.end_month and month >= item.start_month and month <=
+                                    item.end_month %} <div class="gantt-bar-container">
+                                    <div class="gantt-bar-complete" style="width: {{ item.progress }}%;"></div>
+                                    <div class="gantt-bar-remain" style="width: {{ 100 - item.progress }}%;"></div>
+            </div>
+            {% endif %}
+            </td>
+            {% endfor %}
+            </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+            </div>
+            <div class="gantt-legend">
+                <span class="legend-item"><span class="legend-complete"></span>完了</span>
+                <span class="legend-item"><span class="legend-remain"></span>未完了</span>
+                <span class="legend-item"><span class="legend-current"></span>現在月</span>
+            </div>
+
+            <div class="button-group">
+                <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">戻る</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

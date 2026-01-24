@@ -151,14 +151,16 @@ def GK_menu01():
                 GK1S0040.insertLog(user_id,"B061","")
                 mtShiryo = GK1S0040.create_mtShiryo()
                 session[f"{user_id}_mtShiryo"] = mtShiryo
-                # ガントチャートデータ取得
+                return render_template('GK_db060.html', mtshiryo=mtShiryo)
+            elif db_kbn == "8":
+                GK1S0040.insertLog(user_id,"B071","")
+                                # ガントチャートデータ取得
                 gantt_data, months = GK1S0040.get_gantt_data()
                 session[f"{user_id}_gantt_data"] = gantt_data
                 session[f"{user_id}_months"] = months
                 # 現在月を取得（YYYYMM形式）
                 current_month = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m")
-                return render_template('GK_db060.html', 
-                           mtshiryo=mtShiryo,
+                return render_template('GK_db061.html', 
                            gantt_data=gantt_data,
                            months=months,
                            current_month=current_month)
@@ -807,12 +809,21 @@ def GK_db060():
             mimetype='text/csv; charset=utf-8',
             headers={'Content-Disposition': "attachment; filename*=UTF-8''MT%E8%B3%87%E6%96%99.csv"}
         ) 
-    return render_template('GK_db060.html', 
-                           mtshiryo=session.get(f"{user_id}_mtShiryo"),
+    return render_template('GK_db060.html', mtshiryo=session.get(f"{user_id}_mtShiryo"))
+
+
+#ガントチャート作成
+@app.route('/GK_db061', methods=['GET', 'POST'])
+def GK_db061():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,8,9]:
+        return redirect(url_for('GK_menu01'))   
+    return render_template('GK_db061.html', 
                            gantt_data=session.get(f"{user_id}_gantt_data"),
                            months=session.get(f"{user_id}_months"),
                            current_month=session.get(f"{user_id}_current_month"))
-
 
 # セッションの有効期限をリセット
 @app.before_request
@@ -873,7 +884,7 @@ def init07(user_id):
     session.pop(f"{user_id}_months", None)      
     session.pop(f"{user_id}_current_month", None)
 
-    
+
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)

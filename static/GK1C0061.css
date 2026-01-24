@@ -1,0 +1,197 @@
+/* 全体レイアウト */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ヘッダー・フッター */
+header,
+footer {
+    background-color: #1e3a8a;
+    color: white;
+    text-align: center;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* メインボックス */
+.options {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 95%;
+    max-width: 1400px;
+    text-align: center;
+}
+
+.options h2 {
+    color: #1e3a8a;
+    margin-bottom: 20px;
+}
+
+/* ===== ガントチャートセクション ===== */
+.gantt-container {
+    overflow-x: auto;
+    border: 1px solid #ccc;
+}
+
+.gantt-table {
+    border-collapse: collapse;
+    width: max-content;
+    min-width: 100%;
+}
+
+.gantt-table th,
+.gantt-table td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.gantt-table thead th {
+    background-color: #1e3a8a;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* タスク列 */
+.gantt-task-col,
+.gantt-task {
+    width: 130px;
+    min-width: 130px;
+    text-align: left;
+    padding-left: 10px;
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+/* 担当者列 */
+.gantt-tantou-col,
+.gantt-tantou {
+    width: 100px;
+    min-width: 100px;
+    background-color: #f8f9fa;
+    font-size: 12px;
+}
+
+/* 進捗列 */
+.gantt-progress-col,
+.gantt-progress-cell {
+    width: 60px;
+    min-width: 60px;
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+/* 月列 */
+.gantt-month-col,
+.gantt-cell {
+    width: 60px;
+    min-width: 60px;
+    padding: 4px;
+}
+
+/* 現在月のハイライト */
+.current-month {
+    background-color: #ffc107 !important;
+    color: #000 !important;
+}
+
+.current-month-cell {
+    background-color: #fff8e1;
+}
+
+/* ガントバー */
+.gantt-bar-container {
+    display: flex;
+    height: 20px;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.gantt-bar-complete {
+    background-color: #28a745;
+    height: 100%;
+}
+
+.gantt-bar-remain {
+    background-color: #dee2e6;
+    height: 100%;
+}
+
+/* 凡例 */
+.gantt-legend {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+}
+
+.legend-complete,
+.legend-remain,
+.legend-current {
+    width: 20px;
+    height: 12px;
+    border-radius: 2px;
+}
+
+.legend-complete {
+    background-color: #28a745;
+}
+
+.legend-remain {
+    background-color: #dee2e6;
+}
+
+.legend-current {
+    background-color: #ffc107;
+}
+
+/* ボタン */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.menu-button {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    color: white;
+    background-color: #e67e22;
+}
+
+.menu-button:hover {
+    opacity: 0.8;
+}
