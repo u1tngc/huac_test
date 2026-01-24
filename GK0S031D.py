@@ -1,6 +1,6 @@
 #PGM-ID:GK0S031D
 #PGM-NAME:GK学科試験管理セグI/O(オンライン)
-#最終更新日:2026/01/10
+#最終更新日:2026/01/24
 
 import os
 
@@ -55,24 +55,6 @@ def insert_data(id):
     finally:
         if conn:
             conn.close() 
-
-
-def delete_data(id):
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)  
-        with conn.cursor() as cur:
-            sql = 'DELETE FROM 学科試験管理セグ WHERE 学籍番号 = %s'
-            data = (id,) 
-            cur.execute(sql, data)
-            conn.commit()
-        conn.close()
-        return 0 
-    except psycopg2.Error as e:
-        print(f'エラー内容：{e}')
-        return 1
-    except Exception as e:
-        print(f'エラー内容：{e}')
-        return 2
     
 
 def get_gakkaShiken(id):

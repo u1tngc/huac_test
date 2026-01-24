@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2026/01/10
+#最終更新日:2026/01/24
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -98,6 +98,7 @@ def check01(id,name):
     return err
 """
 
+
 def check02(name,status,answer):
     if not name or not status or not answer:
         return "未入力項目があります。"
@@ -106,15 +107,15 @@ def check02(name,status,answer):
     try:
         dummy = int(status)
         if len(status) != 1:
-            return "状況CDは1桁の数字で入力してください。"
+            return "権限は1桁の数字で入力してください。"
     except ValueError:
-        return "状況CDは半角数字で入力してください。"
+        return "権限は半角数字で入力してください。"
     try:
         dummy = int(answer)
         if len(answer) != 1:
-            return "状況CDは1桁の数字で入力してください。"
+            return "権限は1桁の数字で入力してください。"
     except ValueError:
-        return "状況CDは半角数字で入力してください。"
+        return "権限は半角数字で入力してください。"
     return ""
     
 
@@ -145,20 +146,6 @@ def check04(id, name, status_cd, shikaku_cd):
         return "氏名は空白を入れずに入力してください。"
     return ""
 
-def check05(old, new):
-    if old[4] == "練許生" and new[4] == 1:
-        ret_cd = 1
-    else:
-        ret_cd = 0
-    return ret_cd
-
-def check06(kekka):
-    if kekka[5] == "" and (kekka[0] != 0 or kekka[1] != 0 or kekka[2] != 0 or kekka[3] != 0 ):
-        return "有効期間を入力してください。"
-    elif kekka[5] != "" and (kekka[0] == 0 and kekka[1] == 0 and kekka[2] == 0 and kekka[3] == 0 ):
-        return "学科試験結果を入力してください。"
-    else:
-        return ""
 
 def check07(date, name):
     has_gakusei_chk = date[4] != ""
@@ -271,11 +258,6 @@ def get_renkyosei():
 def get_gakuseiName(id):
     ret_array = GK0S001D.get_gakuseiName(id)
     return ret_array
-
-def delete_data(id):
-    err = GK0S031D.delete_data(id)
-    err = GK0S041D.delete_data(id)
-    return err
 
 def get_gakkaShiken(id):
     gakkaShiken = GK0S031D.get_gakkaShiken(id)

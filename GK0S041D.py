@@ -1,6 +1,6 @@
 #PGM-ID:GK0S001D
 #PGM-NAME:GK各種CHK管理セグI/O(オンライン)
-#最終更新日:2025/12/12
+#最終更新日:2026/01/24
 
 import os
 
@@ -146,26 +146,6 @@ def update_chkList(update_chkList):
                 update_chkList[0],
                 update_chkList[1]
             )
-            cur.execute(sql, data)
-            conn.commit()
-        return 0  
-    except psycopg2.Error as e:
-        print(f'エラー内容：{e}')
-        return 1  
-    except Exception as e:
-        print(f'エラー内容：{e}')
-        return 2   
-    finally:
-        if conn:
-            conn.close()
-
-
-def delete_data(id):
-    try:
-        conn = psycopg2.connect(**DB_CONFIG)  
-        with conn.cursor() as cur:
-            sql = "DELETE FROM 各種chk管理セグ WHERE 学籍番号 = %s"
-            data = (id,)
             cur.execute(sql, data)
             conn.commit()
         return 0  

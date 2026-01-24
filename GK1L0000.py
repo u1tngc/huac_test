@@ -65,8 +65,8 @@ def GK_menu01():
             mondai_num = int(request.form['mondai_num'])
             init02(user_id)
             GK1S0040.insertLog(user_id,"A001",bunya)
-            if bunya == "Z" and user_id == "22A0134":
-                        return redirect(url_for('GK_menu01')) 
+            #if bunya == "Z" and user_id == "22A0134":
+            #            return redirect(url_for('GK_menu01')) 
             session[f"{user_id}_fukushu"] = []
             session[f"{user_id}_ix1"] = 0  
             session[f'{user_id}_mondaiNum'] = mondai_num
@@ -420,9 +420,6 @@ def GK_db003():
         id = list[0]
         update_gakusei = [id, name, int(status_cd),int(kanri_cd),int(shikaku_cd)]
         err = GK1S0040.update_gakusei(update_gakusei)
-        change_chk = GK1S0040.check05(list, update_gakusei)
-        if change_chk == 1:
-            err1 = GK1S0040.delete_data(id)
         err = f"[{name}]の訂正が完了しました。"
         gakuseiData = session.get(f"{user_id}_gakuseiData")
         return render_template('GK_db002.html', gakuseiData=gakuseiData, err1=err) 
