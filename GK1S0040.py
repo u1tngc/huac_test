@@ -12,6 +12,7 @@ import GK0S031D
 import GK0S041D
 import GK0S051D
 import GK0S052D
+import GK0S061D
 import GK0S099D
 
 def get_gakusei(id,authority):
@@ -564,3 +565,70 @@ def get_mtShiryoForCSV(data):
         csv_data.append(row)
     
     return csv_data
+
+
+def get_gantt_data():
+    """ガントチャート用データを生成"""
+    # チーム一覧取得
+    team_list = GK0S061D.get_team_list()
+    if not team_list:
+        return [], []  
+    # 分野リスト（衛生・六項目は養成計画に含まれないが進捗は表示）
+    bunnya_list = ['法規', '工学', '気象', '情報']
+  
+    # 養成項目を取得（分野ごとの養成cd一覧）
+    yosei_items = GK0S052D.get_yoseiAll()    
+    # 分野ごとの養成cd辞書
+    bunnya_cd_map = {}
+    for item in yosei_items:
+        bunnya = item[1]
+        cd = item[0]
+        if bunnya not in bunnya_cd_map:
+            bunnya_cd_map[bunnya] = []
+        bunnya_cd_map[bunnya].append(cd)   
+    # 月範囲を決定（全データから最小・最大を取得）
+    all_months = set()
+    keikaku_all = GK0S061D.get_keikaku_all()
+    for row in keikaku_all:
+        if row[3]:  # 養成予定年月
+            all_months.add(row[3])    
+    if not all_months:
+        return [], []    
+    months = sorted(list(all_months))    
+    gantt_data = []    
+    for team in team_list:
+        # チームメンバー取得
+        members = GK0S061D.get_team_members(team)
+        if not members:
+            continue        
+        # スケジュール情報取得
+        schedules = GK0S061D.get_team_schedule(team)
+        schedule_map = {s[0]: {'start': s[1], 'end': s[2]} for s in schedules}        
+        for bunnya in bunnya_list:
+            # 担当者取得
+            tantousha_list = GK0S061D.get_tantousha_by_team_bunnya(team, bunnya)
+            tantousha_str = ', '.join(tantousha_list) if tantousha_list else '-'            
+            # 進捗率計算
+            target_cds = bunnya_cd_map.get(bunnya, [])
+            if target_cds and members:
+                total_count = len(members) * len(target_cds)
+                completed_count = 0                
+                for member in members:
+                    for cd in target_cds:
+                        yosei_date = GK0S051D.get_yoseiDate(member, cd)
+                        if yosei_date:
+                            completed_count += 1                
+                progress = int((completed_count / total_count) * 100) if total_count > 0 else 0
+            else:
+                progress = 0            
+            # スケジュール
+            schedule = schedule_map.get(bunnya, {'start': '', 'end': ''})            
+            gantt_data.append({
+                'team': team,
+                'bunnya': bunnya,
+                'tantousha': tantousha_str,
+                'progress': progress,
+                'start_month': schedule.get('start', ''),
+                'end_month': schedule.get('end', '')
+            })    
+    return gantt_data, months

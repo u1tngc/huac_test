@@ -779,10 +779,9 @@ def GK_db060():
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
     if not session.get('authority') in [6,7,8,9]:
-        return redirect(url_for('GK_menu01'))
+        return redirect(url_for('GK_menu01'))   
     if request.method == 'POST':
-        data = session.get(f"{user_id}_mtShiryo")
-        csv_data = GK1S0040.get_mtShiryoForCSV(data)
+        csv_data = GK1S0040.get_mtShiryoForCSV()
         if not csv_data:
             flash("データの取得に失敗しました。")
             return redirect(url_for('GK_menu01'))
@@ -795,9 +794,19 @@ def GK_db060():
         return Response(
             csv_content.encode('utf-8'),
             mimetype='text/csv; charset=utf-8',
-            headers={'Content-Disposition': "attachment; filename*=UTF-8''MT%E8%B3%87%E6%96%99.csv"}
-        )
-    return render_template('GK_db060.html')
+            headers={'Content-Disposition': "attachment; filename*=UTF-8''%E5%85%8D%E8%A8%B1%E5%8F%96%E5%BE%97%E8%B3%87%E6%96%99.csv"}
+        ) 
+    # GET時：画面表示用データ取得
+    mtShiryo = GK1S0040.create_mtShiryo()
+    # ガントチャートデータ取得
+    gantt_data, months = GK1S0040.get_gantt_data()
+    # 現在月を取得（YYYYMM形式）
+    current_month = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m")
+    return render_template('GK_db060.html', 
+                           meshiryo=mtShiryo,
+                           gantt_data=gantt_data,
+                           months=months,
+                           current_month=current_month)
 
 
 # セッションの有効期限をリセット
