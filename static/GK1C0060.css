@@ -61,9 +61,9 @@ main {
     text-align: center;
     font-size: 14px;
     background-color: white;
-    width: 45px;
-    min-width: 45px;
-    max-width: 45px;
+    width: 50px;
+    min-width: 50px;
+    max-width: 50px;
     white-space: nowrap;
 }
 
@@ -104,7 +104,7 @@ main {
     z-index: 20;
 }
 
-/* 有効期限列 */
+/* 有効期限列（最終列） */
 .data-table th:last-child,
 .data-table td:last-child {
     width: 90px;
