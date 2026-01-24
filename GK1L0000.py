@@ -781,7 +781,8 @@ def GK_db060():
     if not session.get('authority') in [6,7,8,9]:
         return redirect(url_for('GK_menu01'))   
     if request.method == 'POST':
-        csv_data = GK1S0040.get_mtShiryoForCSV()
+        data = session.get(f"{user_id}_mtShiryo")
+        csv_data = GK1S0040.get_mtShiryoForCSV(data)
         if not csv_data:
             flash("データの取得に失敗しました。")
             return redirect(url_for('GK_menu01'))
