@@ -151,7 +151,17 @@ def GK_menu01():
                 GK1S0040.insertLog(user_id,"B061","")
                 mtShiryo = GK1S0040.create_mtShiryo()
                 session[f"{user_id}_mtShiryo"] = mtShiryo
-                return render_template('GK_db060.html',meshiryo=mtShiryo)
+                # ガントチャートデータ取得
+                gantt_data, months = GK1S0040.get_gantt_data()
+                session[f"{user_id}_gantt_data"] = gantt_data
+                session[f"{user_id}_months"] = months
+                # 現在月を取得（YYYYMM形式）
+                current_month = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m")
+                return render_template('GK_db060.html', 
+                           mtshiryo=mtShiryo,
+                           gantt_data=gantt_data,
+                           months=months,
+                           current_month=current_month)
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
@@ -795,19 +805,13 @@ def GK_db060():
         return Response(
             csv_content.encode('utf-8'),
             mimetype='text/csv; charset=utf-8',
-            headers={'Content-Disposition': "attachment; filename*=UTF-8''%E5%85%8D%E8%A8%B1%E5%8F%96%E5%BE%97%E8%B3%87%E6%96%99.csv"}
+            headers={'Content-Disposition': "attachment; filename*=UTF-8''MT%E8%B3%87%E6%96%99.csv"}
         ) 
-    # GET時：画面表示用データ取得
-    mtShiryo = GK1S0040.create_mtShiryo()
-    # ガントチャートデータ取得
-    gantt_data, months = GK1S0040.get_gantt_data()
-    # 現在月を取得（YYYYMM形式）
-    current_month = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m")
     return render_template('GK_db060.html', 
-                           meshiryo=mtShiryo,
-                           gantt_data=gantt_data,
-                           months=months,
-                           current_month=current_month)
+                           mtshiryo=session.get(f"{user_id}_mtShiryo"),
+                           gantt_data=session.get(f"{user_id}_gantt_data"),
+                           months=session.get(f"{user_id}_months"),
+                           current_month=session.get(f"{user_id}_current_month"))
 
 
 # セッションの有効期限をリセット
@@ -864,8 +868,12 @@ def init07(user_id):
     session.pop(f"{user_id}_wk51gakuseiName", None)
     session.pop(f"{user_id}_wk51yoseiJokyo", None)
     session.pop(f"{user_id}_wk51sum", None)
+    session.pop(f"{user_id}_mtShiryo", None)
+    session.pop(f"{user_id}_gantt_data", None)
+    session.pop(f"{user_id}_months", None)      
+    session.pop(f"{user_id}_current_month", None)
 
-
+    
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=False)
