@@ -1,6 +1,6 @@
 #PGM-ID:GK0S061D
 #PGM-NAME:GK養成計画管理セグI/O(オンライン)
-#最終更新日:2026/01/24
+#最終更新日:2026/01/27
 
 import os
 import psycopg2
@@ -152,6 +152,33 @@ def get_tantousha_by_team_bunnya(team, bunnya):
             result = cur.fetchall()
         conn.close()
         return [row[0] for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
+    
+
+def get_gantt_base_data():
+    """ガントチャート用の基本データを一括取得"""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = """
+                SELECT 
+                    チーム,
+                    学籍番号,
+                    養成分野,
+                    養成予定年月,
+                    担当者
+                FROM 養成計画管理セグ
+                ORDER BY チーム, 養成分野, 養成予定年月
+            """
+            cur.execute(sql)
+            result = cur.fetchall()
+        conn.close()
+        return [list(row) for row in result]
     except psycopg2.Error as e:
         print(f'エラー内容：{e}')
         return []

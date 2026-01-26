@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2026/01/24
+#最終更新日:2026/01/27
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -568,16 +568,16 @@ def get_mtShiryoForCSV(data):
 
 
 def get_gantt_data():
-    """ガントチャート用データを生成"""
-    # チーム一覧取得
-    team_list = GK0S061D.get_team_list()
-    if not team_list:
-        return [], []  
-    # 分野リスト（衛生・六項目は養成計画に含まれないが進捗は表示）
-    bunnya_list = ['法規', '工学', '気象', '情報']
-  
-    # 養成項目を取得（分野ごとの養成cd一覧）
-    yosei_items = GK0S052D.get_yoseiAll()    
+    """ガントチャート用データを生成（最適化版）"""
+    # 1. 基本データを一括取得（1クエリ）
+    keikaku_all = GK0S061D.get_gantt_base_data()
+    if not keikaku_all:
+        return [], []
+    # 2. 養成項目を取得（1クエリ）
+    yosei_items = GK0S052D.get_yoseiAll()
+    # 3. 全養成状況を一括取得（1クエリ）
+    yosei_status_all = GK0S051D.get_yoseiDateAll()
+    # === メモリ上でデータ構造を構築 ===
     # 分野ごとの養成cd辞書
     bunnya_cd_map = {}
     for item in yosei_items:
@@ -585,50 +585,61 @@ def get_gantt_data():
         cd = item[0]
         if bunnya not in bunnya_cd_map:
             bunnya_cd_map[bunnya] = []
-        bunnya_cd_map[bunnya].append(cd)   
-    # 月範囲を決定（全データから最小・最大を取得）
-    all_months = set()
-    keikaku_all = GK0S061D.get_keikaku_all()
+        bunnya_cd_map[bunnya].append(cd)  
+    # 養成状況辞書: {(学籍番号, 養成cd): True}
+    yosei_completed = set()
+    for row in yosei_status_all:
+        gakuseki, yosei_cd, yosei_date = row
+        if yosei_date:
+            yosei_completed.add((gakuseki, yosei_cd))  
+    # 計画データを構造化
+    team_data = {}
+    all_months = set()  
     for row in keikaku_all:
-        if row[3]:  # 養成予定年月
-            all_months.add(row[3])    
-    if not all_months:
-        return [], []    
-    months = sorted(list(all_months))    
-    gantt_data = []    
-    for team in team_list:
-        # チームメンバー取得
-        members = GK0S061D.get_team_members(team)
-        if not members:
-            continue        
-        # スケジュール情報取得
-        schedules = GK0S061D.get_team_schedule(team)
-        schedule_map = {s[0]: {'start': s[1], 'end': s[2]} for s in schedules}        
+        team, gakuseki, bunnya, yotei_month, tantousha = row
+        if team not in team_data:
+            team_data[team] = {'members': set(), 'bunnya': {}}
+        team_data[team]['members'].add(gakuseki)
+        if bunnya not in team_data[team]['bunnya']:
+            team_data[team]['bunnya'][bunnya] = {'tantou': set(), 'months': set()}
+        if tantousha:
+            team_data[team]['bunnya'][bunnya]['tantou'].add(tantousha)
+        if yotei_month:
+            team_data[team]['bunnya'][bunnya]['months'].add(yotei_month)
+            all_months.add(yotei_month)
+    
+    # === ガントデータ生成 ===
+    bunnya_list = ['法規', '工学', '気象', '情報']
+    gantt_data = []
+    for team, data in team_data.items():
+        members = data['members']
         for bunnya in bunnya_list:
-            # 担当者取得
-            tantousha_list = GK0S061D.get_tantousha_by_team_bunnya(team, bunnya)
-            tantousha_str = ', '.join(tantousha_list) if tantousha_list else '-'            
-            # 進捗率計算
+            bunnya_info = data['bunnya'].get(bunnya, {'tantou': set(), 'months': set()})
+            # 担当者
+            tantousha_str = ', '.join(sorted(bunnya_info['tantou'])) if bunnya_info['tantou'] else '-'
+            # 進捗率計算（メモリ上で高速計算）
             target_cds = bunnya_cd_map.get(bunnya, [])
             if target_cds and members:
                 total_count = len(members) * len(target_cds)
-                completed_count = 0                
-                for member in members:
-                    for cd in target_cds:
-                        yosei_date = GK0S051D.get_yoseiDate(member, cd)
-                        if yosei_date:
-                            completed_count += 1                
+                completed_count = sum(
+                    1 for member in members 
+                    for cd in target_cds 
+                    if (member, cd) in yosei_completed
+                )
                 progress = int((completed_count / total_count) * 100) if total_count > 0 else 0
             else:
-                progress = 0            
+                progress = 0
             # スケジュール
-            schedule = schedule_map.get(bunnya, {'start': '', 'end': ''})            
+            months = sorted(bunnya_info['months'])
+            start_month = months[0] if months else ''
+            end_month = months[-1] if months else ''
             gantt_data.append({
                 'team': team,
                 'bunnya': bunnya,
                 'tantousha': tantousha_str,
                 'progress': progress,
-                'start_month': schedule.get('start', ''),
-                'end_month': schedule.get('end', '')
-            })    
+                'start_month': start_month,
+                'end_month': end_month
+            })
+    months = sorted(list(all_months))
     return gantt_data, months

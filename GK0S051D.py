@@ -1,6 +1,6 @@
 #PGM-ID:GK0S051D
 #PGM-NAME:GK養成状況管理セグI/O(オンライン)
-#最終更新日:2025/12/26
+#最終更新日:2026/01/27
 
 import os
 
@@ -230,3 +230,25 @@ def get_yoreiRate(yoseiKamoku, id):
     except Exception as e:
         print(f'エラー内容：{e}')
         return 0
+    
+
+def get_yoseiDateAll():
+    """全学生の養成状況を一括取得（ガントチャート用）"""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = """
+                SELECT 学籍番号, 養成cd, 養成日 
+                FROM 養成状況管理セグ 
+                WHERE 養成日 != ''
+            """
+            cur.execute(sql)
+            result = cur.fetchall()
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
