@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2026/01/10
+#最終更新日:2026/01/27
 
 import csv
 from datetime import timedelta
@@ -13,6 +13,7 @@ from zoneinfo import ZoneInfo
 
 import GK1S0000
 import GK1S0040
+import GK1S0041
 
 
 app = Flask(__name__)
@@ -59,7 +60,6 @@ def GK_menu01():
     if request.method == 'POST':
         init07(user_id)
         shorikbn = request.form['selection']
-        GK1S0000.print_seg(shorikbn, session.get('user_id'))
         if shorikbn == "practice":
             bunya = request.form['bunya']
             mondai_num = int(request.form['mondai_num'])
@@ -200,7 +200,10 @@ def GK_menu01():
                 wk54yoseiStudent = GK1S0040.get_renkyosei()
                 session[f"{user_id}_wk54yoseiKamoku"] = wk54yoseiKamoku
                 session[f"{user_id}_wk54yoseiStudent"] = wk54yoseiStudent
-                return render_template('GK_db054.html', wk54yoseiKamoku=wk54yoseiKamoku, wk54yoseiStudent=wk54yoseiStudent, err1="")        
+                return render_template('GK_db054.html', wk54yoseiKamoku=wk54yoseiKamoku, wk54yoseiStudent=wk54yoseiStudent, err1="")     
+        elif shorikbn == "send_msg":
+            GK1S0040.insertLog(user_id,"D001","")
+            return render_template('GK_send_msg1.html', err="")   
         elif shorikbn == "password":
                 return redirect(url_for('GK_db010',err=""))
 
@@ -824,6 +827,47 @@ def GK_db061():
                            gantt_data=session.get(f"{user_id}_gantt_data"),
                            months=session.get(f"{user_id}_months"),
                            current_month=session.get(f"{user_id}_current_month"))
+
+
+#ＭＳＧ送信・入力
+@app.route('/GK_send_msg1', methods=['GET', 'POST'])
+def GK_send_msg1():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,9]:
+        return redirect(url_for('GK_menu01'))
+    
+    if request.method == 'POST':
+        msg_kbn = request.form['msg_kbn']
+        msg_title = request.form['msg_title']
+        msg_body = request.form['msg_body']
+        msg_array = [msg_kbn, msg_title, msg_body]
+        session[f'{user_id}_msg_data'] = msg_array
+        return redirect(url_for('GK_send_msg2', msg_array=msg_array, err=""))
+    return render_template('GK_send_msg1.html', err="")  
+ 
+#ＭＳＧ送信・送信
+@app.route('/GK_send_msg2', methods=['GET', 'POST'])
+def GK_send_msg2():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,9]:
+        return redirect(url_for('GK_menu01'))
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'back':
+            return redirect(url_for('GK_send_msg1', session.get(f'{user_id}_msg_data')))
+        else:
+            msg_array = session.get(f'{user_id}_msg_data')
+            err = GK1S0041.send_msg(msg_array, user_id)
+            if err:
+                return render_template('GK_send_msg2.html', msg_array=msg_array, err=err)
+            session.pop(f'{user_id}_msg_data', None)
+            return render_template('GK_send_msg1.html', err="送信完了しました。")   
+    return render_template('GK_send_msg2.html', msg_array=session.get(f'{user_id}_msg_data'), err="")
 
 # セッションの有効期限をリセット
 @app.before_request

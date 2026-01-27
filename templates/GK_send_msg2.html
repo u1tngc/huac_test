@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール MSG送信確認</title>
+    <link rel="stylesheet" href="../static/GK1C0070.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+    <main>
+        <section class="options">
+            <h2>MSG送信確認</h2>
+            {% if err %}
+            <div class="err">
+                {{ err }}
+            </div>
+            <br>
+            {% endif %}
+            <form method="post" action="/GK_send_msg2">
+                <div class="data-section">
+                    <div class="confirm-section">
+                        <div class="confirm-row">
+                            <span class="confirm-label">区分:</span>
+                            <span class="confirm-value">
+                                {% if msg_array[0] == "1" %}通知
+                                {% elif msg_array[0] == "2" %}注意
+                                {% elif msg_array[0] == "3" %}警告
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="confirm-row">
+                            <span class="confirm-label">タイトル:</span>
+                            <span class="confirm-value title-{{ msg_array[0] }}">{{ msg_array[1] }}</span>
+                        </div>
+                        <div class="confirm-row">
+                            <span class="confirm-label">本文:</span>
+                            <span class="confirm-value honbun-area">{{ msg_array[2] }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="button-group">
+                    <button type="submit" name="action" value="back" class="menu-button">戻る</button>
+                    <button type="submit" name="action" value="send" class="execute-button">送信</button>
+                </div>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>
