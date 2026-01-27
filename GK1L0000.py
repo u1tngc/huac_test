@@ -844,12 +844,16 @@ def GK_send_msg1():
         msg_body = request.form['msg_body']
         msg_array = [msg_kbn, msg_title, msg_body]
         session[f'{user_id}_msg_data'] = msg_array
-        return redirect(url_for('GK_send_msg2', msg_array=msg_array, err=""))
-    return render_template('GK_send_msg1.html', err="")  
- 
+        return render_template('GK_send_msg2.html', msg_array=msg_array, err="")
+    
+    # GET時：セッションにデータがあれば表示（戻るボタン対応）
+    msg_array = session.get(f'{user_id}_msg_data')
+    return render_template('GK_send_msg1.html', msg_array=msg_array, err="")
+
+
 #ＭＳＧ送信・送信
 @app.route('/GK_send_msg2', methods=['GET', 'POST'])
-def GK_send_msg2():
+def GK_send_msg2():  # ← 関数名の重複を修正
     user_id = session.get('user_id')
     if not session.get('logged_in'):
         return redirect(url_for('GK_login'))
@@ -859,15 +863,17 @@ def GK_send_msg2():
     if request.method == 'POST':
         action = request.form.get('action')
         if action == 'back':
-            return redirect(url_for('GK_send_msg1', session.get(f'{user_id}_msg_data')))
+            # redirectでGK_send_msg1に戻る（セッションからデータ取得）
+            return redirect(url_for('GK_send_msg1'))
         else:
             msg_array = session.get(f'{user_id}_msg_data')
             err = GK1S0041.send_msg(msg_array, user_id)
             if err:
                 return render_template('GK_send_msg2.html', msg_array=msg_array, err=err)
             session.pop(f'{user_id}_msg_data', None)
-            return render_template('GK_send_msg1.html', err="送信完了しました。")   
+            return render_template('GK_send_msg1.html', msg_array=None, err="送信完了しました。")   
     return render_template('GK_send_msg2.html', msg_array=session.get(f'{user_id}_msg_data'), err="")
+
 
 # セッションの有効期限をリセット
 @app.before_request
