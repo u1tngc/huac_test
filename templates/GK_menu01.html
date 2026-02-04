@@ -146,6 +146,13 @@
                         </div>
                     </div>
                     {% endif %}
+                    {% if session['authority'] in [0, 6, 7, 8, 9] %}
+                    <div class="data-section">
+                        <div class="radio-section">
+                            <label class="radio-group"><input type="radio" name="selection" value="aiTNGC">擬似谷口</label>
+                        </div>
+                    </div>
+                    {% endif %}
                     <div class="data-section">
                         <div class="radio-section">
                             <label class="radio-group"><input type="radio" name="selection"

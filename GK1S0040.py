@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2026/01/27
+#最終更新日:2026/02/04
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -460,7 +460,7 @@ def update_yoseiJokyo(wk54updateInfo, yoseiKamoku):
 
 def insertLog(user,shobuncd,biko):
     dt = datetime.now(ZoneInfo("Asia/Tokyo"))
-    ymd = dt.strftime("%Y%m%d%H%M")
+    ymdHMS = dt.strftime("%Y%m%d%H%M%S")
     bunya_array = {
         "A" : "法規",
         "B" : "工学",
@@ -479,7 +479,7 @@ def insertLog(user,shobuncd,biko):
         biko = bunya_array.get(bunyacd, "")
     if shobuncd == "A021":
         biko = kbn_array.get(biko,"")
-    err = GK0S099D.insertLog(user,shobuncd,ymd,biko)
+    err = GK0S099D.insertLog(user,shobuncd,ymdHMS,biko)
 
 
 def create_mtShiryo():

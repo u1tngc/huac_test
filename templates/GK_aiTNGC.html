@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 擬似谷口</title>
+    <link rel="stylesheet" href="../static/GK1C0080.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>擬似谷口</h2>
+
+            <div class="chat-container" id="chatContainer">
+                {% if taniguchiList %}
+                {% for item in taniguchiList %}
+                {% if item[2] == 1 %}
+                <!-- QA区分=1: 右側の吹き出し（緑色） -->
+                <div class="message-wrapper right">
+                    <div class="message user-message">
+                        <div class="message-content">{{ item[4] }}</div>
+                        <!-- <div class="message-meta">
+                            <span class="field-label">{{ item[3] }}</span>
+                            <span class="datetime">{{ item[1] }}</span>
+                        </div> -->
+                    </div>
+                </div>
+                {% elif item[2] == 2 %}
+                <!-- QA区分=2: 左側の吹き出し（水色） -->
+                <div class="message-wrapper left">
+                    <div class="message ai-message">
+                        <div class="message-content">{{ item[4] }}</div>
+                        <!-- <div class="message-meta">
+                            <span class="field-label">{{ item[3] }}</span>
+                            <span class="datetime">{{ item[1] }}</span>
+                        </div> -->
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                <div class="empty-message">
+                    <p>まだメッセージがありません。下のフォームから質問を送信してください。</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="input-area">
+                <form method="POST" action="/GK_aiTNGC" id="chatForm" onsubmit="return validateForm()">
+                    {% if err %}
+                    <div class="error-message">{{ err }}</div>
+                    {% endif %}
+
+                    <div class="input-row">
+                        <div class="field-select-wrapper">
+                            <label for="field">分野:</label>
+                            <select name="field" id="field" class="field-select" required>
+                                <option value="法規" {% if taniguchiList and taniguchiList|length> 0 and
+                                    taniguchiList[-1][3] == '法規' %}selected{% elif not taniguchiList or
+                                    taniguchiList|length == 0 %}selected{% endif %}>法規</option>
+                                <option value="気象" {% if taniguchiList and taniguchiList|length> 0 and
+                                    taniguchiList[-1][3] == '気象' %}selected{% endif %}>気象</option>
+                                <option value="工学" {% if taniguchiList and taniguchiList|length> 0 and
+                                    taniguchiList[-1][3] == '工学' %}selected{% endif %}>工学</option>
+                                <option value="情報" {% if taniguchiList and taniguchiList|length> 0 and
+                                    taniguchiList[-1][3] == '情報' %}selected{% endif %}>情報</option>
+                            </select>
+                        </div>
+
+                        <div class="text-input-wrapper">
+                            <input type="text" name="message" id="message" class="text-input"
+                                placeholder="メッセージを入力してください（1～1000文字）" maxlength="1000" required>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="menu-button" onclick="location.href='/GK_menu01'">Menu</button>
+                        <button type="submit" class="execute-button">送信</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+
+    <script>
+        // ページ読み込み時にチャット画面を最下部にスクロール
+        window.addEventListener('load', function () {
+            var chatContainer = document.getElementById('chatContainer');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        });
+
+        // フォームバリデーション
+        function validateForm() {
+            var message = document.getElementById('message').value;
+
+            if (message.length < 1) {
+                alert('メッセージは1文字以上入力してください。');
+                return false;
+            }
+
+            if (message.length > 1000) {
+                alert('メッセージは1000文字以下で入力してください。');
+                return false;
+            }
+
+            return true;
+        }
+    </script>
+</body>
+
+</html>

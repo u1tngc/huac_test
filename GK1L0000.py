@@ -11,9 +11,10 @@ import os
 from zoneinfo import ZoneInfo
 
 
-import GK1S0000
+import GK1S0001
 import GK1S0040
 import GK1S0041
+import GK1S0201
 
 
 app = Flask(__name__)
@@ -31,7 +32,7 @@ def GK_login():
             return redirect(url_for('GK_login'))
         in_password = request.form['password']
         in_user = request.form['user']
-        login_ret, info = GK1S0000.login_check(in_user, in_password)
+        login_ret, info = GK1S0001.login_check(in_user, in_password)
         #if in_user not in ["16A3184","22A0134","22H9509","23H1019","24C3113","24X0077","25X0043","25X0155","99A0000"]:
         #    flash("緊急メンテナンス中")
         #    return redirect(url_for('GK_login'))
@@ -53,7 +54,7 @@ def GK_menu01():
         return redirect(url_for('GK_login'))  
     user_id = session.get('user_id')  # ユーザーIDを取得
     #session.pop('_flashes', None)
-    rireki_num = GK1S0000.check02(user_id)
+    rireki_num = GK1S0001.check02(user_id)
     if rireki_num != 0:
         flash("未解答の小テストがあります。")
     init01(user_id)
@@ -61,6 +62,7 @@ def GK_menu01():
         init07(user_id)
         shorikbn = request.form['selection']
         if shorikbn == "practice":
+            #機能：練習問題
             bunya = request.form['bunya']
             mondai_num = int(request.form['mondai_num'])
             init02(user_id)
@@ -70,11 +72,12 @@ def GK_menu01():
             session[f"{user_id}_fukushu"] = []
             session[f"{user_id}_ix1"] = 0  
             session[f'{user_id}_mondaiNum'] = mondai_num
-            mondai = GK1S0000.get_mondai(bunya, mondai_num)
+            mondai = GK1S0001.get_mondai(bunya, mondai_num)
             session[f"{user_id}_mondai_list"] = mondai
             return redirect(url_for('GK_practice01'))
-        elif shorikbn == "test":
-            err, test = GK1S0000.check01(user_id)
+        elif shorikbn == "test": 
+            #機能：小テスト
+            err, test = GK1S0001.check01(user_id)
             if err:
                 session.pop('_flashes', None)
                 flash("今週の小テストは完了しています。")
@@ -86,10 +89,11 @@ def GK_menu01():
                 GK1S0040.insertLog(user_id,"A011","")
             return redirect(url_for('GK_test01'))
         elif shorikbn == "fukushu":
+            #機能：復習問題
             init05(user_id)
             fukushu_num = request.form['fukushu_num']
             fukushu_kbn = request.form['kbn']
-            fukushu_list, fukushu_num = GK1S0000.get_fukushuNum(user_id, fukushu_num, fukushu_kbn)
+            fukushu_list, fukushu_num = GK1S0001.get_fukushuNum(user_id, fukushu_num, fukushu_kbn)
             if fukushu_list:
                 session[f"{user_id}_fukushuList"] = fukushu_list
                 session[f"{user_id}_fukushuNum"] = fukushu_num
@@ -108,10 +112,12 @@ def GK_menu01():
         elif shorikbn == "db_show":
             db_kbn = request.form['db_kbn1']
             if db_kbn == "1":
+                #機能：学生情報照会
                 GK1S0040.insertLog(user_id,"B001","")
                 gakuseiList = GK1S0040.get_gakuseiAll()
                 return render_template('GK_db001.html',gakuseiList=gakuseiList)     
             elif db_kbn == "2":
+                #機能：小テスト履歴照会
                 init04(user_id)
                 GK1S0040.insertLog(user_id,"B011","")
                 if session.get('authority') in [7,8,9]:
@@ -125,11 +131,13 @@ def GK_menu01():
                         return redirect(url_for('GK_menu01')) 
                     return render_template('GK_db020.html',rireki=array)    
             elif db_kbn == "3":
+                #機能：学科試験状況照会
                 GK1S0040.insertLog(user_id,"B021","")
                 gakkaShikenList = GK1S0040.get_gakkaShikenAll()
                 session[f"{user_id}_gakkaShikenList"] = gakkaShikenList
                 return render_template('GK_db031.html',gakkaShikenList=gakkaShikenList)  
             elif db_kbn == "4":
+                #機能：各種CHK状況照会
                 GK1S0040.insertLog(user_id,"B031","")
                 if session.get('authority') in [6,7,8,9]:
                     chklist = GK1S0040.get_chkListAll()
@@ -139,20 +147,24 @@ def GK_menu01():
                     chklist = GK1S0040.get_chkList(id,1)
                     return render_template('GK_db042.html',chklist=chklist)    
             elif db_kbn == "5":
+                #機能：養成状況照会
                 GK1S0040.insertLog(user_id,"B041","")
                 wk51studentList = GK1S0040.get_renkyosei()
                 session[f"{user_id}_wk51studentList"] = wk51studentList
                 return render_template('GK_db051.html', studentList=wk51studentList,err1="")
             elif db_kbn == "6":
+                #機能：養成状況一括照会
                 GK1S0040.insertLog(user_id,"B051","")
                 wk53yoseiSumAll = GK1S0040.get_yoseiSumAll()
                 return render_template('GK_db053.html', wk53yoseiSumAll=wk53yoseiSumAll) 
             elif db_kbn == "7":
+                #機能：MT資料作成
                 GK1S0040.insertLog(user_id,"B061","")
                 mtShiryo = GK1S0040.create_mtShiryo()
                 session[f"{user_id}_mtShiryo"] = mtShiryo
                 return render_template('GK_db060.html', mtshiryo=mtShiryo)
             elif db_kbn == "8":
+                #機能：ガントチャート作成
                 GK1S0040.insertLog(user_id,"B071","")
                                 # ガントチャートデータ取得
                 gantt_data, months = GK1S0040.get_gantt_data()
@@ -167,14 +179,17 @@ def GK_menu01():
         elif shorikbn == "db_edit":
             db_kbn = request.form['db_kbn2']
             if db_kbn == "1":
+                #機能：学生情報訂正
                 GK1S0040.insertLog(user_id,"C001","")
                 gakuseiData = GK1S0040.get_gakuseiInfo00(session.get('authority'))
                 session[f"{user_id}_gakuseiData"] = gakuseiData
                 return render_template('GK_db002.html', gakuseiData=gakuseiData, err1="") 
             elif db_kbn == "2":
+                #機能：学生情報登録
                 GK1S0040.insertLog(user_id,"C011","")
                 return redirect(url_for('GK_db004',err=""))
             elif db_kbn == "3":
+                #機能：学科試験状況更新
                 GK1S0040.insertLog(user_id,"C021","")
                 gakkaShiken_data = GK1S0040.get_gakkaShiken(session.get('user_id'))
                 if gakkaShiken_data:
@@ -190,11 +205,13 @@ def GK_menu01():
                     flash("学科試験のデータがありません。学科班に確認してください。")
                     return redirect(url_for('GK_menu01'))               
             elif db_kbn == "4":
+                #機能：各種CHK状況更新
                 GK1S0040.insertLog(user_id,"C031","")
                 gakuseiCHK = GK1S0040.get_renkyosei()
                 session[f"{user_id}_gakuseiCHK"] = gakuseiCHK
                 return render_template('GK_db043.html', gakuseiCHK=gakuseiCHK, err1="") 
             elif db_kbn == "5":
+                #機能：養成状況更新
                 GK1S0040.insertLog(user_id,"C041","")
                 wk54yoseiKamoku = GK1S0040.get_yoseiKamokuAll()
                 wk54yoseiStudent = GK1S0040.get_renkyosei()
@@ -202,9 +219,17 @@ def GK_menu01():
                 session[f"{user_id}_wk54yoseiStudent"] = wk54yoseiStudent
                 return render_template('GK_db054.html', wk54yoseiKamoku=wk54yoseiKamoku, wk54yoseiStudent=wk54yoseiStudent, err1="")     
         elif shorikbn == "send_msg":
+            #機能：ＭＳＧ送信
             GK1S0040.insertLog(user_id,"D001","")
-            return render_template('GK_send_msg1.html', err="")   
+            return render_template('GK_send_msg1.html', err="")  
+        elif shorikbn == "aiTNGC":
+        #機能:擬似谷口
+            GK1S0040.insertLog(user_id,"E001","")
+            taniguchiList = GK1S0201.get_taniguchiAll(user_id)
+            return render_template('GK_aiTNGC.html', taniguchiList=taniguchiList, err="")
+
         elif shorikbn == "password":
+                #機能：パスワード変更
                 return redirect(url_for('GK_db010',err=""))
 
     return render_template('GK_menu01.html')
@@ -254,9 +279,9 @@ def GK_practice02():
         result = request.form["result"]
         if result != "1":
             if session[f'{user_id}_mondaiNo'][0:1] == "Z":
-                GK1S0000.update_fukushu(user_id, session[f'{user_id}_mondaiNo'], 3)         
+                GK1S0001.update_fukushu(user_id, session[f'{user_id}_mondaiNo'], 3)         
             else:
-                GK1S0000.update_fukushu(user_id, session[f'{user_id}_mondaiNo'], 2)
+                GK1S0001.update_fukushu(user_id, session[f'{user_id}_mondaiNo'], 2)
             session.pop(f"{user_id}_fukushu", None)
         if err == 0:
             return redirect(url_for('GK_practice01'))
@@ -307,7 +332,7 @@ def GK_fukushu02():
     if request.method == 'POST':
         session[f"{user_id}_fukushu_ix1"] += 1 
         result = request.form["result"]
-        GK1S0000.update_fukushu1(user_id,session[f'{user_id}_fukushuNo'],result)
+        GK1S0001.update_fukushu1(user_id,session[f'{user_id}_fukushuNo'],result)
         if session[f"{user_id}_fukushu_eof"] == 0:
             return redirect(url_for('GK_fukushu01'))
         else:
@@ -326,7 +351,7 @@ def GK_test01():
     if f"{user_id}_test" not in session:
         return redirect(url_for('GK_menu01')) 
     
-    err, test = GK1S0000.check01(user_id)      
+    err, test = GK1S0001.check01(user_id)      
     session[f'{user_id}_test' ] = test
     numbers = [4, 6, 8, 10, 12]
     column = ["解答結果１", "解答結果２", "解答結果３", "解答結果４", "解答結果５"]
@@ -334,7 +359,7 @@ def GK_test01():
     eof_flg = 0
     while eof_flg == 0:
         if test[numbers[ix1]] == 0:
-            mondai = GK1S0000.get_testMondai(test[numbers[ix1]-1])
+            mondai = GK1S0001.get_testMondai(test[numbers[ix1]-1])
             mondai.append(column[ix1])
             session[f'{user_id}_testList'] = mondai
             question = mondai[3].replace("\n", "<br>") 
@@ -367,14 +392,14 @@ def GK_test02():
         shoriYMD = session[f'{user_id}_test'][1]
         mondai_no = session[f'{user_id}_testList'][0] + session[f'{user_id}_testList'][1] + session[f'{user_id}_testList'][2]
         column =session[f'{user_id}_testList'][5]
-        GK1S0000.update_rireki01(user_id, shoriYMD, mondai_no,column, result)
+        GK1S0001.update_rireki01(user_id, shoriYMD, mondai_no,column, result)
         if result != "1":
-            GK1S0000.update_fukushu_test(user_id, mondai_no, 1)
+            GK1S0001.update_fukushu_test(user_id, mondai_no, 1)
         if column == "解答結果５":
             session[f'{user_id}_end'] = 1
             timezone = datetime.now(ZoneInfo("Asia/Tokyo"))
             kaito_ymd = timezone.strftime('%Y%m%d%H%M')
-            GK1S0000.update_rireki02(user_id, shoriYMD, kaito_ymd)
+            GK1S0001.update_rireki02(user_id, shoriYMD, kaito_ymd)
         if session[f'{user_id}_end'] == 1:
             return redirect(url_for('GK_menu01'))  
         else:
@@ -873,6 +898,39 @@ def GK_send_msg2():  # ← 関数名の重複を修正
             session.pop(f'{user_id}_msg_data', None)
             return render_template('GK_send_msg1.html', msg_array=None, err="送信完了しました。")   
     return render_template('GK_send_msg2.html', msg_array=session.get(f'{user_id}_msg_data'), err="")
+
+
+#擬似谷口
+@app.route('/GK_aiTNGC', methods=['GET', 'POST'])
+def GK_aiTNGC():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    
+    # GETリクエスト時の初期表示
+    if request.method == 'GET':
+        GK1S0040.insertLog(user_id,"E001","")
+        taniguchiList = GK1S0201.get_taniguchiAll(user_id)  # ← これで過去履歴を取得
+        return render_template('GK_aiTNGC.html', taniguchiList=taniguchiList, err="")
+    
+    # POSTリクエスト時の処理
+    if request.method == 'POST':
+        field_ai = request.form['field']
+        message = request.form['message'].strip()
+        # ユーザーの質問をDBに保存
+        GK1S0201.insert_taniguchi(user_id, 1, field_ai, message)
+        # AI応答を取得
+        anw, err = GK1S0201.get_ai_main(user_id, field_ai, message)
+        if err:
+            taniguchiList = GK1S0201.get_taniguchiAll(user_id)
+            return render_template('GK_aiTNGC.html', taniguchiList=taniguchiList, err=err)
+        
+        # AIの回答をDBに保存
+        GK1S0201.insert_taniguchi(user_id, 2, field_ai, anw)
+        
+        # 最新の会話履歴を取得して画面を再描画
+        taniguchiList = GK1S0201.get_taniguchiAll(user_id)
+        return render_template('GK_aiTNGC.html', taniguchiList=taniguchiList, err="")
 
 
 # セッションの有効期限をリセット
