@@ -74,20 +74,17 @@
                         </div>
                     </div>
                     {% if session['authority'] in [0, 1, 6, 7, 9] %}
-                    <!-- <div class="radio-section">
-                        <label class="radio-group"><input type="radio" name="selection" value="nigate">苦手克服</label>
-                    </div> -->
                     <div class="radio-section">
                         <label class="radio-group"><input type="radio" name="selection" value="test">小テスト</label>
                     </div>
                     {% endif %}
-                    <!-- {% if session['authority'] in [6,7,8,9] %}
-                <div class="data-section">
-                    <div class="radio-section">
-                        <label class="radio-group"><input type="radio" name="selection" value="analysis">苦手分析</label>
+                    {% if session['authority'] in [6, 7, 9] %}
+                    <div class="data-section">
+                        <div class="radio-section">
+                            <label class="radio-group"><input type="radio" name="selection" value="aiTNGC">擬似谷口</label>
+                        </div>
                     </div>
-                </div>
-                {% endif %} -->
+                    {% endif %}
                     {% if session['authority'] in [0, 1, 6, 7, 8, 9] %}
                     <div class="data-section">
                         <div class="radio-section">
@@ -143,13 +140,6 @@
                         <div class="radio-section">
                             <label class="radio-group"><input type="radio" name="selection"
                                     value="send_msg">ＭＳＧ送信</label>
-                        </div>
-                    </div>
-                    {% endif %}
-                    {% if session['authority'] in [0, 6, 7, 8, 9] %}
-                    <div class="data-section">
-                        <div class="radio-section">
-                            <label class="radio-group"><input type="radio" name="selection" value="aiTNGC">擬似谷口</label>
                         </div>
                     </div>
                     {% endif %}
