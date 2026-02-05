@@ -93,10 +93,30 @@
     </footer>
 
     <script>
-        // ページ読み込み時にチャット画面を最下部にスクロール
+        // ページ読み込み時にチャット画面を最終メッセージ付近にスクロール
         window.addEventListener('load', function () {
             var chatContainer = document.getElementById('chatContainer');
-            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // メッセージが存在する場合
+            var messages = chatContainer.querySelectorAll('.message-wrapper');
+            if (messages.length > 0) {
+                // 最終メッセージを取得
+                var lastMessage = messages[messages.length - 1];
+
+                // 少し遅延させてから最終メッセージにスクロール
+                setTimeout(function () {
+                    // 最終メッセージの冒頭が見えるようにスクロール
+                    lastMessage.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+
+                    // さらに少し上にスクロールして余白を確保
+                    setTimeout(function () {
+                        chatContainer.scrollTop = chatContainer.scrollTop - 20;
+                    }, 200);
+                }, 100);
+            } else {
+                // メッセージがない場合は一番上
+                chatContainer.scrollTop = 0;
+            }
         });
 
         // フォームバリデーション
