@@ -130,6 +130,9 @@
                                     {% if session['authority'] in [1, 6, 7, 9] %}
                                     <option value="5">養成状況更新</option>
                                     {% endif %}
+                                    {% if session['authority'] in [7, 9] %}
+                                    <option value="6">養成計画更新</option>
+                                    {% endif %}
                                 </select>
                             </div>
                         </div>

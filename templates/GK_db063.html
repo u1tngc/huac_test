@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 養成計画管理セグ・更新（更新）</title>
+    <link rel="stylesheet" href="../static/GK1C0063.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+    <main>
+        <section class="options">
+            <h2>養成計画管理セグ・更新（更新）</h2>
+            {% if err %}
+            <a class="err">{{ err }}</a>
+            <br><br>
+            {% endif %}
+            <form method="post" action="/GK_db063">
+                <a>更新内容を確認してください。</a>
+                <a>養成予定年月はYYYYMM形式で入力してください。</a>
+                <a>（例）2026年１月の場合→202601</a>
+                {% for i in range(teamInfoBef|length) %}
+                <div class="data-section">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>{{ teamInfoBef[i][1] }}</th>
+                                <th>変更前</th>
+                                <th>変更後</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>養成予定年月</td>
+                                <td>{{ teamInfoBef[i][2] }}</td>
+                                <td>
+                                    <input type="text" name="yoteiYYYYMM{{ i }}" value="{{ teamInfoAft[i][2] }}"
+                                        class="input-field">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>担当者</td>
+                                <td>{{ teamInfoBef[i][3] }}</td>
+                                <td>
+                                    <input type="text" name="tanto{{ i }}" value="{{ teamInfoAft[i][3] }}"
+                                        class="input-field">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                {% endfor %}
+
+                <div class="button-group">
+                    <button type="submit" name="action" value="back" class="menu-button">戻る</button>
+                    <button type="submit" name="action" value="next" class="execute-button">登録</button>
+                </div>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

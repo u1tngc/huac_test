@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2026/02/04
+#最終更新日:2026/02/08
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -177,6 +177,23 @@ def check08(date,id):
             if flg[ix1] == 0:
                 return "学生チェックの結果は、全科目の養成進捗率が100%でないと入力できません。" 
     return ""
+
+
+def check09(bef, aft):
+    Now_YYYMM = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m")
+    if bef == aft:
+        return "変更前と変更後が同じです。"
+    for ix1 in range(len(aft)):
+        if bef[ix1] != aft[ix1]:
+            if aft[ix1][2] != "":
+                try:
+                    datetime.strptime(aft[ix1][2], "%Y%m")
+                except (ValueError, TypeError):
+                    return "養成予定年月の形式が不正です。"
+                if aft[ix1][2] < Now_YYYMM:
+                    return "養成予定年月は当月以降を指定してください。"
+    return ""
+       
 
 def update_gakusei(update_gakusei):
     if update_gakusei[4] == 1:
@@ -609,7 +626,7 @@ def get_gantt_data():
             all_months.add(yotei_month)
     
     # === ガントデータ生成 ===
-    bunnya_list = ['法規', '工学', '気象', '情報']
+    bunnya_list = ['法規', '工学', '気象', '情報', '衛生', '六項目']
     gantt_data = []
     for team, data in team_data.items():
         members = data['members']
@@ -643,3 +660,36 @@ def get_gantt_data():
             })
     months = sorted(list(all_months))
     return gantt_data, months
+
+
+def get_teamList():
+    team_list = GK0S061D.get_teamList()
+    if team_list is None:
+        return []
+    ret_name = []
+    for ix1 in range(len(team_list)):
+        name_list = GK0S061D.get_team_members(team_list[ix1])
+        name_list = ", ".join(name_list)
+        ret_name.append([team_list[ix1], name_list])
+    #ret_name.append(["", "新規チーム"])
+    return ret_name
+
+def get_yoseiTeamInfo(team):
+    team_info = []
+    yosei_list = ["法規", "工学", "気象", "情報", "衛生", "六項目"]
+    for ix1 in range(len(yosei_list)):
+        yoseiInfo_temp = GK0S061D.get_yoseiTeamInfo(team, yosei_list[ix1])
+        if yoseiInfo_temp:
+            team_info.append(yoseiInfo_temp)
+        else:
+            team_info.append([team, yosei_list[ix1], "", ""])
+    return team_info
+
+
+def update_yoseiTeamInfo(yoseiTeamInfoBef, yoseiTeamInfoAft):
+    for ix1 in range(len(yoseiTeamInfoAft)):
+        if yoseiTeamInfoBef[ix1] != yoseiTeamInfoAft[ix1]:
+            err = GK0S061D.update_yoseiTeamInfo(yoseiTeamInfoAft[ix1])
+            if err:
+                return err
+    return ""

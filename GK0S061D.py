@@ -1,6 +1,6 @@
 #PGM-ID:GK0S061D
 #PGM-NAME:GK養成計画管理セグI/O(オンライン)
-#最終更新日:2026/01/27
+#最終更新日:2026/02/08
 
 import os
 import psycopg2
@@ -185,3 +185,87 @@ def get_gantt_base_data():
     except Exception as e:
         print(f'エラー内容：{e}')
         return []
+
+def get_teamList():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = """
+                SELECT DISTINCT チーム
+                FROM 養成計画管理セグ
+                ORDER BY チーム;
+            """
+            cur.execute(sql)
+            result = cur.fetchall()
+        conn.close()
+        return [row[0] for row in result] if result else []
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
+
+
+def get_team_members(team):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = """
+                SELECT DISTINCT s.氏名
+                FROM 養成計画管理セグ y
+                JOIN 学生管理セグ s
+                  ON y.学籍番号 = s.学籍番号
+                WHERE y.チーム = %s
+                ORDER BY s.氏名;
+            """
+            cur.execute(sql, (team,))
+            result = cur.fetchall()
+        conn.close()
+        return [row[0] for row in result] if result else []
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
+    
+
+def get_yoseiTeamInfo(team, bunya):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  # 定数を展開して接続
+        with conn.cursor() as cur:
+            sql = 'SELECT "チーム", "養成分野", "養成予定年月", "担当者" FROM "養成計画管理セグ" WHERE "チーム" = %s AND "養成分野" = %s '
+            data = (team,bunya)  
+            cur.execute(sql, data)
+            result = cur.fetchone()  
+        conn.close()
+        return list(result) if result else []
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
+
+
+def update_yoseiTeamInfo(yoseiTeamInfo):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  # 定数を展開して接続
+        with conn.cursor() as cur:
+            sql = '''
+                UPDATE "養成計画管理セグ"
+                SET "養成予定年月" = %s, "担当者" = %s
+                WHERE "チーム" = %s AND "養成分野" = %s
+            '''
+            data = (yoseiTeamInfo[2], yoseiTeamInfo[3], yoseiTeamInfo[0], yoseiTeamInfo[1])
+            cur.execute(sql, data)
+            conn.commit()
+        conn.close()
+        return 0 
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 2

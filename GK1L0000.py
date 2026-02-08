@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2026/01/27
+#最終更新日:2026/02/08
 
 import csv
 from datetime import timedelta
@@ -104,11 +104,6 @@ def GK_menu01():
             else:
                 flash("復習対象の問題がありません。")
                 return redirect(url_for('GK_menu01'))
-            """    
-            elif shorikbn == "nigate":
-                ret_cd = GK1S0000.check_nigate(user_id)
-                return render_template('GK_nigate01')
-            """
         elif shorikbn == "db_show":
             db_kbn = request.form['db_kbn1']
             if db_kbn == "1":
@@ -218,6 +213,11 @@ def GK_menu01():
                 session[f"{user_id}_wk54yoseiKamoku"] = wk54yoseiKamoku
                 session[f"{user_id}_wk54yoseiStudent"] = wk54yoseiStudent
                 return render_template('GK_db054.html', wk54yoseiKamoku=wk54yoseiKamoku, wk54yoseiStudent=wk54yoseiStudent, err1="")     
+            elif db_kbn == "6":
+                #養成計画登録・訂正
+                GK1S0040.insertLog(user_id,"C051","")
+                team_list = GK1S0040.get_teamList()
+                return render_template('GK_db062.html', team_list=team_list, err="")              
         elif shorikbn == "send_msg":
             #機能：ＭＳＧ送信
             GK1S0040.insertLog(user_id,"D001","")
@@ -853,6 +853,53 @@ def GK_db061():
                            months=session.get(f"{user_id}_months"),
                            current_month=session.get(f"{user_id}_current_month"))
 
+
+#養成計画管理セグ・更新（選択）
+@app.route('/GK_db062', methods=['GET', 'POST'])
+def GK_db062():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [7,9]:
+        return redirect(url_for('GK_menu01'))   
+    if request.method == 'POST':
+        team_no = request.form['selected_team']
+        teamInfo = GK1S0040.get_yoseiTeamInfo(team_no)
+        session[f'{user_id}_yoseiTeamInfoBef'] = teamInfo
+        return render_template('GK_db063.html', teamInfoBef=teamInfo, teamInfoAft=teamInfo, err="")
+    return render_template('GK_db062.html', team_list=GK1S0040.get_teamList(), err="")
+
+
+#養成計画管理セグ・更新（更新）
+@app.route('/GK_db063', methods=['GET', 'POST'])
+def GK_db063():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [7,9]:
+        return redirect(url_for('GK_menu01'))   
+    if request.method == 'POST':
+        if request.form.get('action') == 'back':
+            return render_template('GK_db062.html', team_list=GK1S0040.get_teamList(), err="")
+        yoseiTeamInfoBef = session.get(f'{user_id}_yoseiTeamInfoBef')
+        yoseiTeamInfoAft = []
+        wk63team_no = yoseiTeamInfoBef[0][0]
+        for i in range(6):
+            bunya = yoseiTeamInfoBef[i][1]
+            yotei = request.form.get(f'yoteiYYYYMM{i}')
+            tanto = request.form.get(f'tanto{i}')
+            yoseiTeamInfoAft.append([wk63team_no, bunya, yotei, tanto])
+        err = GK1S0040.check09(yoseiTeamInfoBef, yoseiTeamInfoAft)
+        if err:
+            return render_template('GK_db063.html', teamInfoBef=yoseiTeamInfoBef, teamInfoAft=yoseiTeamInfoAft, err=err)
+        err = GK1S0040.update_yoseiTeamInfo(yoseiTeamInfoBef, yoseiTeamInfoAft)
+        if err:
+            return render_template('GK_db063.html', teamInfoBef=yoseiTeamInfoBef, teamInfoAft=yoseiTeamInfoAft, err=err)
+        err = "養成計画の更新が完了しました。"
+        team_list = GK1S0040.get_teamList()
+        return render_template('GK_db062.html', team_list=team_list, err=err)
+    return render_template('GK_db063.html', teamInfoBef=yoseiTeamInfoBef, teamInfoAft=yoseiTeamInfoBef, err=err)
+    
 
 #ＭＳＧ送信・入力
 @app.route('/GK_send_msg1', methods=['GET', 'POST'])

@@ -76,8 +76,8 @@ main {
 /* タスク列 */
 .gantt-task-col,
 .gantt-task {
-    width: 130px;
-    min-width: 130px;
+    width: 100px;
+    min-width: 100px;
     text-align: left;
     padding-left: 10px;
     background-color: #f8f9fa;
@@ -87,8 +87,8 @@ main {
 /* 担当者列 */
 .gantt-tantou-col,
 .gantt-tantou {
-    width: 100px;
-    min-width: 100px;
+    width: 50px;
+    min-width: 50px;
     background-color: #f8f9fa;
     font-size: 12px;
 }
