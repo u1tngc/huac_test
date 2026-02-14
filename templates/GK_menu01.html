@@ -95,7 +95,7 @@
                                     <option value="2">小テスト履歴照会</option>
                                     {% if session['authority'] in [6, 7, 8, 9] %}
                                     <option value="1">学生情報照会</option>
-                                    <option value="3">学科試験照会</option>
+                                    <option value="3">学科試験状況照会</option>
                                     <option value="4">各種CHK状況照会</option>
                                     <option value="6">養成状況一括照会</option>
                                     {% endif %}
@@ -122,7 +122,7 @@
                                     <option value="2">学生情報登録</option>
                                     {% endif %}
                                     {% if session['authority'] in [0, 6, 7, 9] %}
-                                    <option value="3">学科試験更新</option>
+                                    <option value="3">学科試験状況更新</option>
                                     {% endif %}
                                     {% if session['authority'] in [6, 7, 9] %}
                                     <option value="4">各種CHK状況更新</option>
