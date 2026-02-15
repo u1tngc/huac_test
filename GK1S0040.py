@@ -147,6 +147,10 @@ def check04(id, name, status_cd, shikaku_cd):
         return "氏名は空白を入れずに入力してください。"
     return ""
 
+def check06(kekka):
+    if (kekka[0] != "" or kekka[1] != "" or kekka[2] != "" or kekka[3] != "") and kekka[5] == "":
+        return "有効期間を入力してください。"
+    return ""
 
 def check07(date, name):
     has_gakusei_chk = date[4] != ""
