@@ -168,7 +168,7 @@ def check07(date, name):
     return ""
 
 def check08(date,id):
-    kamoku = ["法規", "気象", "工学", "情報"]
+    kamoku = ["法規", "気象", "工学", "情報", "衛生", "六項目"]
     flg = [0,0,0,0,0,0]
     for ix1 in range(len(kamoku)):
         if date[ix1] != "":
