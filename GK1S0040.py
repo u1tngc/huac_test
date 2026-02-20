@@ -177,7 +177,7 @@ def check08(date,id):
                 return f"{kamoku[ix1]}の養成進捗率が100%未満です。"
             flg[ix1] = 1
     if date[4] != "":
-        for ix1 in range(len(flg)):
+        for ix1 in range(len(kamoku)):
             if flg[ix1] == 0:
                 return "学生チェックの結果は、全科目の養成進捗率が100%でないと入力できません。" 
     return ""
