@@ -167,20 +167,27 @@ def check07(date, name):
     
     return ""
 
+
 def check08(date,id):
-    kamoku = ["法規", "気象", "工学", "情報", "衛生", "六項目"]
+    kamoku1 = ["法規", "気象", "工学", "情報"]
     flg = [0,0,0,0,0,0]
-    for ix1 in range(len(kamoku)):
+    for ix1 in range(len(kamoku1)):
         if date[ix1] != "":
-            rate = GK0S051D.get_yoreiRate(kamoku[ix1], id)
+            rate = GK0S051D.get_yoreiRate(kamoku1[ix1], id)
             if rate != 100:
-                return f"{kamoku[ix1]}の養成進捗率が100%未満です。"
+                return f"{kamoku1[ix1]}の養成進捗率が100%未満です。"
             flg[ix1] = 1
+    kamoku2 = ["衛生", "六項目"]
+    for ix1 in range(len(kamoku2)):
+        if date[4] != "":
+            rate = GK0S051D.get_yoreiRate(kamoku2[ix1], id)
+            if rate == 100:
+                flg[4 + ix1] = 1  
     if date[4] != "":
-        for ix1 in range(len(kamoku)):
+        for ix1 in range(len(flg)):
             if flg[ix1] == 0:
                 return "学生チェックの結果は、全科目の養成進捗率が100%でないと入力できません。" 
-    return ""
+    return ""  
 
 
 def check09(bef, aft):
