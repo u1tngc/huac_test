@@ -3,7 +3,9 @@
 #PGM-NAME:GK擬似谷口AI連携メイン
 #最終更新日:2026/02/04
 
+
 import GK1S0202
+import GK1S0203
 import GK1S0A1D
 
 
@@ -13,7 +15,11 @@ def get_taniguchiAll(id):
 
 
 def get_ai_main(id,bunya,question):
-    answer, err = GK1S0202.get_ai_main(id,bunya,question)
+    if bunya == "汎用":
+        answer, err = GK1S0203.get_ai_main(id,bunya,question)
+        pass
+    else:
+        answer, err = GK1S0202.get_ai_main(id,bunya,question)
     if err == 1:
         err = "擬似谷口は忙しいので後にしてください。"
         return "", err

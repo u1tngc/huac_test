@@ -61,9 +61,11 @@
                         <div class="field-select-wrapper">
                             <label for="field">分野:</label>
                             <select name="field" id="field" class="field-select" required>
+                                <option value="汎用" {% if taniguchiList and taniguchiList|length> 0 and
+                                    taniguchiList[-1][3] == '汎用' %}selected{% elif not taniguchiList or
+                                    taniguchiList|length == 0 %}selected{% endif %}>汎用</option>
                                 <option value="法規" {% if taniguchiList and taniguchiList|length> 0 and
-                                    taniguchiList[-1][3] == '法規' %}selected{% elif not taniguchiList or
-                                    taniguchiList|length == 0 %}selected{% endif %}>法規</option>
+                                    taniguchiList[-1][3] == '法規' %}selected{% endif %}>法規</option>
                                 <option value="気象" {% if taniguchiList and taniguchiList|length> 0 and
                                     taniguchiList[-1][3] == '気象' %}selected{% endif %}>気象</option>
                                 <option value="工学" {% if taniguchiList and taniguchiList|length> 0 and
