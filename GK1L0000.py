@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2026/02/08
+#最終更新日:2026/05/13
 
 import csv
 from datetime import timedelta
@@ -27,8 +27,8 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)  # セッショ
 def GK_login():
     if request.method == 'POST':
         now = datetime.now(ZoneInfo("Asia/Tokyo"))
-        if now.weekday() == 6 and now.hour == 0 and now.minute < 15:
-            flash("日曜日の午前0時から午前0時15分まではメンテナンス時間です。")
+        if now.weekday() in [1, 3, 6] and now.hour == 0 and now.minute < 30:
+            flash("日曜・火曜・木曜の午前0時から午前0時30分まではメンテナンス時間です。")
             return redirect(url_for('GK_login'))
         in_password = request.form['password']
         in_user = request.form['user']
@@ -223,14 +223,14 @@ def GK_menu01():
             GK1S0040.insertLog(user_id,"D001","")
             return render_template('GK_send_msg1.html', err="")  
         elif shorikbn == "aiTNGC":
-        #機能:擬似谷口
+            #機能:擬似谷口
             GK1S0040.insertLog(user_id,"E001","")
             taniguchiList = GK1S0201.get_taniguchiAll(user_id)
             return render_template('GK_aiTNGC.html', taniguchiList=taniguchiList, err="")
 
         elif shorikbn == "password":
-                #機能：パスワード変更
-                return redirect(url_for('GK_db010',err=""))
+            #機能：パスワード変更
+            return redirect(url_for('GK_db010',err=""))
 
     return render_template('GK_menu01.html')
 
