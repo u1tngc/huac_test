@@ -1,6 +1,7 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2026/02/08
+#最終更新日:2026/05/16
+
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -14,6 +15,7 @@ import GK0S051D
 import GK0S052D
 import GK0S061D
 import GK0S099D
+
 
 def get_gakusei(id,authority):
     gakusei_list = GK0S001D.get_gakusei(id)
@@ -90,6 +92,7 @@ def timestamp_to_date(timestamp):
     date_str = timestamp.strftime("%Y/%m/%d/%H:%M")
     return date_str
 
+
 """
 def check01(id,name):
     if id == "" and name == "":
@@ -147,10 +150,14 @@ def check04(id, name, status_cd, shikaku_cd):
         return "氏名は空白を入れずに入力してください。"
     return ""
 
+
 def check06(kekka):
-    if (kekka[0] != "" or kekka[1] != "" or kekka[2] != "" or kekka[3] != "") and kekka[5] == "":
+    if kekka[4] == 1 and kekka[0] != 1 and kekka[1] != 1 and kekka[2] != 1 and kekka[3] != 1 and kekka[5] != "":
+        return"航特に有効期間は存在しません。"
+    if (kekka[0] == 1  or kekka[1] == 1 or kekka[2] == 1 or kekka[3] == 1) and kekka[5] == "":
         return "有効期間を入力してください。"
     return ""
+
 
 def check07(date, name):
     has_gakusei_chk = date[4] != ""
@@ -212,6 +219,7 @@ def update_gakusei(update_gakusei):
     err = GK0S001D.update_gakusei(update_gakusei)       
     return ""
 
+
 def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
     err = GK0S001D.insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd)
     if err == 3:
@@ -222,9 +230,11 @@ def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
         err = GK0S041D.insert_chkList(id,2)
     return ""    
 
+
 def update_password(user_id,password):
     err = GK0S001D.update_password(user_id,password)
     return ""        
+
 
 def get_rireki(user_id):
     list = GK0S002D.get_rireki(user_id)
@@ -249,6 +259,7 @@ def get_rireki(user_id):
 
     return []
 
+
 def get_rirekiAll():
     list = GK0S002D.get_rirekiAll()
     number = [4,6,8,10,12]
@@ -272,31 +283,38 @@ def get_rirekiAll():
 
     return []
 
+
 def get_gakuseiInfo01():
     ret_array = GK0S001D.get_gakuseiInfo01()
     return ret_array
+
 
 def get_gakuseiInfo00(authority):
     ret_array = GK0S001D.get_gakuseiInfo00(authority)
     return ret_array
 
+
 def get_renkyosei():
     ret_array = GK0S001D.get_renkyosei()
     return ret_array
+
 
 def get_gakuseiName(id):
     ret_array = GK0S001D.get_gakuseiName(id)
     return ret_array
 
+
 def get_gakkaShiken(id):
     gakkaShiken = GK0S031D.get_gakkaShiken(id)
     return gakkaShiken
+
 
 def update_gakkaShiken(id,kekka):
     dt = datetime.now(ZoneInfo("Asia/Tokyo"))
     ymd = dt.strftime("%Y%m%d")
     updateInfo=[id,kekka[0],kekka[1],kekka[2],kekka[3],kekka[4],kekka[5], ymd]
     err1 = GK0S031D.update_gakkaShiken(updateInfo)
+
 
 def get_gakkaShikenAll():
     kekka_dict = {
@@ -317,6 +335,7 @@ def get_gakkaShikenAll():
             array[ix1][7] = f'{array[ix1][7][4:6]}/{array[ix1][7][6:]}'
     return array
 
+
 def get_chkListAll():
     temp_array1 = GK0S041D.get_chkListAll()
     ret_array = []
@@ -329,6 +348,7 @@ def get_chkListAll():
             ret_array.append(row)    
     return ret_array 
 
+
 def get_chkList(id,kbn):
         temp_array1 = GK0S041D.get_chkList(id)
         ret_array = []
@@ -340,10 +360,12 @@ def get_chkList(id,kbn):
                 ret_array += [v for i, v in enumerate(temp_array1[ix1 + 1]) if i not in (0, 1, 2)]   
         return ret_array 
 
+
 def update_chkList(date_array, name_array):
     err = GK0S041D.update_chkList(date_array)
     err = GK0S041D.update_chkList(name_array)
     return err
+
 
 def get_yoseiJokyo(id):
     yoseiJokyo = GK0S051D.get_yoseiJokyo(id)
@@ -375,6 +397,7 @@ def get_yoseiJokyo(id):
         return ret_array1, ret_array2
     return [], []
 
+
 def get_yoseiSumAll():
     rows = GK0S051D.get_yoseiSumAll()
     if not rows:
@@ -400,6 +423,7 @@ def get_yoseiSumAll():
         ])
     
     return ret_array
+
 
 def get_yoseiAllDataForCSV():
     """全学生の養成状況データをCSV用に整形"""
@@ -458,12 +482,14 @@ def get_yoseiAllDataForCSV():
     
     return csv_data
 
+
 def get_yoseiKamokuAll():
     temp_array = GK0S052D.get_yoseiAll()
     ret_array = []
     for ix1 in range(len(temp_array)):
         ret_array.append([temp_array[ix1][0], f"{temp_array[ix1][1]}：{temp_array[ix1][2]}"])
     return ret_array
+
 
 def get_youseiJyokyo(yoseiKamoku, yoseiStudent, yoseiDateNew):
     ret_array = []
@@ -684,6 +710,7 @@ def get_teamList():
         ret_name.append([team_list[ix1], name_list])
     #ret_name.append(["", "新規チーム"])
     return ret_name
+
 
 def get_yoseiTeamInfo(team):
     team_info = []
