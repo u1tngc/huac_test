@@ -1,11 +1,12 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2026/05/16
+#最終更新日:2026/06/13
 
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import re
+import bcrypt
 
 import GK0S001D
 import GK0S002D
@@ -91,6 +92,18 @@ def timestamp_to_date(timestamp):
         return "未ログイン"
     date_str = timestamp.strftime("%Y/%m/%d/%H:%M")
     return date_str
+
+
+def login_check(user, password):
+    user_info = GK0S001D.select_gakusei(user)
+    if not user_info:
+        return 1, 0
+    stored = user_info[5]
+    if bcrypt.checkpw(password.encode('utf-8'), stored.encode('utf-8')):
+        GK0S001D.update_lastLogin(user)
+        return 0, user_info[2]
+    else:
+        return 2, 0 
 
 
 """

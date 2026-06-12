@@ -1,6 +1,7 @@
 #PGM-ID:GK1S0000
 #PGM-NAME:GK自家用練習問題・テスト
-#最終更新日:2026/01/27
+#最終更新日:2026/06/13
+
 
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -10,17 +11,6 @@ import GK0S001D
 import GK0S002D
 import GK0S003D
 import GK0S01XD
-
-def login_check(user, password):
-    user_info = GK0S001D.select_gakusei(user)
-    if not user_info:
-        return 1,0
-    else:
-        if user_info[5] == password:
-            GK0S001D.update_lastLogin(user)
-            return 0,user_info[2]
-        else:
-            return 2,0       
         
 
 def check01(user_id):
@@ -29,9 +19,11 @@ def check01(user_id):
         return "現在発生している小テストはありません。", list
     return "", list
 
+
 def check02(user_id):
     ret_num = GK0S002D.check_rireki_num(user_id)
     return ret_num
+
 
 def get_mondai(bunya,mondai_num):
     bunya_list = {

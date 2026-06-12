@@ -5,6 +5,7 @@
 import os
 
 import psycopg2
+import bcrypt
 
 
 DB_CONFIG = {
@@ -20,37 +21,25 @@ DB_CONFIG = {
     "target_session_attrs": "read-write"
 }
 
-# DB_CONFIG = {
-#     "dbname": "huac_gakka", 
-#     "user": "taniguchi_tanglin_ic", 
-#     "password": "N6eEqr20vmfNV-_McGwfkA", 
-#     "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
-#     "port": 26257,
-#     "sslmode": "require",
-#     "sslcert": "",
-#     "sslkey": "",
-#     "sslrootcert": "",
-#     "target_session_attrs": "read-write"
-# }
 
-def insert_gakusei(id, name, status_cd,kanri_cd, shikaku_cd):
+def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
     try:
-        conn = psycopg2.connect(**DB_CONFIG)  
+        conn = psycopg2.connect(**DB_CONFIG)
         with conn.cursor() as cur:
             sql = "INSERT INTO 学生管理セグ (学籍番号, 氏名, 権限, 出題区分, 資格, パスワード) VALUES (%s, %s, %s, %s, %s, %s)"
-            data = (id, name, status_cd, kanri_cd, shikaku_cd, '245422kz')
+            data = (id, name, status_cd, kanri_cd, shikaku_cd, hash_password('245422kz'))
             cur.execute(sql, data)
             conn.commit()
-        return 0  
+        return 0
     except psycopg2.IntegrityError as e:
         print(f'エラー内容：{e}')
-        return 3  # 主キー衝突エラー
+        return 3
     except psycopg2.Error as e:
         print(f'エラー内容：{e}')
-        return 1  
+        return 1
     except Exception as e:
         print(f'エラー内容：{e}')
-        return 2   
+        return 2
     finally:
         if conn:
             conn.close() 
@@ -145,27 +134,25 @@ def update_lastLogin(id):
     except Exception as e:
         print(f'エラー内容：{e}')
         return 2
-    
 
-def update_password(id,password):
+
+def update_password(id, password):
     try:
-        conn = psycopg2.connect(**DB_CONFIG)  
+        conn = psycopg2.connect(**DB_CONFIG)
         with conn.cursor() as cur:
-            sql = """
-            UPDATE 学生管理セグ SET パスワード = %s WHERE 学籍番号 = %s
-            """
-            data = (password, id) 
+            sql = "UPDATE 学生管理セグ SET パスワード = %s WHERE 学籍番号 = %s"
+            data = (hash_password(password), id)
             cur.execute(sql, data)
             conn.commit()
         conn.close()
-        return 0  
+        return 0
     except psycopg2.Error as e:
         print(f'エラー内容：{e}')
         return 1
     except Exception as e:
         print(f'エラー内容：{e}')
         return 2
-    
+
 
 def get_gakuseiInfo01():
     try:
@@ -182,7 +169,8 @@ def get_gakuseiInfo01():
     except Exception as e:
         print(f'エラー内容：{e}')
         return ""
-    
+
+
 def get_gakuseiInfo00(authority):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
@@ -206,7 +194,8 @@ def get_gakuseiInfo00(authority):
     except Exception as e:
         print(f'エラー内容：{e}')
         return ""
-    
+
+
 def get_renkyosei():
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
@@ -224,6 +213,7 @@ def get_renkyosei():
         print(f'エラー内容：{e}')
         return ""
 
+
 def get_gakuseiName(id):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
@@ -240,3 +230,6 @@ def get_gakuseiName(id):
     except Exception as e:
         print(f'エラー内容：{e}')
         return ""
+    
+def hash_password(plain: str) -> str:
+    return bcrypt.hashpw(plain.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')

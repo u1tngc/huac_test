@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2026/05/13
+#最終更新日:2026/06/13
 
 import csv
 from datetime import timedelta
@@ -32,7 +32,7 @@ def GK_login():
             return redirect(url_for('GK_login'))
         in_password = request.form['password']
         in_user = request.form['user']
-        login_ret, info = GK1S0001.login_check(in_user, in_password)
+        login_ret, info = GK1S0040.login_check(in_user, in_password)
         #if in_user not in ["16A3184","22A0134","22H9509","23H1019","24C3113","24X0077","25X0043","25X0155","99A0000"]:
         #    flash("緊急メンテナンス中")
         #    return redirect(url_for('GK_login'))
@@ -65,6 +65,9 @@ def GK_menu01():
             #機能：練習問題
             bunya = request.form['bunya']
             mondai_num = int(request.form['mondai_num'])
+            if mondai_num < 5 or mondai_num > 25:
+                flash("問題数は5問以上25問以下で指定してください。")
+                return redirect(url_for('GK_menu01'))
             init02(user_id)
             GK1S0040.insertLog(user_id,"A001",bunya)
             #if bunya == "Z" and user_id == "22A0134":
@@ -227,7 +230,6 @@ def GK_menu01():
             GK1S0040.insertLog(user_id,"E001","")
             taniguchiList = GK1S0201.get_taniguchiAll(user_id)
             return render_template('GK_aiTNGC.html', taniguchiList=taniguchiList, err="")
-
         elif shorikbn == "password":
             #機能：パスワード変更
             return redirect(url_for('GK_db010',err=""))
