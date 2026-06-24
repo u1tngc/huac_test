@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2026/06/13
+#最終更新日:2026/06/24
 
 
 from datetime import datetime
@@ -246,6 +246,7 @@ def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
 
 def update_password(user_id,password):
     err = GK0S001D.update_password(user_id,password)
+    err = GK0S001D.update_password1(user_id, password)
     return ""        
 
 

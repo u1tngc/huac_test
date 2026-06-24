@@ -1,12 +1,11 @@
 #PGM-ID:GK0S001D
 #PGM-NAME:GK学生管理セグI/O(オンライン)
-#最終更新日:2025/12/20
+#最終更新日:2026/06/24
 
 import os
 
 import psycopg2
 import bcrypt
-
 
 DB_CONFIG = {
     "dbname": os.getenv("DB_NAME"),
@@ -231,5 +230,22 @@ def get_gakuseiName(id):
         print(f'エラー内容：{e}')
         return ""
     
+def update_password1(id, password):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = "UPDATE ユーザー管理セグ SET パスワード = %s WHERE ユーザーid = %s"
+            data = (hash_password(password), id)
+            cur.execute(sql, data)
+            conn.commit()
+        conn.close()
+        return 0
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 2
+
 def hash_password(plain: str) -> str:
     return bcrypt.hashpw(plain.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
