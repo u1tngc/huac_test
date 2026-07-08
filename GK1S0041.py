@@ -1,8 +1,11 @@
 #PGM-ID:GK1S0041
 #PGM-NAME:GK自家用MSG送信
-#最終更新日:2026/01/27
+#最終更新日:2026/07/08
+
 
 import requests
+import GK0S071D
+
 
 # Discord Webhook URL
 WEBHOOK_URL = "https://discordapp.com/api/webhooks/1454837288344228035/9LvK3n6u9JWLBjpIZXG27WJzqiosq1zFxRmVPIkkPAVbuGEtazE6K7cPLedsv2E5Slwd"
@@ -61,6 +64,7 @@ def send_msg(msg_data, user_id):
         
         if response.status_code == 204:
             print(f"Discordへの送信が完了しました。送信者: {user_id}")
+            err = GK0S071D.insert_msg_history(user_id,msg_data[0],msg_data[1],msg_data[2])
             return ""
         else:
             print(f"Discord送信エラー: {response.status_code}")
