@@ -4,46 +4,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUAC学科ツール 養成計画・更新（選択）</title>
-    <link rel="stylesheet" href="../static/GK1C0062.css">
+    <title>HUAC学科ツール 技能審査対策（選択）</title>
+    <link rel="stylesheet" href="../static/GK1C0040.css">
 </head>
 
 <body>
     <header>
         <h1>HUAC学科ツール</h1>
     </header>
+
     <main>
         <section class="options">
-            <h2>養成計画・更新（選択）</h2>
-            {% if err %}
-            <a class="err">{{ err }}</a>
-            <br><br>
-            {% endif %}
-            <a>更新するチームを選択してください。</a>
-            <form method="post" action="/GK_db062">
+            <h2>技能審査対策（選択）</h2>
+            <a>練習する技能審査を選択してください。</a>
+            <form method="post" action="/GK_ginoS01">
                 <div class="data-section">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>選択</th>
-                                <th>チーム名</th>
-                                <th>チームメンバー</th>
+                                <th>期</th>
+                                <th>審査員</th>
+                                <th>受験者</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for team in team_list %}
+                            {% for list in ginoS_List %}
                             <tr>
                                 <td>
-                                    <input type="radio" name="selected_team" value="{{ team[0] }}"
-                                        id="team_{{ loop.index }}" {% if loop.first %}checked{% endif %}>
+                                    <input type="radio" name="selected_gino" value="{{ list[0] }}"
+                                        id="list_{{ loop.index }}" {% if loop.first %}checked{% endif %}>
                                 </td>
                                 <td>
-                                    <label for="team_{{ loop.index }}">{{ team[0] }}</label>
+                                    <label for="list_{{ loop.index }}">{{ list[0] }}</label>
                                 </td>
                                 <td>
-                                    <label for="team_{{ loop.index }}">{{ team[1] }}</label>
+                                    <label for="list_{{ loop.index }}">{{ list[1] }}</label>
                                 </td>
-
+                                <td>
+                                    <label for="list_{{ loop.index }}">{{ list[2] }}</label>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -56,15 +56,17 @@
             </form>
         </section>
     </main>
+
     <footer>
         <p>&copy; 2025 Yuichi Taniguchi</p>
     </footer>
+
     <script>
-        // フォーム送信時にチームが選択されているかチェック
+        // フォーム送信時に学生が選択されているかチェック
         document.querySelector('form').addEventListener('submit', function (e) {
-            const selectedTeam = document.querySelector('input[name="selected_team"]:checked');
-            if (!selectedTeam) {
-                alert('チームを選択してください。');
+            const selectedStudent = document.querySelector('input[name="selected_student"]:checked');
+            if (!selectedStudent) {
+                alert('学生を選択してください。');
                 e.preventDefault();
             }
         });

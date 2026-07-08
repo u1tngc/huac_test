@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2026/06/24
+#最終更新日:2026/07/08
 
 
 from datetime import datetime
@@ -505,24 +505,28 @@ def get_yoseiKamokuAll():
     return ret_array
 
 
-def get_youseiJyokyo(yoseiKamoku, yoseiStudent, yoseiDateNew):
+def get_yoseiJokyo(yoseiKamoku, yoseiStudent, yoseiDateNew):
     ret_array = []
     if yoseiDateNew:
             yoseiDateNew = f'{yoseiDateNew[0:4]}/{yoseiDateNew[4:6]}/{yoseiDateNew[6:]}'
+    kamokulist = {row[0]: row[1] for row in get_yoseiKamokuAll()}
     for ix1 in range(len(yoseiStudent)):
-        yoseiDateOld = GK0S051D.get_yoseiDate(yoseiStudent[ix1], yoseiKamoku)
         name = GK0S001D.get_gakuseiName(yoseiStudent[ix1])
         dt = datetime.now(ZoneInfo("Asia/Tokyo"))
-        if yoseiDateOld:
-            yoseiDateOld = f'{yoseiDateOld[0:4]}/{yoseiDateOld[4:6]}/{yoseiDateOld[6:]}'
-        ret_array.append([yoseiStudent[ix1], name, yoseiDateOld, yoseiDateNew])
+        for kamoku in yoseiKamoku:
+            yoseiDateOld = GK0S051D.get_yoseiDate(yoseiStudent[ix1], kamoku)
+            if yoseiDateOld:
+                yoseiDateOld = f'{yoseiDateOld[0:4]}/{yoseiDateOld[4:6]}/{yoseiDateOld[6:]}'
+            kamoku_disp = kamokulist.get(kamoku, kamoku)
+            ret_array.append([yoseiStudent[ix1], name, kamoku, yoseiDateOld, yoseiDateNew, kamoku_disp])
     return ret_array
 
 
-def update_yoseiJokyo(wk54updateInfo, yoseiKamoku):
+def update_yoseiJokyo(wk54updateInfo):
     for ix1 in range(len(wk54updateInfo)):
-        wk54updateInfo[ix1][3] = wk54updateInfo[ix1][3].replace("/","")
-        err = GK0S051D.update_yoseiJokyo(yoseiKamoku, wk54updateInfo[ix1][0], wk54updateInfo[ix1][3])
+        wk54updateInfo[ix1][4] = wk54updateInfo[ix1][4].replace("/","")
+        kamoku = wk54updateInfo[ix1][2]
+        err = GK0S051D.update_yoseiJokyo(kamoku, wk54updateInfo[ix1][0], wk54updateInfo[ix1][4])
     return err
 
 

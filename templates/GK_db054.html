@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUAC学科ツール 養成状況更新（入力）</title>
+    <title>HUAC学科ツール 養成状況更新（課目・日付入力）</title>
     <link rel="stylesheet" href="../static/GK1C0047.css">
 </head>
 
@@ -17,72 +17,69 @@
         <section class="options">
             <h2>養成状況更新（入力）</h2>
             {% if err1 %}
-            <div class="err">
-                {{ err1 }}
-            </div>
+            <div class="err">{{ err1 }}</div>
             <br>
             {% endif %}
             <form method="post" action="/GK_db054" id="yoseiForm">
                 <h3>■養成課目■</h3>
                 <a>養成を行った課目を選択してください。</a>
-                <div class="select-section">
-                    <select name="yoseiKamoku" class="table-input" id="yoseiKamoku">
-                        <option value="">-- 選択してください --</option>
-                        {% for wk54yoseiKamoku in wk54yoseiKamoku %}
-                        <option value="{{ wk54yoseiKamoku[0] }}">{{ wk54yoseiKamoku[1] }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <br>
-                <h3>■養成日■</h3>
-                <a>養成を行った日付を入力してください。</a>
-                <div class="input-section">
-                    <input type="date" name="yoseiDate" class="table-input">
-                </div>
-                <br>
-                <h3>■対象学生■</h3>
-                <a>養成した学生を選択してください。</a>
                 <div class="data-section">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>✓</th>
-                                <th>学生名</th>
+                                <th>養成課目</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for wk54yoseiStudent in wk54yoseiStudent %}
+                            {% for kamoku in wk54yoseiKamoku %}
                             <tr>
-                                <td><input type="checkbox" name="yoseiStudent" value="{{ wk54yoseiStudent[0] }}"
-                                        class="item-checkbox"></td>
-                                <td>{{ wk54yoseiStudent[1] }}</td>
+                                <td>
+                                    <input type="checkbox"
+                                           name="yoseiKamoku"
+                                           value="{{ kamoku[0] }}"
+                                           class="kamoku-checkbox"
+                                           {% if wk54yoseiKamokuSelected and kamoku[0] in wk54yoseiKamokuSelected %}checked{% endif %}>
+                                </td>
+                                <td>{{ kamoku[1] }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                <div class="clear-button-area">
+                    <button type="button" onclick="toggleAllKamoku(false)" class="clear-button">全解除</button>
+                </div>
+
+                <br>
+                <h3>■養成日■</h3>
+                <a>養成を行った日付を入力してください。</a>
+                <div class="input-section">
+                    <input type="date" name="yoseiDate" class="table-input"
+                           value="{{ wk54yoseiDate if wk54yoseiDate else '' }}">
+                </div>
+
                 <div class="button-group">
                     <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">戻る</button>
                     <button type="submit" class="execute-button">次へ</button>
-                    <button type="button" onclick="toggleAll(false)" class="clear-button">全解除</button>
                 </div>
             </form>
+
             <script>
-                function toggleAll(checked) {
-                    document.querySelectorAll('.item-checkbox').forEach(cb => cb.checked = checked);
+                function toggleAllKamoku(checked) {
+                    document.querySelectorAll('.kamoku-checkbox').forEach(cb => cb.checked = checked);
                 }
 
                 document.getElementById('yoseiForm').addEventListener('submit', function (e) {
-                    const kamoku = document.getElementById('yoseiKamoku').value;
-                    if (kamoku === '') {
-                        alert('養成課目を選択してください。');
+                    const checked = document.querySelectorAll('.kamoku-checkbox:checked');
+                    if (checked.length === 0) {
+                        alert('養成課目を1つ以上選択してください。');
                         e.preventDefault();
                         return;
                     }
-
-                    const checked = document.querySelectorAll('.item-checkbox:checked');
-                    if (checked.length === 0) {
-                        alert('学生を1名以上選択してください。');
+                    const date = document.querySelector('input[name="yoseiDate"]').value;
+                    if (!date) {
+                        alert('養成日を入力してください。');
                         e.preventDefault();
                     }
                 });

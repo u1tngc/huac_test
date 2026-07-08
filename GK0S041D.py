@@ -20,19 +20,6 @@ DB_CONFIG = {
     "target_session_attrs": "read-write"
 }
 
-# DB_CONFIG = {
-#     "dbname": "huac_gakka", 
-#     "user": "taniguchi_tanglin_ic", 
-#     "password": "N6eEqr20vmfNV-_McGwfkA", 
-#     "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
-#     "port": 26257,
-#     "sslmode": "require",
-#     "sslcert": "",
-#     "sslkey": "",
-#     "sslrootcert": "",
-#     "target_session_attrs": "read-write"
-# }
-
 
 def insert_chkList(id, datakbn):
     try:

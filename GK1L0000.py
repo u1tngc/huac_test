@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2026/06/13
+#最終更新日:2026/07/08
 
 import csv
 from datetime import timedelta
@@ -70,8 +70,9 @@ def GK_menu01():
                 return redirect(url_for('GK_menu01'))
             init02(user_id)
             GK1S0040.insertLog(user_id,"A001",bunya)
-            #if bunya == "Z" and user_id == "22A0134":
-            #            return redirect(url_for('GK_menu01')) 
+            if bunya == "Z" and user_id == "23C2739":
+                flash("タコ助には開示してません。残念ｗ")
+                return redirect(url_for('GK_menu01')) 
             session[f"{user_id}_fukushu"] = []
             session[f"{user_id}_ix1"] = 0  
             session[f'{user_id}_mondaiNum'] = mondai_num
@@ -212,10 +213,8 @@ def GK_menu01():
                 #機能：養成状況更新
                 GK1S0040.insertLog(user_id,"C041","")
                 wk54yoseiKamoku = GK1S0040.get_yoseiKamokuAll()
-                wk54yoseiStudent = GK1S0040.get_renkyosei()
                 session[f"{user_id}_wk54yoseiKamoku"] = wk54yoseiKamoku
-                session[f"{user_id}_wk54yoseiStudent"] = wk54yoseiStudent
-                return render_template('GK_db054.html', wk54yoseiKamoku=wk54yoseiKamoku, wk54yoseiStudent=wk54yoseiStudent, err1="")     
+                return render_template('GK_db054.html', wk54yoseiKamoku=wk54yoseiKamoku, err1="")     
             elif db_kbn == "6":
                 #養成計画登録・訂正
                 GK1S0040.insertLog(user_id,"C051","")
@@ -265,8 +264,7 @@ def GK_practice02():
         return redirect(url_for('GK_login'))   
     user_id = session.get('user_id')
     if f"{user_id}_mondai_list" not in session:
-        return redirect(url_for('GK_menu01'))   
-     
+        return redirect(url_for('GK_menu01'))    
     question_index = session[f"{user_id}_ix1"]
     question = session[f"{user_id}_mondai_list"][question_index][3].replace("\n", "<br>")  # 改行適用
     answer = session[f"{user_id}_mondai_list"][question_index][4].replace("\n", "<br>")  # 改行適用
@@ -779,16 +777,15 @@ def GK_db054():
     if not session.get('authority') in [1,6,7,9]:
         return redirect(url_for('GK_menu01'))
     if request.method == 'POST':
-        yoseiKamoku = request.form['yoseiKamoku']
-        yoseiStudent = request.form.getlist('yoseiStudent')
+        yoseiKamoku = request.form.getlist('yoseiKamoku')
         yoseiDate = request.form['yoseiDate']
         if yoseiDate:
             yoseiDate = yoseiDate.replace("-", "")
-        wk54updateInfo = GK1S0040.get_youseiJyokyo(yoseiKamoku, yoseiStudent, yoseiDate)
-        session[f'{user_id}_wk54updateInfo'] = wk54updateInfo
-        session[f'{user_id}_wk54yoseicd'] = yoseiKamoku
-        return render_template('GK_db055.html', wk54updateInfo=wk54updateInfo, err1="")
-    return render_template('GK_db054.html', wk54yoseiKamoku=session.get(f'{user_id}_wk54yoseiKamoku'), wk54yoseiStudent=session.get(f'{user_id}_wk54yoseiStudent'), err1="")
+        session[f'{user_id}_wk54yoseiKamoku_sel'] = yoseiKamoku
+        session[f'{user_id}_wk54yoseiDate'] = yoseiDate
+        yoseiStudent = GK1S0040.get_renkyosei()
+        return render_template('GK_db055.html', wk54yoseiStudent=yoseiStudent, err1="")
+    return render_template('GK_db054.html', wk54yoseiKamoku=session.get(f'{user_id}_wk54yoseiKamoku'), wk54yoseiDate=session.get(f'{user_id}_wk54yoseiDate'), err1="")
 
 #養成状況管理セグ更新２
 @app.route('/GK_db055', methods=['GET', 'POST'])
@@ -801,18 +798,44 @@ def GK_db055():
     if request.method == 'POST':
         action = request.form.get('action')
         if action == 'back':
-            return render_template('GK_db054.html', wk54yoseiKamoku=session.get(f'{user_id}_wk54yoseiKamoku'), wk54yoseiStudent=session.get(f'{user_id}_wk54yoseiStudent'), err1="")
+            return render_template('GK_db054.html', wk54yoseiKamoku=session.get(f'{user_id}_wk54yoseiKamoku'), wk54yoseiDate=session.get(f'{user_id}_wk54yoseiDate'), err1="")
+        else:
+            yoseiStudent = request.form.getlist('yoseiStudent')
+        session[f'{user_id}_wk54yoseiStudent'] = yoseiStudent
+        yoseiKamoku = session.get(f'{user_id}_wk54yoseiKamoku_sel')
+        yoseiDateNew = session.get(f'{user_id}_wk54yoseiDate')
+        wk54updateInfo = GK1S0040.get_yoseiJokyo(yoseiKamoku, yoseiStudent, yoseiDateNew)
+        session[f'{user_id}_wk54updateInfo'] = wk54updateInfo
+        return render_template('GK_db056.html', wk54updateInfo=wk54updateInfo, err1="")
+    yoseiStudent = GK1S0040.get_renkyosei()
+    return render_template('GK_db055.html', wk54yoseiStudent=yoseiStudent, err1="")
+
+#養成状況管理セグ更新3
+@app.route('/GK_db056', methods=['GET', 'POST'])
+def GK_db056():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [1,6,7,9]:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'back':
+            yoseiStudent = GK1S0040.get_renkyosei()
+            return render_template('GK_db055.html', wk54yoseiStudent=yoseiStudent, err1="")
         else:
             wk54updateInfo = session.get(f'{user_id}_wk54updateInfo')
-            err = GK1S0040.update_yoseiJokyo(wk54updateInfo,session.get(f'{user_id}_wk54yoseicd'))
+            err = GK1S0040.update_yoseiJokyo(wk54updateInfo)
         if err:
-            return render_template('GK_db055.html', wk54updateInfo=wk54updateInfo, err1=err)
+            return render_template('GK_db056.html', wk54updateInfo=wk54updateInfo, err1=err)
         session.pop(f'{user_id}_wk54updateInfo', None)
-        session.pop(f'{user_id}_wk54yoseicd', None)
+        session.pop(f'{user_id}_wk54yoseiKamoku', None)
+        session.pop(f'{user_id}_wk54yoseiDate', None)
+        session.pop(f'{user_id}_wk54yoseiStudent', None)
         err1 = "養成状況の更新が完了しました。"
-        return render_template('GK_db054.html', wk54yoseiKamoku=session.get(f'{user_id}_wk54yoseiKamoku'), wk54yoseiStudent=session.get(f'{user_id}_wk54yoseiStudent'), err1=err1)
-    return render_template('GK_db055.html', wk54updateInfo=session.get(f'{user_id}_wk54updateInfo'), err1="")
-
+        wk54yoseiKamoku = GK1S0040.get_yoseiKamokuAll()
+        session[f'{user_id}_wk54yoseiKamoku'] = wk54yoseiKamoku
+        return render_template('GK_db054.html', wk54yoseiKamoku=wk54yoseiKamoku, err1=err1)
 
 #ＭＴ資料作成
 @app.route('/GK_db060', methods=['GET', 'POST'])
