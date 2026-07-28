@@ -5,7 +5,7 @@
 import csv
 from datetime import timedelta
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, session, flash, Response, send_file
+from flask import (Flask, render_template, request, redirect, url_for, session, flash, Response, send_file, after_this_request)
 import io
 import os
 from zoneinfo import ZoneInfo
@@ -1012,21 +1012,42 @@ def GK_aiTNGC():
 
 
 # METARTAF取得翻訳
-@app.route('/GK_WX_MetarTaf',methods=['GET', 'POST'])
+@app.route('/GK_WX_MetarTaf', methods=['GET', 'POST'])
 def GK_WX_MetarTaf():
     if not session.get('logged_in'):
-        return redirect(url_for('login'))
+        return redirect(url_for('GK_login'))          # ← 旧: url_for('login') は存在しないため修正
     if request.method == 'POST':
         location = request.form['airport']
         shorikbn = request.form['processType']
         metar = request.form['metar']
         taf = request.form['taf']
-        fileName,err_msg = WL1M0200.main(shorikbn ,location,metar,taf)
-        if err_msg == 0:
-            return send_file(f"{fileName}", as_attachment=True, download_name=fileName)
-        else:
-            return render_template(fileName, err_msg=err_msg)
-    return render_template('get_metartaf.html')
+        filePath, err_msg = WL1M0200.main(shorikbn, location, metar, taf)
+        if err_msg != 0:
+            # 異常時はエラーメッセージを添えて入力画面を再表示する
+            return render_template('GK_WX_MetarTaf.html',
+                                   err=WL1M0200.get_err_msg(err_msg),
+                                   err_msg=WL1M0200.get_err_msg(err_msg))
+        # 送信完了後に一時作業ディレクトリごと削除する
+        workdir = os.path.dirname(filePath)
+        @after_this_request
+        def cleanup(response):
+            try:
+                WL1M0200.cleanup_workdir(workdir)
+            except Exception:
+                pass
+            return response
+        # conditional=False とキャッシュ無効化で、ブラウザ側の古い内容の再表示を防ぐ
+        response = send_file(
+            filePath,
+            as_attachment=True,
+            download_name=os.path.basename(filePath),
+            conditional=False
+        )
+        response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+        return response
+    return render_template('GK_WX_MetarTaf.html', err="", err_msg="")
 
 # セッションの有効期限をリセット
 @app.before_request
