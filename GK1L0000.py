@@ -1012,8 +1012,8 @@ def GK_aiTNGC():
 
 
 # METARTAF取得翻訳
-@app.route('/get_metartaf',methods=['GET', 'POST'])
-def get_metartaf():
+@app.route('/GK_WX_MetarTaf',methods=['GET', 'POST'])
+def GK_WX_MetarTaf():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
     if request.method == 'POST':
