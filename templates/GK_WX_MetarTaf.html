@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC気象ツール</title>
+    <link rel="stylesheet" href="../static/GK1C0100.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>HUAC気象ツール</h1>
+        </header>
+
+        <main>
+            <section class="form-section">
+                <h2>MetarTaf取得翻訳</h2>
+                <form id="weatherForm" , method="post" , action="/GK_WX_MetarTaf">
+                    <div class="form-group">
+                        <label>処理選択:</label>
+                        <label><input type="radio" name="processType" value="取得・翻訳" checked>取得・翻訳</label>
+                        <label><input type="radio" name="processType" value="翻訳">翻訳</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="airportSelect">空港選択:</label>
+                        <select id="airportSelect" name="airport">
+                            <option value="RJTY">RJTY:横田飛行場(米軍)</option>
+                            <option value="RJAA">RJAA:成田国際空港</option>
+                            <option value="RJBB">RJBB:関西国際空港</option>
+                            <option value="RJCC">RJCC:新千歳空港</option>
+                            <option value="RJOO">RJOO:大阪国際空港(伊丹空港)</option>
+                            <option value="RJTT">RJTT:東京国際空港(羽田空港)</option>
+                            <option value="RJAH">RJAH:百里飛行場(茨城空港)</option>
+                            <option value="RJAF">RJAF:松本空港</option>
+                            <option value="RJBD">RJBD:南紀白浜空港</option>
+                            <option value="RJBE">RJBE:神戸空港</option>
+                            <option value="RJBT">RJBT:但馬空港</option>
+                            <option value="OEJN">OEJN:キング・アブドゥルアズィール国際空港(Saudi Arabia)</option>
+                            <option value="OEMA">OEMA:プリンス・モハンマド・ビン・アブドゥルアズィーズ国際空港(Saudi Arabia)</option>
+                            <option value="OPIS">OPIS:イスラマバード国際空港(Pakistan)</option>
+                            <option value="OPKC">OPKC:ジンナー国際空港(Pakistan)</option>
+                            <option value="OPLA">OPLA:アッラーマ・イクバール国際空港(Pakistan)</option>
+                            <option value="OPPS">OPPS:バシャ・カーン国際空港(Pakistan)</option>
+                            <option value="VIDP">VIDP:インディラ・ガンディー国際空港(India)</option>
+                            <option value="WSSS">WSSS:チャンギ国際空港(Singapore)</option>
+                            <option value="RJCH">RJCH:函館空港</option>
+                            <option value="RJCK">RJCK:釧路空港</option>
+                            <option value="RJCM">RJCM:女満別空港</option>
+                            <option value="RJCO">RJCO:丘珠空港</option>
+                            <option value="RJEB">RJEB:紋別空港</option>
+                            <option value="RJEC">RJEC:旭川空港</option>
+                            <option value="RJFC">RJFC:屋久島空港</option>
+                            <option value="RJFE">RJFE:福江空港</option>
+                            <option value="RJFF">RJFF:福岡空港</option>
+                            <option value="RJFG">RJFG:種子島空港</option>
+                            <option value="RJFK">RJFK:鹿児島空港</option>
+                            <option value="RJFM">RJFM:宮崎空港</option>
+                            <option value="RJFO">RJFO:大分空港</option>
+                            <option value="RJFR">RJFR:北九州空港</option>
+                            <option value="RJFS">RJFS:佐賀空港</option>
+                            <option value="RJFT">RJFT:熊本空港</option>
+                            <option value="RJFU">RJFU:長崎空港</option>
+                            <option value="RJGG">RJGG:中部国際空港(セントレア)</option>
+                            <option value="RJKA">RJKA:奄美空港</option>
+                            <option value="RJNG">RJNG:岐阜飛行場</option>
+                            <option value="RJNK">RJNK:小松空港</option>
+                            <option value="RJNS">RJNS:静岡空港</option>
+                            <option value="RJNT">RJNT:富山空港</option>
+                            <option value="RJNY">RJNY:静浜飛行場</option>
+                            <option value="RJOA">RJOA:広島空港</option>
+                            <option value="RJOB">RJOB:岡山空港</option>
+                            <option value="RJOC">RJOC:出雲空港</option>
+                            <option value="RJOH">RJOH:美保飛行場(米子空港)</option>
+                            <option value="RJOI">RJOI:岩国空港(米軍)</option>
+                            <option value="RJOK">RJOK:高知空港</option>
+                            <option value="RJOM">RJOM:松山空港</option>
+                            <option value="RJOR">RJOR:鳥取空港</option>
+                            <option value="RJOS">RJOS:徳島空港</option>
+                            <option value="RJOT">RJOT:高松空港</option>
+                            <option value="RJOW">RJOW:山口宇部空港</option>
+                            <option value="RJOY">RJOY:八尾飛行場</option>
+                            <option value="RJSA">RJSA:青森空港</option>
+                            <option value="RJSC">RJSC:山形空港</option>
+                            <option value="RJSF">RJSF:福島空港</option>
+                            <option value="RJSH">RJSH:八戸航空基地</option>
+                            <option value="RJSI">RJSI:花巻空港</option>
+                            <option value="RJSM">RJSM:三沢飛行場</option>
+                            <option value="RJSN">RJSN:新潟空港</option>
+                            <option value="RJSS">RJSS:仙台空港</option>
+                            <option value="RJSY">RJSY:庄内空港</option>
+                            <option value="RJTF">RJTF:調布飛行場</option>
+                            <option value="RJTI">東京ヘリポート</option>
+                            <option value="ROAH">ROAH:那覇空港</option>
+                            <option value="RODN">RODN:嘉手納飛行場(米軍)</option>
+                            <option value="ROIG">ROIG:新石垣空港</option>
+                            <option value="ROMD">ROMD:南大東空港</option>
+                            <option value="RORK">RORK:北大東空港</option>
+                            <option value="RORS">RORS:下地島空港</option>
+                            <option value="ROTM">ROTM:普天間飛行場(米軍)</option>
+                            <option value="ROYN">ROYN:与那国空港</option>
+                            <option value="EGLL">EGLL:ヒースロー空港(United Kingdom)</option>
+                            <option value="LTBA">LTBA:アタテュルク国際空港(Turkey)</option>
+                            <option value="OERK">OERK:キング・ハーリド国際空港(Saudi Arabia)</option>
+                            <option value="OIFM">OIFM:シャヒード・ベヘシュティー国際空港(Iran)</option>
+                            <option value="OIIE">OIIE:エマーム・ホメイニー国際空港(Iran)</option>
+                            <option value="OMDB">OMDB:ドバイ国際空港(U.A.E.)</option>
+                            <option value="RKSI">RKSI:仁川国際空港(Korea)</option>
+                            <option value="RKSS">RKSS:金浦国際空港(Korea)</option>
+                            <option value="VABB">VABB:チャトラパティ・シヴァージー国際空港(India)</option>
+                            <option value="VTBS">VTBS:スワンナプーム国際空港(Thailand)</option>
+                            <option value="VTCC">VTCC:チェンマイ国際空港(Thailand)</option>
+                            <option value="WIII">WIII:スカルノ・ハッタ国際空港(Indonesia)</option>
+                            <option value="WMKJ">WMKJ:スルタン・イスマイル空港(Malaysia)</option>
+                            <option value="WMKK">WMKK:クアラルンプール国際空港(Malaysia)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additionalInfo">翻訳するMETAR:</label>
+                        <div>
+                            <textarea id="metar" name="metar" rows="4"
+                                placeholder="処理区分：翻訳　の場合に翻訳するMETARを入力"></textarea>
+                        </div>
+                        <label for="additionalInfo">翻訳するTAF:</label>
+                        <div>
+                            <textarea id="taf" name="taf" rows="4" placeholder="処理区分：翻訳　の場合に翻訳するtafを入力"></textarea>
+                        </div>
+                    </div>
+                    <button type="button" onclick="location.href='/menu'" class="menu-button">Menu</button>
+                    <button type="submit">実行</button>
+                </form>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Yuichi Taniguchi</p>
+        </footer>
+    </div>
+</body>
+
+</html>

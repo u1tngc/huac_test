@@ -5,7 +5,7 @@
 import csv
 from datetime import timedelta
 from datetime import datetime
-from flask import Flask, render_template, request, redirect, url_for, session, flash, Response
+from flask import Flask, render_template, request, redirect, url_for, session, flash, Response, send_file
 import io
 import os
 from zoneinfo import ZoneInfo
@@ -15,6 +15,8 @@ import GK1S0001
 import GK1S0040
 import GK1S0041
 import GK1S0201
+
+import WL1M0200
 
 
 app = Flask(__name__)
@@ -229,6 +231,10 @@ def GK_menu01():
             GK1S0040.insertLog(user_id,"E001","")
             taniguchiList = GK1S0201.get_taniguchiAll(user_id)
             return render_template('GK_aiTNGC.html', taniguchiList=taniguchiList, err="")
+        elif shorikbn == "metartaf":
+            #機能：METAR/TAF取得
+            GK1S0040.insertLog(user_id,"W001","")
+            return render_template('GK_WX_MetarTaf.html', err="")  
         elif shorikbn == "password":
             #機能：パスワード変更
             return redirect(url_for('GK_db010',err=""))
@@ -1004,6 +1010,23 @@ def GK_aiTNGC():
         taniguchiList = GK1S0201.get_taniguchiAll(user_id)
         return render_template('GK_aiTNGC.html', taniguchiList=taniguchiList, err="")
 
+
+# METARTAF取得翻訳
+@app.route('/get_metartaf',methods=['GET', 'POST'])
+def get_metartaf():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        location = request.form['airport']
+        shorikbn = request.form['processType']
+        metar = request.form['metar']
+        taf = request.form['taf']
+        fileName,err_msg = WL1M0200.main(shorikbn ,location,metar,taf)
+        if err_msg == 0:
+            return send_file(f"{fileName}", as_attachment=True, download_name=fileName)
+        else:
+            return render_template(fileName, err_msg=err_msg)
+    return render_template('get_metartaf.html')
 
 # セッションの有効期限をリセット
 @app.before_request
