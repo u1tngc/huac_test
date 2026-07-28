@@ -9,6 +9,7 @@ from flask import (Flask, render_template, request, redirect, url_for, session, 
 import io
 import os
 from zoneinfo import ZoneInfo
+import zipfile
 
 
 import GK1S0001
@@ -16,6 +17,7 @@ import GK1S0040
 import GK1S0041
 import GK1S0201
 
+import WL1M0000
 import WL1M0200
 
 
@@ -231,16 +233,23 @@ def GK_menu01():
             GK1S0040.insertLog(user_id,"E001","")
             taniguchiList = GK1S0201.get_taniguchiAll(user_id)
             return render_template('GK_aiTNGC.html', taniguchiList=taniguchiList, err="")
-        elif shorikbn == "metartaf":
-            #機能：METAR/TAF取得
-            GK1S0040.insertLog(user_id,"W001","")
-            return render_template('GK_WX_MetarTaf.html', err="")  
+        elif shorikbn == "wx":
+            wx_kbn = request.form['wx_kbn']
+            if wx_kbn == "1":
+                #機能：METAR/TAF取得
+                GK1S0040.insertLog(user_id,"W001","")
+                return render_template('GK_WX_MetarTaf.html', err="") 
+            elif wx_kbn == "2":
+                #機能：概況取得
+                GK1S0040.insertLog(user_id,"W011","")
+                return render_template('GK_WX_wx.html', err="") 
+            elif wx_kbn == "3":
+                #機能：資料取得
+                pass
         elif shorikbn == "password":
             #機能：パスワード変更
             return redirect(url_for('GK_db010',err=""))
-
     return render_template('GK_menu01.html')
-
 
 # 練習問題（問題表示）
 @app.route('/GK_practice01', methods=['GET', 'POST']) 
@@ -261,7 +270,6 @@ def GK_practice01():
         return redirect(url_for('GK_practice02', end=end))
 
     return render_template('GK_practice01.html', question=question)
-
 
 # 練習問題（解答表示）
 @app.route('/GK_practice02', methods=['GET', 'POST'])
@@ -296,7 +304,6 @@ def GK_practice02():
 
     return render_template('GK_practice02.html', answer=answer, question=question, err=err)
 
-
 # 復習問題（問題表示）
 @app.route('/GK_fukushu01', methods=['GET', 'POST']) 
 def GK_fukushu01():
@@ -318,7 +325,6 @@ def GK_fukushu01():
         return redirect(url_for('GK_fukushu02', err=err))
 
     return render_template('GK_fukushu01.html', question=question)
-
 
 # 復習問題（解答表示）
 @app.route('/GK_fukushu02', methods=['GET', 'POST'])
@@ -346,7 +352,6 @@ def GK_fukushu02():
             return redirect(url_for('GK_menu01'))  # 最後の問題の場合はメニューに戻る
 
     return render_template('GK_fukushu02.html', answer=answer, question=question,err=err)
-
 
 # 小テスト問題（問題表示）
 @app.route('/GK_test01', methods=['GET', 'POST']) 
@@ -380,7 +385,6 @@ def GK_test01():
     
     return render_template('GK_test01.html', question=question)
 
-
 # 小テスト問題（解答表示）
 @app.route('/GK_test02', methods=['GET', 'POST'])
 def GK_test02():
@@ -413,7 +417,6 @@ def GK_test02():
 
     return render_template('GK_test02.html', answer=answer, question=question)
 
-
 #学生管理セグ・照会
 @app.route('/GK_db001', methods=['GET', 'POST'])
 def GK_db001():
@@ -424,7 +427,6 @@ def GK_db001():
         return redirect(url_for('GK_menu01'))
     
     return render_template('GK_db001.html')
-
 
 #学生管理セグ訂正・照会
 @app.route('/GK_db002', methods=['GET', 'POST'])
@@ -443,7 +445,6 @@ def GK_db002():
         return redirect(url_for('GK_db003', gakusei=session.get(f'{user_id}_gakusei'), err=""))
     
     return render_template('GK_db002.html')
-
 
 #学生管理セグ・訂正
 @app.route('/GK_db003', methods=['GET', 'POST'])
@@ -471,7 +472,6 @@ def GK_db003():
         return render_template('GK_db002.html', gakuseiData=gakuseiData, err1=err) 
     return render_template('GK_db003.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")      
 
-
 #学生管理セグ・登録
 @app.route('/GK_db004', methods=['GET', 'POST'])
 def GK_db004():
@@ -498,7 +498,6 @@ def GK_db004():
 
     return render_template('GK_db004.html', err="")  
 
-
 #パスワード変更
 @app.route('/GK_db010', methods=['GET', 'POST'])
 def GK_db010():
@@ -518,7 +517,6 @@ def GK_db010():
 
     return render_template('GK_db010.html', err ="")  
 
-
 #履歴管理セグ・照会（学生用）
 @app.route('/GK_db020', methods=['GET', 'POST'])
 def GK_db020():
@@ -526,7 +524,6 @@ def GK_db020():
         return redirect(url_for('GK_login'))
     
     return render_template('GK_db020.html')
-    
 
 #履歴管理セグ・照会１（管理者用）
 @app.route('/GK_db021', methods=['GET', 'POST'])
@@ -548,7 +545,6 @@ def GK_db021():
     
     return render_template('GK_db021.html', gakuseiName=session.get(f"{user_id}_gakuseiName"))
 
-
 #履歴管理セグ・照会２（管理者用）
 @app.route('/GK_db022', methods=['GET', 'POST'])
 def GK_db022():
@@ -566,7 +562,6 @@ def GK_db022():
     rireki = session.get(f'{user_id}_rireki')
     
     return render_template('GK_db022.html', gakuseiName=gakuseiName, rireki=rireki)
-
 
 #学科試験管理セグ・照会
 @app.route('/GK_db031', methods=['GET', 'POST'])
@@ -596,7 +591,6 @@ def GK_db031():
     gakkaShikenList = session.get(f'{user_id}_gakkaShikenList')
     return render_template('GK_db031.html', gakkaShikenList=gakkaShikenList)
 
-
 #学科試験管理セグ・訂正
 @app.route('/GK_db032', methods=['GET', 'POST'])
 def GK_db032():
@@ -620,7 +614,6 @@ def GK_db032():
         return redirect(url_for('GK_menu01')) 
     return render_template('GK_db032.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")      
 
-
 #各種CHK管理セグ・照会（管理者用）
 @app.route('/GK_db041', methods=['GET', 'POST'])
 def GK_db041():
@@ -630,7 +623,6 @@ def GK_db041():
     if not session.get('authority') in [6,7,8,9]:
         return redirect(url_for('GK_menu01'))
     return render_template('GK_db041.html')
-
 
 #各種CHK管理セグ・照会（練許生用）
 @app.route('/GK_db042', methods=['GET', 'POST'])
@@ -671,7 +663,6 @@ def GK_db043():
             return redirect(url_for('GK_menu01'))   
     return render_template('GK_db043.html')
 
-
 #各種CHK管理セグ訂正・訂正
 @app.route('/GK_db044', methods=['GET', 'POST'])
 def GK_db044():
@@ -710,7 +701,6 @@ def GK_db044():
             err = GK1S0040.update_chkList(aft_array1, aft_array2)
             err1 = f"{session.get(f'{user_id}_chk_name')}の訂正が完了しました。"
             return render_template('GK_db043.html', gakuseiCHK=session.get(f"{user_id}_gakuseiCHK"), err1=err1) 
-
 
 #養成状況管理セグ照会１
 @app.route('/GK_db051', methods=['GET', 'POST'])
@@ -772,7 +762,6 @@ def GK_db053():
             headers={'Content-Disposition': "attachment; filename*=UTF-8''%E9%A4%8A%E6%88%90%E7%8A%B6%E6%B3%81%E4%B8%80%E8%A6%A7.csv"}
         )
     return render_template('GK_db053.html')
-
 
 #養成状況管理セグ更新１
 @app.route('/GK_db054', methods=['GET', 'POST'])
@@ -870,7 +859,6 @@ def GK_db060():
         ) 
     return render_template('GK_db060.html', mtshiryo=session.get(f"{user_id}_mtShiryo"))
 
-
 #ガントチャート作成
 @app.route('/GK_db061', methods=['GET', 'POST'])
 def GK_db061():
@@ -883,7 +871,6 @@ def GK_db061():
                            gantt_data=session.get(f"{user_id}_gantt_data"),
                            months=session.get(f"{user_id}_months"),
                            current_month=session.get(f"{user_id}_current_month"))
-
 
 #養成計画管理セグ・更新（選択）
 @app.route('/GK_db062', methods=['GET', 'POST'])
@@ -899,7 +886,6 @@ def GK_db062():
         session[f'{user_id}_yoseiTeamInfoBef'] = teamInfo
         return render_template('GK_db063.html', teamInfoBef=teamInfo, teamInfoAft=teamInfo, err="")
     return render_template('GK_db062.html', team_list=GK1S0040.get_teamList(), err="")
-
 
 #養成計画管理セグ・更新（更新）
 @app.route('/GK_db063', methods=['GET', 'POST'])
@@ -931,7 +917,6 @@ def GK_db063():
         return render_template('GK_db062.html', team_list=team_list, err=err)
     return render_template('GK_db063.html', teamInfoBef=yoseiTeamInfoBef, teamInfoAft=yoseiTeamInfoBef, err=err)
     
-
 #ＭＳＧ送信・入力
 @app.route('/GK_send_msg1', methods=['GET', 'POST'])
 def GK_send_msg1():
@@ -952,7 +937,6 @@ def GK_send_msg1():
     # GET時：セッションにデータがあれば表示（戻るボタン対応）
     msg_array = session.get(f'{user_id}_msg_data')
     return render_template('GK_send_msg1.html', msg_array=msg_array, err="")
-
 
 #ＭＳＧ送信・送信
 @app.route('/GK_send_msg2', methods=['GET', 'POST'])
@@ -976,7 +960,6 @@ def GK_send_msg2():  # ← 関数名の重複を修正
             session.pop(f'{user_id}_msg_data', None)
             return render_template('GK_send_msg1.html', msg_array=None, err="送信完了しました。")   
     return render_template('GK_send_msg2.html', msg_array=session.get(f'{user_id}_msg_data'), err="")
-
 
 #擬似谷口
 @app.route('/GK_aiTNGC', methods=['GET', 'POST'])
@@ -1009,7 +992,6 @@ def GK_aiTNGC():
         # 最新の会話履歴を取得して画面を再描画
         taniguchiList = GK1S0201.get_taniguchiAll(user_id)
         return render_template('GK_aiTNGC.html', taniguchiList=taniguchiList, err="")
-
 
 # METARTAF取得翻訳
 @app.route('/GK_WX_MetarTaf', methods=['GET', 'POST'])
@@ -1048,6 +1030,35 @@ def GK_WX_MetarTaf():
         response.headers['Expires'] = '0'
         return response
     return render_template('GK_WX_MetarTaf.html', err="", err_msg="")
+
+# WX資料取得
+@app.route('/GK_WX_wx',methods=['GET', 'POST'])
+def GK_WX_wx():
+    html_path = ""
+    ret_path = ""
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        location = request.form['airport']
+        shorikbn = request.form['purpose']
+        fileNames, err_msg = WL1M0000.kyotsu_shori(shorikbn ,location[0:4])
+        #fileNames, err_msg,html_name = WX1M0000.kyotsu_shori(shorikbn ,location[0:4])
+        if shorikbn == "1":
+            return send_file(f"{fileNames[0]}", as_attachment=True, download_name=fileNames[0])
+        else:
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zipf:
+                for ix1 in range(2):
+                    file_path = f"{fileNames[ix1]}"
+                    zipf.write(file_path, arcname=fileNames[ix1])
+            zip_buffer.seek(0)
+            if err_msg == "":
+                return send_file(zip_buffer, as_attachment=True, download_name='wx資料.zip')
+        if err_msg == "":
+            return render_template('GK_WX_wx.html',err_msg=err_msg)
+        #else:
+        #    return render_template('天気概況.html')
+    return render_template('GK_WX_wx.html')
 
 # セッションの有効期限をリセット
 @app.before_request

@@ -148,8 +148,14 @@
                     {% endif %}
                     <div class="data-section">
                         <div class="radio-section">
-                            <label class="radio-group"><input type="radio" name="selection"
-                                    value="metartaf">METAR・TAF取得</label>
+                            <label class="radio-group"><input type="radio" name="selection" value="wx">気象関連</label>
+                            <div class="form-group">
+                                <label for="wx_kbn"></label>
+                                <select id="wx_kbn" name="wx_kbn">
+                                    <option value="1">ＭＥＴＡＲ／ＴＡＦ取得・翻訳</option>
+                                    <option value="2">資料取得</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
                     <div class="data-section">

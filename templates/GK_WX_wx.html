@@ -5,47 +5,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HUAC気象ツール</title>
-    <link rel="stylesheet" href="../static/GK1CW200.css">
+    <link rel="stylesheet" href="../static/GK1CW000.css">
 </head>
 
 <body>
-    <div class="container">
-        <header>
-            <h1>HUAC気象ツール</h1>
-        </header>
+    <header>
+        <h1>HUAC気象ツール</h1>
+    </header>
 
-        <main>
-            <section class="form-section">
-                <h2>MetarTaf取得翻訳</h2>
-                <form id="weatherForm" , method="post" , action="/GK_WX_MetarTaf">
-                    <div class="form-group">
-                        <label>処理選択:</label>
-                        <label><input type="radio" name="processType" value="取得・翻訳" checked>取得・翻訳</label>
-                        <label><input type="radio" name="processType" value="翻訳">翻訳</label>
-                    </div>
+    <main>
+        <section class="form-section">
+            <h2>資料取得</h2>
+            <form id="weatherForm" method="post" action="/GK_WX_wx">
+                <div class="form-group">
+                    <label>利用目的:</label>
+                    <label><input type="radio" name="purpose" value="1" checked>自家用</label>
+                    <label><input type="radio" name="purpose" value="2">教育証明</label>
+                </div>
 
-                    <div class="form-group">
-                        <label for="airportSelect">空港選択:</label>
-                        <select id="airportSelect" name="airport">
-                            <option value="RJTY">RJTY:横田飛行場(米軍)</option>
+                <div class="form-group">
+                    <label for="airport">追加の空港を選択（RJTYはデフォルトで出力）
+                        <select id="airport" name="airport">
+                            <option value="">なし</option>
+                            <option value="RJAA">RJAA:成田国際空港</option>
+                            <option value="RJBB">RJBB:関西国際空港</option>
+                            <option value="RJCC">RJCC:新千歳空港</option>
                             <option value="RJOO">RJOO:大阪国際空港(伊丹空港)</option>
                             <option value="RJTT">RJTT:東京国際空港(羽田空港)</option>
-                            <option value="RJBE">RJBE:神戸空港</option>
-                            <option value="RJBB">RJBB:関西国際空港</option>
-                            <option value="RJBD">RJBD:南紀白浜空港</option>
-                            <option value="RJAA">RJAA:成田国際空港</option>
-                            <option value="RJCC">RJCC:新千歳空港</option>
                             <option value="RJAH">RJAH:百里飛行場(茨城空港)</option>
-                            <option value="OPLA">OPLA:アッラーマ・イクバール国際空港(Pakistan)</option>
-                            <option value="VIDP">VIDP:インディラ・ガンディー国際空港(India)</option>
-                            <option value="WSSS">WSSS:チャンギ国際空港(Singapore)</option>
+                            <option value="RJAF">RJAF:松本空港</option>
+                            <option value="RJBD">RJBD:南紀白浜空港</option>
+                            <option value="RJBE">RJBE:神戸空港</option>
+                            <option value="RJBT">RJBT:但馬空港</option>
                             <option value="OEJN">OEJN:キング・アブドゥルアズィール国際空港(Saudi Arabia)</option>
                             <option value="OEMA">OEMA:プリンス・モハンマド・ビン・アブドゥルアズィーズ国際空港(Saudi Arabia)</option>
                             <option value="OPIS">OPIS:イスラマバード国際空港(Pakistan)</option>
                             <option value="OPKC">OPKC:ジンナー国際空港(Pakistan)</option>
+                            <option value="OPLA">OPLA:アッラーマ・イクバール国際空港(Pakistan)</option>
                             <option value="OPPS">OPPS:バシャ・カーン国際空港(Pakistan)</option>
-                            <option value="RJAF">RJAF:松本空港</option>
-                            <option value="RJBT">RJBT:但馬空港</option>
+                            <option value="VIDP">VIDP:インディラ・ガンディー国際空港(India)</option>
+                            <option value="WSSS">WSSS:チャンギ国際空港(Singapore)</option>
                             <option value="RJCH">RJCH:函館空港</option>
                             <option value="RJCK">RJCK:釧路空港</option>
                             <option value="RJCM">RJCM:女満別空港</option>
@@ -92,7 +91,7 @@
                             <option value="RJSS">RJSS:仙台空港</option>
                             <option value="RJSY">RJSY:庄内空港</option>
                             <option value="RJTF">RJTF:調布飛行場</option>
-                            <option value="RJTI">東京ヘリポート</option>
+                            <option value="RJTI">RJTI:東京ヘリポート</option>
                             <option value="ROAH">ROAH:那覇空港</option>
                             <option value="RODN">RODN:嘉手納飛行場(米軍)</option>
                             <option value="ROIG">ROIG:新石垣空港</option>
@@ -116,29 +115,22 @@
                             <option value="WMKJ">WMKJ:スルタン・イスマイル空港(Malaysia)</option>
                             <option value="WMKK">WMKK:クアラルンプール国際空港(Malaysia)</option>
                         </select>
-                    </div>
+                </div>
+                <button type="button" onclick="location.href='/menu'" class="menu-button">Menu</button>
+                <button type="submit" class="execute-button">実行</button>
+                <!--<button type="button" onclick="location.href='/gaikyo'" class="menu-button">概況</button>-->
+            </form>
+            <a
+                href="https://1drv.ms/f/c/0bca17f66a05bfa2/ErBVvpItJGFBhcTSHlfh-ssBwIqDr4ZOtvyzgiLmFdbgdQ?e=GdO5Ht">定時稼働結果</a>
+            {% if err %}
+            <li><a class="err">{{ err }}</a></li>
+            {% endif %}
+        </section>
+    </main>
 
-                    <div class="form-group">
-                        <label for="additionalInfo">翻訳するMETAR:</label>
-                        <div>
-                            <textarea id="metar" name="metar" rows="4"
-                                placeholder="処理区分：翻訳　の場合に翻訳するMETARを入力"></textarea>
-                        </div>
-                        <label for="additionalInfo">翻訳するTAF:</label>
-                        <div>
-                            <textarea id="taf" name="taf" rows="4" placeholder="処理区分：翻訳　の場合に翻訳するtafを入力"></textarea>
-                        </div>
-                    </div>
-                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">戻る</button>
-                    <button type="submit">実行</button>
-                </form>
-            </section>
-        </main>
-
-        <footer>
-            <p>&copy; 2025 Yuichi Taniguchi</p>
-        </footer>
-    </div>
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
 </body>
 
 </html>
