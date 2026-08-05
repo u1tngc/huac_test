@@ -80,7 +80,10 @@ def GK_menu01():
             session[f"{user_id}_fukushu"] = []
             session[f"{user_id}_ix1"] = 0  
             session[f'{user_id}_mondaiNum'] = mondai_num
-            mondai = GK1S0001.get_mondai(bunya, mondai_num)
+            if (user_id == "23C2739" or user_id == "16A3184") and bunya == "Z":
+                mondai = GK1S0001.get_mondai1(bunya, mondai_num)
+            else:
+                mondai = GK1S0001.get_mondai(bunya, mondai_num)
             session[f"{user_id}_mondai_list"] = mondai
             return redirect(url_for('GK_practice01'))
         elif shorikbn == "test": 

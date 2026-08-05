@@ -7,7 +7,6 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import random
 
-import GK0S001D
 import GK0S002D
 import GK0S003D
 import GK0S01XD
@@ -57,6 +56,45 @@ def get_mondai(bunya,mondai_num):
         mondai[ix1][4] = mondai[ix1][4].replace("\\n", "\n").replace("\n", "<br>")
     return mondai
 
+def get_mondai1(bunya,mondai_num):
+    bunya_list = {
+        "A":"法規",
+        "B":"工学",
+        "C":"気象",
+        "D":"情報",
+        "E":"その他",
+        "X":"赤帽",
+        "Z":"極秘"
+    }
+    bunya_name = bunya_list[bunya]
+    ret_list = GK0S01XD.get_mondai(bunya_name)
+    mondai = []
+    random_num = [0]
+
+    eof_flg = 0
+    random_num[0] = random.randint(0, len(ret_list) - 1)
+    mondai.append(ret_list[random_num[0]])
+    while eof_flg == 0:
+        num = random.randint(0, len(ret_list) - 1)
+        if num in random_num:
+            pass
+        else:
+            random_num.append(num)
+            mondai.append(ret_list[num])
+            if len(mondai) == mondai_num:
+                eof_flg = 1
+    for ix1 in range(len(mondai)):
+        mondai[ix1][3] = mondai[ix1][3].replace("\\n", "\n").replace("\n", "<br>")
+        mondai[ix1][4] = mondai[ix1][4].replace("\\n", "\n").replace("\n", "<br>")
+    mondai[0][0] = "Z"
+    mondai[0][1] = "2"
+    mondai[0][2] = "0083"
+    temp_mondai = "以下〇〇に入る学生名を答えなさい。\n\n〇〇・〇〇：ワールドカップ観戦後、ネカフェの同じ部屋で一夜を明かす。（午前10時まで）"
+    temp_kaito = "森・宮地"
+    mondai[0][3] = temp_mondai.replace("\\n", "\n").replace("\n", "<br>")
+    mondai[0][4] = temp_kaito.replace("\\n", "\n").replace("\n", "<br>")
+
+    return mondai
 
 def get_testMondai(mondai):
     bunya = mondai[0:1]
