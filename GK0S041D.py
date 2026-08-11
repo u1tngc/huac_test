@@ -1,4 +1,4 @@
-#PGM-ID:GK0S001D
+#PGM-ID:GK0S041D
 #PGM-NAME:GK各種CHK管理セグI/O(オンライン)
 #最終更新日:2026/01/24
 

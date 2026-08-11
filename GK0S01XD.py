@@ -6,7 +6,6 @@ import os
 
 import psycopg2
 
-
 DB_CONFIG = {
     "dbname": os.getenv("DB_NAME"),
     "user": os.getenv("DB_USER"),
@@ -19,19 +18,6 @@ DB_CONFIG = {
     "sslrootcert": "",
     "target_session_attrs": "read-write"
 }
-
-# DB_CONFIG = {
-#     "dbname": "huac_gakka", 
-#     "user": "taniguchi_tanglin_ic", 
-#     "password": "N6eEqr20vmfNV-_McGwfkA", 
-#     "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
-#     "port": 26257,
-#     "sslmode": "require",
-#     "sslcert": "",
-#     "sslkey": "",
-#     "sslrootcert": "",
-#     "target_session_attrs": "read-write"
-# }
 
 def get_mondai(bunya):
     try:
@@ -48,7 +34,6 @@ def get_mondai(bunya):
     except Exception as e:
         print(f'エラー内容：{e}')
         return []
-
 
 def get_test_jikayo(bunya, kubun, mondai_no):
     conn = None
@@ -85,7 +70,6 @@ def get_test_jikayo(bunya, kubun, mondai_no):
     finally:
         if conn:
             conn.close()  # 接続を確実に閉じる
-
 
 def get_nigateMondai(bunya, kubun):
     conn = None

@@ -20,7 +20,6 @@ DB_CONFIG = {
     "target_session_attrs": "read-write"
 }
 
-
 def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
     try:
         conn = psycopg2.connect(**DB_CONFIG)

@@ -6,7 +6,6 @@ import os
 
 import psycopg2
 
-
 DB_CONFIG = {
     "dbname": os.getenv("DB_NAME"),
     "user": os.getenv("DB_USER"),
@@ -19,19 +18,6 @@ DB_CONFIG = {
     "sslrootcert": "",
     "target_session_attrs": "read-write"
 }
-
-# DB_CONFIG = {
-#     "dbname": "huac_gakka", 
-#     "user": "taniguchi_tanglin_ic", 
-#     "password": "N6eEqr20vmfNV-_McGwfkA", 
-#     "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
-#     "port": 26257,
-#     "sslmode": "require",
-#     "sslcert": "",
-#     "sslkey": "",
-#     "sslrootcert": "",
-#     "target_session_attrs": "read-write"
-# }
 
 def check_rireki(user):
     try:
