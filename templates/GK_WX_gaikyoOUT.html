@@ -97,6 +97,8 @@ WL1S0000.to_web_path() で変換済みの値が渡ってくる
 
                                 <body>
                                     <h1>天気概況</h1>
+                                    <button type="button" onclick="location.href='/GK_WX_gaikyoIN'"
+                                        class="back-button">戻る</button>
                                     {# ---------- 現在天気 ---------- #}
                                     <h2>{{ title[1] }}</h2>
                                     {% set end = now_weather1.index('@') if '@' in now_weather1 else now_weather1 |
