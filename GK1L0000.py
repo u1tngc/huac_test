@@ -1037,7 +1037,7 @@ def GK_WX_wx():
     html_path = ""
     ret_path = ""
     if not session.get('logged_in'):
-        return redirect(url_for('login'))
+        return redirect(url_for('GK_login'))
     if request.method == 'POST':
         location = request.form['airport']
         shorikbn = request.form['purpose']
