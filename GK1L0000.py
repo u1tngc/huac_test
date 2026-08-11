@@ -1060,7 +1060,7 @@ def GK_WX_wx():
         #    return render_template('天気概況.html')
     return render_template('GK_WX_wx.html')
 
-# WX概況取得
+# WX概況取得（入力画面）
 @app.route('/GK_WX_gaikyoIN', methods=['GET', 'POST'])
 def GK_WX_gaikyoIN():
     user_id = session.get('user_id')
@@ -1076,13 +1076,30 @@ def GK_WX_gaikyoIN():
         if err:
             return render_template('GK_WX_gaikyoIN.html', err=err)
         GK1S0040.insertLog(user_id, "W021", "")
-        return render_template('GK_WX_gaikyoOUT.html',
-                               title=gaikyo["title"],
-                               now_weather1=gaikyo["now_weather1"],
-                               now_weather2=gaikyo["now_weather2"],
-                               forecast=gaikyo["forecast"],
-                               kinocd=gaikyo["kinocd"])
+        session['gaikyo_postNo'] = postNo
+        session['gaikyo_city'] = city
+        return redirect(url_for('GK_WX_gaikyoOUT'))
     return render_template('GK_WX_gaikyoIN.html', err="")
+
+# WX概況取得（結果画面）
+@app.route('/GK_WX_gaikyoOUT', methods=['GET'])
+def GK_WX_gaikyoOUT():
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    postNo = session.get('gaikyo_postNo')
+    city = session.get('gaikyo_city')
+    # 直接URLを叩かれた場合など、検索条件が無ければ入力画面へ
+    if postNo is None or city is None:
+        return redirect(url_for('GK_WX_gaikyoIN'))
+    err, gaikyo = WL1M0100.get_gaikyo(postNo, city)
+    if err:
+        return render_template('GK_WX_gaikyoIN.html', err=err)
+    return render_template('GK_WX_gaikyoOUT.html',
+                           title=gaikyo["title"],
+                           now_weather1=gaikyo["now_weather1"],
+                           now_weather2=gaikyo["now_weather2"],
+                           forecast=gaikyo["forecast"],
+                           kinocd=gaikyo["kinocd"])
 
 # セッションの有効期限をリセット
 @app.before_request
