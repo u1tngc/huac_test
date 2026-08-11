@@ -13,9 +13,7 @@ import pickle
 # =========================
 # APIクライアント
 # =========================
-#client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-client = OpenAI(api_key="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")
-
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 MODEL = os.getenv("OPENAI_MODEL_NAME")
 
 # =========================
