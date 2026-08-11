@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC気象ツール</title>
+    <link rel="stylesheet" href="../static/GK1CW300.css">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>HUAC気象ツール</h1>
+        </header>
+
+        <main>
+            <section class="form-section">
+                <h2>気象概況・予報</h2>
+                <form id="weatherForm" method="post" action="/GK_WX_gaikyoIN">
+                    <div class="form-group">
+                        <label for="postNo">郵便番号：</label>
+                        <div>
+                            <textarea id="postNo" name="postNo" rows="1" placeholder="3600222"></textarea>
+                        </div>
+                        <label for="city">都市名:</label>
+                        <div>
+                            <textarea id="city" name="city" rows="1" placeholder="Osaka"></textarea>
+                        </div>
+                    </div>
+                    <button type="submit">実行</button>
+                    <button type="button" onclick="location.href='/menu'" class="menu-button">Menu</button>
+                    <div>郵便番号・都市名共に空白の場合は葛和田の概況を取得</div>
+                </form>
+                {% if err %}
+                <ul>
+                    <li><span class="err">{{ err }}</span></li>
+                </ul>
+                {% endif %}
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Yuichi Taniguchi</p>
+        </footer>
+    </div>
+
+    <script>
+        // rows="1" のtextareaを実質1行入力として扱う:
+        // Enterキーでの改行入力を無効化し、代わりにフォーム送信する
+        document.querySelectorAll('#postNo, #city').forEach(function (el) {
+            el.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    document.getElementById('weatherForm').requestSubmit();
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

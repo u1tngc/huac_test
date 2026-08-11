@@ -5,12 +5,11 @@
 import csv
 from datetime import timedelta
 from datetime import datetime
-from flask import (Flask, render_template, request, redirect, url_for, session, flash, Response, send_file, after_this_request)
+from flask import (Flask, render_template, request, redirect, url_for, session, flash, Response, send_file, after_this_request, send_from_directory)
 import io
 import os
 from zoneinfo import ZoneInfo
 import zipfile
-
 
 import GK1S0001
 import GK1S0040
@@ -19,7 +18,7 @@ import GK1S0201
 
 import WL1M0000
 import WL1M0200
-
+import WL1S0100
 
 app = Flask(__name__)
 app.secret_key = "your_fixed_secret_key_here"  # 固定のキーを使用
@@ -50,7 +49,6 @@ def GK_login():
             return 'ログイン失敗。ユーザー名またはパスワードが違います。'
     return render_template('GK_login.html')
 
-
 # メニュー画面
 @app.route('/GK_menu01', methods=['GET', 'POST'])
 def GK_menu01():
@@ -80,10 +78,7 @@ def GK_menu01():
             session[f"{user_id}_fukushu"] = []
             session[f"{user_id}_ix1"] = 0  
             session[f'{user_id}_mondaiNum'] = mondai_num
-            if (user_id == "23C2739" or user_id == "16A3184") and bunya == "Z":
-                mondai = GK1S0001.get_mondai1(bunya, mondai_num)
-            else:
-                mondai = GK1S0001.get_mondai(bunya, mondai_num)
+            mondai = GK1S0001.get_mondai(bunya, mondai_num)
             session[f"{user_id}_mondai_list"] = mondai
             return redirect(url_for('GK_practice01'))
         elif shorikbn == "test": 
@@ -243,11 +238,13 @@ def GK_menu01():
                 GK1S0040.insertLog(user_id,"W001","")
                 return render_template('GK_WX_MetarTaf.html', err="") 
             elif wx_kbn == "2":
-                #機能：概況取得
+                #機能：資料取得
                 GK1S0040.insertLog(user_id,"W011","")
                 return render_template('GK_WX_wx.html', err="") 
             elif wx_kbn == "3":
-                #機能：資料取得
+                #機能：概況取得
+                GK1S0040.insertLog(user_id,"W021","")
+                return render_template('GK_WX_gaikyoIN.html', err="") 
                 pass
         elif shorikbn == "password":
             #機能：パスワード変更
@@ -1063,11 +1060,34 @@ def GK_WX_wx():
         #    return render_template('天気概況.html')
     return render_template('GK_WX_wx.html')
 
+# WX概況取得
+@app.route('/GK_WX_gaikyoIN', methods=['GET', 'POST'])
+def GK_WX_gaikyoIN():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if request.method == 'POST':
+        postNo = request.form['postNo'].strip()
+        city = request.form['city'].strip()
+        err = WL1S0100.check01(postNo, city)
+        if err:
+            return render_template('GK_WX_gaikyoIN.html', err=err)
+        err, gaikyo = WL1S0100.get_gaikyo(postNo, city)
+        if err:
+            return render_template('GK_WX_gaikyoIN.html', err=err)
+        GK1S0040.insertLog(user_id, "W021", "")
+        return render_template('GK_WX_gaikyoOUT.html',
+                               title=gaikyo["title"],
+                               now_weather1=gaikyo["now_weather1"],
+                               now_weather2=gaikyo["now_weather2"],
+                               forecast=gaikyo["forecast"],
+                               kinocd=gaikyo["kinocd"])
+    return render_template('GK_WX_gaikyoIN.html', err="")
+
 # セッションの有効期限をリセット
 @app.before_request
 def refresh_session():
     session.modified = True  
-
 
 # ログアウト
 @app.route('/GK_logout')
@@ -1075,10 +1095,8 @@ def GK_logout():
     session.clear()
     return redirect(url_for('GK_login'))
 
-
 def init01(user_id):
     session.pop(f"{user_id}_fukushu", None)
-
 
 def init02(user_id):
     session.pop(f"{user_id}_mondai_list", None)
@@ -1087,18 +1105,15 @@ def init02(user_id):
     session.pop(f"{user_id}_mondaiNum", None)
     session.pop(f"{user_id}_mondaiNo", None)
 
-
 def init03(user_id):
     session.pop(f"{user_id}_testList", None)
     session.pop(f"{user_id}_test", None)
     session.pop(f"{user_id}_end", None) 
 
-
 def init04(user_id):
     session.pop(f"{user_id}_gakuseiName", None)
     session.pop(f"{user_id}_gakuseiID", None)
     session.pop(f"{user_id}_rireki", None)
-
 
 def init05(user_id):
     session.pop(f"{user_id}_fukushuList", None)
@@ -1106,11 +1121,9 @@ def init05(user_id):
     session.pop(f'{user_id}_fukushuNo', None)
     session.pop(f'{user_id}_fukushu_eof', None)
 
-
 def init06(user_id):
     session.pop(f"{user_id}_gakkaShiken_data", None)
     session.pop(f"{user_id}_limitdate", None)
-
 
 def init07(user_id):
     session.pop(f"{user_id}_wk51gakuseiID", None)
@@ -1121,7 +1134,6 @@ def init07(user_id):
     session.pop(f"{user_id}_gantt_data", None)
     session.pop(f"{user_id}_months", None)      
     session.pop(f"{user_id}_current_month", None)
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

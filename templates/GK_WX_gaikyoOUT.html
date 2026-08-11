@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>気象概況</title>
+    <link rel="stylesheet" type="text/css" href="/static/GK1CW301.css">
+    <style>
+        @font-face {
+            font-family: "japanese";
+            src: url("/static/fonts/GenShinGothic-Monospace-Medium.ttf");
+        }
+
+        body {
+            font-family: "japanese";
+        }
+    </style>
+</head>
+{#
+============================================================
+受け取る引数
+title : [地点名, "現在天気", "予報天気", 天気図URL]
+now_weather1 : 現在天気の見出し（[0]は観測時刻、'@'で終端）
+now_weather2 : 現在天気の値
+forecast : [日][12項目][9時刻] に整形済みの予報
+kinocd : 2 = 教証・取得郵便 / 3 = 取得都市名（2に寄せ済み）
+
+参照パス（配置が揃っていないので注意）
+CSS : /static/GK1CW301.css
+フォント : /static/fonts/GenShinGothic-Monospace-Medium.ttf
+アイコン : /static/fonts/wx_png/xxx.png
+※WX0S0101は "./fonts/..." を返すため
+WL1S0000.to_web_path() で変換済みの値が渡ってくる
+============================================================
+#}
+{# ---------- セルの色分けルール ---------- #}
+{% macro wind_cell(value) %}
+{%- set head = value[0:1] -%}
+{%- if head == 'A' -%}<td class="blue">{{ value[1:] }}</td>
+{%- elif head == 'B' -%}<td class="orange">{{ value[1:] }}</td>
+{%- elif head == 'C' -%}<td class="red">{{ value[1:] }}</td>
+{%- elif head == 'D' -%}<td class="purple">{{ value[1:] }}</td>
+{%- else -%}<td>{{ value }}</td>
+{%- endif -%}
+{% endmacro %}
+{# 気温は "29℃" 形式のため末尾1文字を落としてから数値化する #}
+{% macro temp_cell(value) %}
+{%- set n = value[:-1] | int(-999) -%}
+{%- if n == -999 -%}<td>{{ value }}</td>
+{%- elif n >= 31 -%}<td class="purple">{{ value }}</td>
+{%- elif n >= 28 -%}<td class="red">{{ value }}</td>
+{%- elif n >= 25 -%}<td class="orange">{{ value }}</td>
+{%- else -%}<td>{{ value }}</td>
+{%- endif -%}
+{% endmacro %}
+{% macro vis_cell(value) %}
+{%- set n = value | int(-1) -%}
+{%- if n < 0 -%}<td>{{ value }}</td>
+    {%- elif n < 1500 -%}<td class="purple">{{ value }}m</td>
+        {%- elif n < 5000 -%}<td class="red">{{ value }}m</td>
+            {%- elif n < 10000 -%}<td class="orange">{{ value }}m</td>
+                {%- else -%}<td>{{ value }}m</td>
+                {%- endif -%}
+                {% endmacro %}
+                {% macro cloud_cell(value) %}
+                {%- set n = value | int(-1) -%}
+                {%- if n < 0 -%}<td>{{ value }}</td>
+                    {%- elif n < 450 -%}<td class="purple">{{ value }}m</td>
+                        {%- elif n < 600 -%}<td class="red">{{ value }}m</td>
+                            {%- elif n < 850 -%}<td class="orange">{{ value }}m</td>
+                                {%- else -%}<td>{{ value }}m</td>
+                                {%- endif -%}
+                                {% endmacro %}
+                                {# 現在天気：見出し名でセルの種類を切り替える #}
+                                {% macro now_cell(label, value) %}
+                                {%- if label == '風速' or label == 'ガスト' -%}{{ wind_cell(value) }}
+                                {%- elif label == 'アイコン' -%}<td class="tdIcon"><img src="{{ value }}" alt="NULL"></td>
+                                {%- elif label == '気温' -%}{{ temp_cell(value) }}
+                                {%- elif label == '視程' -%}{{ vis_cell(value) }}
+                                {%- elif label == '雲底高度' -%}{{ cloud_cell(value) }}
+                                {%- else -%}<td>{{ value }}</td>
+                                {%- endif -%}
+                                {% endmacro %}
+                                {# 予報：行番号でセルの種類を切り替える #}
+                                {% macro forecast_cell(row_no, value) %}
+                                {%- if value == '-' -%}<td>-</td>
+                                {%- elif row_no == 2 -%}<td class="tdIcon"><img src="{{ value }}" alt="NULL"></td>
+                                {%- elif row_no == 4 or row_no == 5 -%}{{ wind_cell(value) }}
+                                {%- elif row_no == 7 -%}{{ vis_cell(value) }}
+                                {%- elif row_no == 8 -%}{{ cloud_cell(value) }}
+                                {%- elif row_no == 9 -%}{{ temp_cell(value) }}
+                                {%- else -%}<td>{{ value }}</td>
+                                {%- endif -%}
+                                {% endmacro %}
+
+                                <body>
+                                    <h1>天気概況</h1>
+                                    {# ---------- 現在天気 ---------- #}
+                                    <h2>{{ title[1] }}</h2>
+                                    {% set end = now_weather1.index('@') if '@' in now_weather1 else now_weather1 |
+                                    length %}
+                                    <table border="1" class="table">
+                                        {% for i in range(1, end) %}
+                                        <tr>
+                                            <th>{{ now_weather1[i] }}</th>
+                                            {{ now_cell(now_weather1[i], now_weather2[i]) }}
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                    <div class="image-container">
+                                        <img src="{{ title[3] }}" alt="NULL">
+                                    </div>
+                                    <p class="time">出典：openWeather,気象庁 {{ now_weather1[0] }} {{ title[0] }}</p>
+                                    <p> </p>
+                                    <p> </p>
+                                    {# ---------- 予報天気（kinocd 2 / 3） ---------- #}
+                                    {% for day in forecast %}
+                                    <h2>{{ title[2] }} {{ day[0][1].split('日')[0] }}日</h2>
+                                    <table border="1">
+                                        {% for row in day %}
+                                        {% set row_no = loop.index0 %}
+                                        <tr>
+                                            {% for value in row %}
+                                            {% if loop.index0 == 0 %}
+                                            <th>{{ value }}</th>
+                                            {% else %}
+                                            {{ forecast_cell(row_no, value) }}
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                    <p>&copy; 法政大学令和元年卒 谷口 雄一</p>
+                                    <p> ※※無断転用禁止※※</p>
+                                    <p> </p>
+                                    <p> </p>
+                                    {% endfor %}
+                                </body>
+
+</html>
