@@ -1,16 +1,16 @@
 
-#PGM-ID:GK0S0201
+#PGM-ID:GK1S0201
 #PGM-NAME:GK擬似谷口AI連携メイン
 #最終更新日:2026/02/04
 
 
 import GK1S0202
 import GK1S0203
-import GK1S0A1D
+import GK0S0A1D
 
 
 def get_taniguchiAll(id):
-    ret_array = GK1S0A1D.get_taniguchi(id)
+    ret_array = GK0S0A1D.get_taniguchi(id)
     return ret_array
 
 
@@ -28,5 +28,5 @@ def get_ai_main(id,bunya,question):
     
 
 def insert_taniguchi(id, kbn,bunya, kaiwa):
-    ret_cd = GK1S0A1D.insert_taniguchi(id, kbn, bunya, kaiwa)
+    ret_cd = GK0S0A1D.insert_taniguchi(id, kbn, bunya, kaiwa)
     return ret_cd

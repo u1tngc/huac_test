@@ -1,4 +1,4 @@
-#PGM-ID:GK0S0203
+#PGM-ID:GK1S0203
 #PGM-NAME:GK擬似谷口AI応答(汎用)
 #最終更新日:2026/05/07
 
@@ -10,7 +10,9 @@ import os
 # =========================
 # APIクライアント
 # =========================
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+#client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key="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")
+
 
 MODEL = os.getenv("OPENAI_MODEL_NAME")
 

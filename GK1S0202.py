@@ -1,6 +1,7 @@
-#PGM-ID:GK0S0202
+#PGM-ID:GK1S0202
 #PGM-NAME:GK擬似谷口AI応答
 #最終更新日:2026/02/04
+
 
 from openai import OpenAI
 import PyPDF2
@@ -8,10 +9,12 @@ import os
 import re
 import pickle
 
+
 # =========================
 # APIクライアント
 # =========================
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+#client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key="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")
 
 MODEL = os.getenv("OPENAI_MODEL_NAME")
 
@@ -77,6 +80,7 @@ def load_cache(path):
             return pickle.load(f)
     return {}
 
+
 def save_cache(path, data):
     with open(path, "wb") as f:
         pickle.dump(data, f)
@@ -94,10 +98,11 @@ FIELD_TO_GLOSSARY = {
     "気象": "用語集_気象.csv"
 }
 
+
+def read_pdf_text(path):
 # =========================
 # PDF処理
 # =========================
-def read_pdf_text(path):
     text = ""
     with open(path, "rb") as f:
         reader = PyPDF2.PdfReader(f)
@@ -106,6 +111,7 @@ def read_pdf_text(path):
             if t:
                 text += t + "\n"
     return text
+
 
 def split_into_blocks(text, max_chars=1200):
     blocks, buf = [], ""
@@ -118,6 +124,7 @@ def split_into_blocks(text, max_chars=1200):
         blocks.append(buf)
     return blocks
 
+
 def extract_related_blocks(blocks, question, max_blocks=6):
     keywords = {
         k for k in re.findall(r"[一-龥ぁ-んァ-ンA-Za-z0-9]+", question)
@@ -128,10 +135,11 @@ def extract_related_blocks(blocks, question, max_blocks=6):
         selected = blocks[:2]
     return "\n".join(selected[:max_blocks])
 
+
+def load_glossary_csv(path):
 # =========================
 # 用語集処理
 # =========================
-def load_glossary_csv(path):
     lines = []
     if not os.path.exists(path):
         return lines
@@ -142,6 +150,7 @@ def load_glossary_csv(path):
                 lines.append(row)
     return lines
 
+
 def extract_related_glossary(glossary_lines, question, max_terms=10):
     keywords = {
         k for k in re.findall(r"[一-龥ぁ-んァ-ンA-Za-z0-9]+", question)
@@ -150,10 +159,11 @@ def extract_related_glossary(glossary_lines, question, max_terms=10):
     hits = [line for line in glossary_lines if any(k in line for k in keywords)]
     return "\n".join(hits[:max_terms])
 
+
+def get_ai_main(user_id,field,question):
 # =========================
 # メイン
 # =========================
-def get_ai_main(user_id,field,question):
     pdf_path = os.path.join("資料", f"{field}.pdf")
     # if not os.path.exists(pdf_path):
     #     print("PDFが存在しません。")
@@ -209,6 +219,7 @@ def get_ai_main(user_id,field,question):
     except Exception as e:
         return "", 1
     return answer, 0
+
 
 if __name__ == "__main__":
     user_id = input("ユーザーID：").strip()
