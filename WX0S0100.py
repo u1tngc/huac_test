@@ -3,7 +3,6 @@
 #最終更新日:
 
 from datetime import datetime, timedelta, timezone
-import locale
 import math
 import requests
 
@@ -42,7 +41,7 @@ def get_weather(title, now_weather1, now_weather2, postCode, kinocd):
     arr_str1 = str(arr_time) + "時点"
     arr_str2 = ""
     now_weather1, now_weather2 = add_arr(now_weather1, now_weather2, arr_str1, arr_str2)
-    
+
     arr_wx = WX0S0101.get_wx(str(weather_data["weather"][0]["id"]),1)
     arr_str1 = "現在天気"
     arr_str2 = arr_wx
@@ -52,16 +51,16 @@ def get_weather(title, now_weather1, now_weather2, postCode, kinocd):
     arr_str1 = "アイコン"
     arr_str2 = WX0S0101.get_wx(arr_icon, 2)
     now_weather1, now_weather2 = add_arr(now_weather1, now_weather2, arr_str1, arr_str2)
-    
+
     arr_wind_d = PK0S0100.wind_direction(weather_data["wind"]["deg"])
-    arr_str1 = "風向" 
+    arr_str1 = "風向"
     arr_str2 = arr_wind_d
     now_weather1, now_weather2 = add_arr(now_weather1, now_weather2, arr_str1, arr_str2)
 
     arr_wind_s1 = weather_data["wind"]["speed"]
     arr_wind_s2 = rounds(arr_wind_s1,1)
     arr_wind_s2 = getWindSpeedIndex(arr_wind_s2)
-    arr_str1 = "風速" 
+    arr_str1 = "風速"
     arr_str2 = arr_wind_s2 + "m/s"
     now_weather1, now_weather2 = add_arr(now_weather1, now_weather2, arr_str1, arr_str2)
 
@@ -134,7 +133,7 @@ def get_weather(title, now_weather1, now_weather2, postCode, kinocd):
 def get_forecast(title, forecast, postCode, kinocd):
     title.append("予報天気")
     forecast_arr1 = ['予報時刻','天気','アイコン','風向','風速','ガスト','3h雨量','視程','雲底高度','気温','湿度','気圧']
-    forecast.append(forecast_arr1) 
+    forecast.append(forecast_arr1)
     if kinocd == 3:
         weather_data = get_wxJson(4,postCode)
     else:
@@ -154,7 +153,7 @@ def get_forecast(title, forecast, postCode, kinocd):
             arr_str = WX0S0101.get_wx(str(weather_data["list"][ix1]["weather"][0]["id"]),2)
             forecast_arr.append(str(arr_str))
             #風向
-            arr_str = PK0S0100.wind_direction(weather_data["list"][ix1]["wind"]["deg"]) 
+            arr_str = PK0S0100.wind_direction(weather_data["list"][ix1]["wind"]["deg"])
             forecast_arr.append(str(arr_str))
             #風速
             arr_wind_s1 = weather_data["list"][ix1]["wind"]["speed"]
@@ -228,7 +227,7 @@ def get_asas():
                 url_year = comp.strftime("%Y")
                 url_month = comp.strftime("%m")
                 url_day = comp.strftime("%d")
-                url_hour = '21'      
+                url_hour = '21'
             else:
                 url_year = now_utc.strftime("%Y")
                 url_month = now_utc.strftime("%m")
@@ -241,7 +240,7 @@ def get_asas():
             url_year = comp.strftime("%Y")
             url_month = comp.strftime("%m")
             url_day = comp.strftime("%d")
-            url_hour = '21'  
+            url_hour = '21'
             break
     if url_hour == '15':
         url_hour = '12'
@@ -251,8 +250,8 @@ def get_asas():
     return url
 
 def get_wxJson(flg, postCode):
-    api_key = "813610f17fcad78884866e8e0a0b1bd1" 
-    zip_place = postCode 
+    api_key = "813610f17fcad78884866e8e0a0b1bd1"
+    zip_place = postCode
     city_name = postCode
     lang = "ja"
     if flg == 1:
@@ -260,7 +259,7 @@ def get_wxJson(flg, postCode):
     elif flg == 2:
         url = f"https://api.openweathermap.org/data/2.5/forecast?zip={zip_place}&units=metric&appid={api_key}&lang={lang}"
     elif flg == 3:
-        url = f"https://api.openweathermap.org/data/2.5/weather?q={city_name}&units=metric&appid={api_key}&lang={lang}" 
+        url = f"https://api.openweathermap.org/data/2.5/weather?q={city_name}&units=metric&appid={api_key}&lang={lang}"
     elif flg == 4:
         url = f"https://api.openweathermap.org/data/2.5/forecast?q={city_name}&units=metric&appid={api_key}&lang={lang}"
     response = requests.get(url)
@@ -268,8 +267,6 @@ def get_wxJson(flg, postCode):
     return data
 
 def unix_to_jst(unix, kinoCd):
-    # ロケールを日本語に設定
-    locale.setlocale(locale.LC_ALL, 'ja_JP.UTF-8')
     JST = timezone(timedelta(hours=+9), 'JST')
     # Unix時間をdatetimeオブジェクトに変換
     jst_time = datetime.fromtimestamp(unix, JST)
@@ -278,8 +275,8 @@ def unix_to_jst(unix, kinoCd):
         jst_datetime = jst_time.strftime("%d日 %H:%M")
     elif kinoCd == 2:
         jst_datetime = jst_time.strftime("%H:%M")
-    else:    
-        jst_datetime = jst_time.strftime("%m/%d %H:%M") 
+    else:
+        jst_datetime = jst_time.strftime("%m/%d %H:%M")
     return jst_datetime
 
 def rounds(num, keta):
@@ -287,7 +284,7 @@ def rounds(num, keta):
         ret = round(num, 1)
     elif keta == 0:
         ret = round(num, 0)
-    return ret    
+    return ret
 
 def dew_point(temperature, humidity):
     a = 17.625

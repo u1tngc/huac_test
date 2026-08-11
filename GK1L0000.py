@@ -18,7 +18,7 @@ import GK1S0201
 
 import WL1M0000
 import WL1M0200
-import WL1S0100
+import WL1M0100
 
 app = Flask(__name__)
 app.secret_key = "your_fixed_secret_key_here"  # 固定のキーを使用
@@ -1069,10 +1069,10 @@ def GK_WX_gaikyoIN():
     if request.method == 'POST':
         postNo = request.form['postNo'].strip()
         city = request.form['city'].strip()
-        err = WL1S0100.check01(postNo, city)
+        err = WL1M0100.check01(postNo, city)
         if err:
             return render_template('GK_WX_gaikyoIN.html', err=err)
-        err, gaikyo = WL1S0100.get_gaikyo(postNo, city)
+        err, gaikyo = WL1M0100.get_gaikyo(postNo, city)
         if err:
             return render_template('GK_WX_gaikyoIN.html', err=err)
         GK1S0040.insertLog(user_id, "W021", "")
