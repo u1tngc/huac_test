@@ -1,15 +1,16 @@
 #PGM-ID:GK1S0041
 #PGM-NAME:GK自家用MSG送信
-#最終更新日:2026/07/08
+#最終更新日:2026/08/18
 
 
 import requests
+import os
+
 import GK0S071D
 
 
 # Discord Webhook URL
-WEBHOOK_URL = "https://discordapp.com/api/webhooks/1454837288344228035/9LvK3n6u9JWLBjpIZXG27WJzqiosq1zFxRmVPIkkPAVbuGEtazE6K7cPLedsv2E5Slwd"
-
+WEBHOOK_URL = os.getenv("DISCORD_WEBHOOK_URL")
 
 def send_msg(msg_data, user_id):
     """Discord にメッセージを送信
