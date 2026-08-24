@@ -72,9 +72,9 @@ def GK_menu01():
                 return redirect(url_for('GK_menu01'))
             init02(user_id)
             GK1S0040.insertLog(user_id,"A001",bunya)
-            if bunya == "Z" and user_id == "23C2739":
-                flash("使用上限回数に達しました。")
-                return redirect(url_for('GK_menu01')) 
+            # if bunya == "Z" and user_id == "23C2739":
+            #     flash("使用上限回数に達しました。")
+            #     return redirect(url_for('GK_menu01')) 
             session[f"{user_id}_fukushu"] = []
             session[f"{user_id}_ix1"] = 0  
             session[f'{user_id}_mondaiNum'] = mondai_num
