@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 会話履歴更新</title>
+    <link rel="stylesheet" href="../static/GK1C0050.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>会話履歴更新</h2>
+            {% if err1 %}
+            <a class="err">{{ err1 }}</a>
+            <br><br>
+            {% endif %}
+            {% if msg1 %}
+            <a class="msg">{{ msg1 }}</a>
+            <br><br>
+            {% endif %}
+            <div class="student-info">
+                <p><strong>氏名:</strong> {{ gakuseiName }}</p>
+            </div>
+
+            {# 既存の会話履歴（参照用）。どこに追加すべきか判断するため更新欄の前に表示する #}
+            {# 明細の並び：[0]学籍番号 [1]管理区分 [2]管理番号 [3]枝番 [4]起票者 [5]開始年月日 [6]内容 [7]管理区分名 #}
+            <div class="rireki-block">
+                <span class="block-title">既存の会話履歴</span>
+                {% if kaiwaRireki %}
+                <div class="rireki-scroll">
+                <div class="kanri-container">
+                    {% for kanriGroup in kaiwaRireki %}
+                    {% if kanriGroup %}
+                    <div class="kanri-box">
+                        <div class="kanri-box-header">
+                            <h3 class="kanri-box-title">{{ kanriGroup[0][7] }}（{{ kanriGroup[0][1] }}）</h3>
+                            <span class="kanri-box-count">{{ kanriGroup|length }}件</span>
+                        </div>
+                        <div class="kanri-box-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-no">管理番号</th>
+                                        <th class="col-date">日付</th>
+                                        <th class="col-user">起票者</th>
+                                        <th>内容</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for list in kanriGroup %}
+                                    <tr{% if not loop.last and loop.nextitem[2] == list[2] %} class="kanri-cont"{% endif %}>
+                                        <td class="col-no">{{ list[2] }}</td>
+                                        <td class="col-date">
+                                            {% if list[5] and list[5]|length == 8 %}
+                                            {{ list[5][0:4] }}/{{ list[5][4:6] }}/{{ list[5][6:8] }}
+                                            {% else %}
+                                            {{ list[5] }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="col-user">{{ list[4] }}</td>
+                                        <td class="naiyo">{{ list[6] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                </div>
+                {% else %}
+                <div class="no-data">
+                    <a>会話履歴は登録されていません。</a>
+                </div>
+                {% endif %}
+            </div>
+
+            <form method="post" action="/GK_db083">
+                <div class="koshin-block">
+                    <span class="block-title">更新種類</span>
+                    <div class="kbn-group">
+                        <label>
+                            <input type="radio" name="koshin_kbn" value="1" {% if koshinKbn=='1' %}checked{% endif %}>
+                            枝番追加<span class="kbn-note">既存の管理番号に追記します</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="koshin_kbn" value="2" {% if koshinKbn=='2' %}checked{% endif %}>
+                            管理番号追加<span class="kbn-note">既存の管理区分に新しい管理番号を起票します</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="koshin_kbn" value="3" {% if koshinKbn=='3' %}checked{% endif %}>
+                            管理区分追加<span class="kbn-note">新しい管理区分で起票します</span>
+                        </label>
+                    </div>
+
+                    {# 枝番追加：既存の管理区分＋管理番号を選択する #}
+                    <div class="select-row" id="row_eda">
+                        <label for="kanri_no">追記する管理番号</label>
+                        {% if kanriNoList %}
+                        <select id="kanri_no" name="kanri_no">
+                            {% for list in kanriNoList %}
+                            <option value="{{ list[0] }},{{ list[2] }}">
+                                {{ list[1] }}（{{ list[0] }}）－ {{ list[2] }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% else %}
+                        <a class="empty-note">追記できる会話履歴がありません。</a>
+                        {% endif %}
+                    </div>
+
+                    {# 管理番号追加：既存の管理区分を選択する #}
+                    <div class="select-row" id="row_kanri">
+                        <label for="kanri_kbn">管理区分</label>
+                        {% if kanriKbnList %}
+                        <select id="kanri_kbn" name="kanri_kbn">
+                            {% for list in kanriKbnList %}
+                            <option value="{{ list[0] }}">{{ list[1] }}（{{ list[0] }}）</option>
+                            {% endfor %}
+                        </select>
+                        {% else %}
+                        <a class="empty-note">登録済みの管理区分がありません。</a>
+                        {% endif %}
+                    </div>
+
+                    {# 管理区分追加：まだ登録されていない管理区分を選択する #}
+                    <div class="select-row" id="row_new">
+                        <label for="new_kanri_kbn">追加する管理区分</label>
+                        {% if newKanriKbnList %}
+                        <select id="new_kanri_kbn" name="new_kanri_kbn">
+                            {% for list in newKanriKbnList %}
+                            <option value="{{ list[0] }}">{{ list[1] }}（{{ list[0] }}）</option>
+                            {% endfor %}
+                        </select>
+                        {% else %}
+                        <a class="empty-note">追加できる管理区分がありません。</a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="koshin-block">
+                    <label class="block-title" for="naiyo">内容（1000文字以内）</label>
+                    <textarea class="naiyo-area" id="naiyo" name="naiyo" maxlength="1000"
+                        required>{{ naiyo }}</textarea>
+                    <div class="auto-item">
+                        <p><strong>起票者:</strong> {{ kihyosha }}</p>
+                        <p><strong>開始年月日:</strong> {{ ymd }}</p>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                    <button type="button" onclick="location.href='/GK_db081'" class="menu-button">戻る</button>
+                    <button type="submit" class="execute-button">登録</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+
+    <script>
+        // 更新種類に応じて選択欄の表示を切り替える
+        function switchKoshinKbn() {
+            var kbn = document.querySelector('input[name="koshin_kbn"]:checked');
+            kbn = kbn ? kbn.value : "1";
+            document.getElementById('row_eda').style.display = (kbn === "1") ? "" : "none";
+            document.getElementById('row_kanri').style.display = (kbn === "2") ? "" : "none";
+            document.getElementById('row_new').style.display = (kbn === "3") ? "" : "none";
+        }
+        var radios = document.querySelectorAll('input[name="koshin_kbn"]');
+        for (var i = 0; i < radios.length; i++) {
+            radios[i].addEventListener('change', switchKoshinKbn);
+        }
+        switchKoshinKbn();
+    </script>
+</body>
+
+</html>

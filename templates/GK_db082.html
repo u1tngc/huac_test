@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 会話履歴照会</title>
+    <link rel="stylesheet" href="../static/GK1C0049.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>会話履歴照会</h2>
+            {% if err1 %}
+            <a class="err">{{ err1 }}</a>
+            <br><br>
+            {% endif %}
+            <div class="student-info">
+                <p><strong>氏名:</strong> {{ gakuseiName }}</p>
+            </div>
+
+            <form method="post" action="/GK_db082">
+                {% if kaiwaRireki %}
+                <div class="kanri-container">
+                    {% for kanriGroup in kaiwaRireki %}
+                    {% if kanriGroup %}
+                    <div class="kanri-box">
+                        <div class="kanri-box-header">
+                            <h3 class="kanri-box-title">
+                                {{ kanriGroup[0][7] }}（{{ kanriGroup[0][1] }}）
+                            </h3>
+                            <span class="kanri-box-count">{{ kanriGroup|length }}件</span>
+                        </div>
+                        <div class="kanri-box-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-date">日付</th>
+                                        <th class="col-user">起票者</th>
+                                        <th>内容</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for list in kanriGroup %}
+                                    <tr{% if not loop.last and loop.nextitem[2]==list[2] %} class="kanri-cont" {% endif
+                                        %}>
+                                        <td class="col-date">
+                                            {% if list[5] and list[5]|length == 8 %}
+                                            {{ list[5][0:4] }}/{{ list[5][4:6] }}/{{ list[5][6:8] }}
+                                            {% else %}
+                                            {{ list[5] }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="col-user">{{ list[4] }}</td>
+                                        <td class="naiyo">{{ list[6] }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="no-data">
+                    <a>会話履歴は登録されていません。</a>
+                </div>
+                {% endif %}
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                    <button type="button" onclick="location.href='/GK_db081'" class="menu-button">戻る</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

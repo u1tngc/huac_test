@@ -14,6 +14,7 @@ import zipfile
 import GK1S0001
 import GK1S0040
 import GK1S0041
+import GK1S0042
 import GK1S0201
 
 import WL1M0000
@@ -246,6 +247,19 @@ def GK_menu01():
                 GK1S0040.insertLog(user_id,"W021","")
                 return render_template('GK_WX_gaikyoIN.html', err="") 
                 pass
+        elif shorikbn == "student_cntl":
+            cntl_kbn = request.form['cntl_kbn']
+            gakuseiCHK = GK1S0042.get_gakuseiInfo02()
+            session[f"{user_id}_wk81gakuseiName"] = gakuseiCHK
+            if cntl_kbn == "1":
+                #機能：会話履歴照会
+                GK1S0040.insertLog(user_id,"F001","")
+                session[f"{user_id}_wk81shoriKbn"] = 1
+            elif cntl_kbn == "2":
+                #機能：会話履歴更新
+                GK1S0040.insertLog(user_id,"F002","")
+                session[f"{user_id}_wk81shoriKbn"] = 2
+            return render_template('GK_db081.html', gakuseiCHK=gakuseiCHK, err1="")                
         elif shorikbn == "password":
             #機能：パスワード変更
             return redirect(url_for('GK_db010',err=""))
@@ -1101,6 +1115,95 @@ def GK_WX_gaikyoOUT():
                            forecast=gaikyo["forecast"],
                            kinocd=gaikyo["kinocd"])
 
+#会話履歴（選択）
+@app.route('/GK_db081', methods=['GET', 'POST'])
+def GK_db081():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if f"{user_id}_wk81gakuseiName" not in session:
+        return redirect(url_for('GK_menu01'))  
+    if not session.get('authority') in [6,7,9]:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':
+        shoriKbn = session.get(f"{user_id}_wk81shoriKbn")
+        if shoriKbn == 1:
+            gakuseiID = request.form['selected_chk']
+            session[f'{user_id}_wk81gakuseiID'] = gakuseiID
+            wk81kaiwaRireki = GK1S0042.get_KaiwaRireki(gakuseiID)
+            session[f'{user_id}_wk81kaiwaRireki'] = wk81kaiwaRireki
+            return redirect(url_for('GK_db082'))
+        elif shoriKbn == 2:
+            gakuseiID = request.form['selected_chk']
+            session[f'{user_id}_wk81gakuseiID'] = gakuseiID
+            return redirect(url_for('GK_db083'))
+    return render_template('GK_db081.html', gakuseiCHK=session.get(f"{user_id}_wk81gakuseiName"), err1="")
+
+#会話履歴（照会）
+@app.route('/GK_db082', methods=['GET', 'POST'])
+def GK_db082():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if f"{user_id}_wk81kaiwaRireki" not in session:
+        return redirect(url_for('GK_menu01'))
+    if not session.get('authority') in [6,7,9]:
+        return redirect(url_for('GK_menu01'))
+    gakuseiID = session.get(f'{user_id}_wk81gakuseiID')
+    return render_template('GK_db082.html',
+                           gakuseiID=gakuseiID,
+                           gakuseiName=GK1S0040.get_gakuseiName(gakuseiID),
+                           kaiwaRireki=session.get(f'{user_id}_wk81kaiwaRireki'),
+                           err1="")
+
+#会話履歴（更新）
+@app.route('/GK_db083', methods=['GET', 'POST'])
+def GK_db083():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if f"{user_id}_wk81gakuseiID" not in session:
+        return redirect(url_for('GK_menu01'))
+    if not session.get('authority') in [6,7,9]:
+        return redirect(url_for('GK_menu01'))
+    gakuseiID = session.get(f'{user_id}_wk81gakuseiID')
+    koshinKbn = "1"
+    naiyo = ""
+    err1 = ""
+    msg1 = ""
+    if request.method == 'POST':
+        koshinKbn = request.form.get('koshin_kbn', "1")
+        naiyo = request.form.get('naiyo', "")
+        if koshinKbn == "1":
+            # 枝番追加：選択値は「管理区分,管理番号」の形式
+            kanriKey = request.form.get('kanri_no', "")
+            kanriKbn, _, kanriNo = kanriKey.partition(",")
+        elif koshinKbn == "2":
+            kanriKbn = request.form.get('kanri_kbn', "")
+            kanriNo = ""
+        else:
+            kanriKbn = request.form.get('new_kanri_kbn', "")
+            kanriNo = ""
+        err, err1 = GK1S0042.insert_Kaiwa(gakuseiID, user_id, koshinKbn, kanriKbn, kanriNo, naiyo)
+        if err == 0:
+            msg1 = "会話履歴を登録しました。"
+            naiyo = ""
+    # 登録後の状態を反映するため、既存履歴と選択肢は毎回取得し直す
+    kaiwaRireki = GK1S0042.get_KaiwaRireki(gakuseiID)
+    kanriNoList, kanriKbnList, newKanriKbnList = GK1S0042.get_KoshinList(gakuseiID)
+    return render_template('GK_db083.html',
+                           gakuseiName=GK1S0040.get_gakuseiName(gakuseiID),
+                           kaiwaRireki=kaiwaRireki,
+                           kanriNoList=kanriNoList,
+                           kanriKbnList=kanriKbnList,
+                           newKanriKbnList=newKanriKbnList,
+                           kihyosha=GK1S0040.get_gakuseiName(user_id),
+                           ymd=datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d"),
+                           koshinKbn=koshinKbn,
+                           naiyo=naiyo,
+                           err1=err1,
+                           msg1=msg1)
+
 # セッションの有効期限をリセット
 @app.before_request
 def refresh_session():
@@ -1151,6 +1254,13 @@ def init07(user_id):
     session.pop(f"{user_id}_gantt_data", None)
     session.pop(f"{user_id}_months", None)      
     session.pop(f"{user_id}_current_month", None)
+    session.pop(f"{user_id}_wk81gakuseiID", None)
+    session.pop(f"{user_id}_wk81gakuseiName", None)
+    session.pop(f"{user_id}_wk81kaiwaRireki", None)
+    session.pop(f"{user_id}_wk81shoriKbn", None)
+    session.pop(f"{user_id}_wk81shoriKbn", None)
+
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

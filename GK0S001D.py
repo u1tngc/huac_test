@@ -193,6 +193,21 @@ def get_gakuseiInfo00(authority):
         print(f'エラー内容：{e}')
         return ""
 
+def get_gakuseiInfo02():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ" WHERE 資格 != 2'
+            cur.execute(sql)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return ""
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return ""
 
 def get_renkyosei():
     try:
