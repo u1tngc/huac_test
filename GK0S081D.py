@@ -127,3 +127,27 @@ def insert_rireki(gakuseiID, kanriKbn, kanriNo, edaNo, kihyosha, ymd, naiyo):
     except Exception as e:
         print(f'エラー内容：{e}')
         return 2
+
+
+def get_rirekiByNo(gakuseiID, kanriKbn, kanriNo):
+    """指定学籍番号・管理区分・管理番号の全枝番を枝番順で返す"""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = '''
+                SELECT 学籍番号, 管理区分, 管理番号, 枝番, 起票者, 開始年月日, 内容
+                  FROM 会話履歴セグ
+                 WHERE 学籍番号 = %s AND 管理区分 = %s AND 管理番号 = %s
+                 ORDER BY 枝番
+            '''
+            data = (gakuseiID, kanriKbn, kanriNo)
+            cur.execute(sql, data)
+            result = cur.fetchall()
+        conn.close()
+        return [list(row) for row in result] if result else []
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []

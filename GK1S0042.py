@@ -4,9 +4,11 @@
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
+import os
 
 import GK0S001D
 import GK0S081D
+import PK0S0002
 
 def get_gakuseiInfo02():
     ret_array = GK0S001D.get_gakuseiInfo02()
@@ -109,7 +111,51 @@ def insert_Kaiwa(gakuseiID, userID, koshinKbn, kanriKbn, kanriNo, naiyo):
     err = GK0S081D.insert_rireki(gakuseiID, kanriKbn, kanriNo, edaNo, kihyosha, ymd, naiyo)
     if err != 0:
         return 1, "会話履歴の登録に失敗しました。"
+    else:
+        gmail_info = [os.getenv("MAIL_FROM"), os.getenv("MAIL_PASS")]
+        # send_mail内でTOヘッダを", ".join(to)しているためリストで渡す
+        to = ["taniguchi.tanglin@icloud.com"]
+        cc = ""
+        title = "【通知】会話履歴の更新"
+        mail = get_mailBody(gakuseiID, kanriKbn, kanriNo)
+        ret = PK0S0002.send_mail(gmail_info,to,cc,title,mail)
+        if not ret:
+            # 登録自体は完了しているため、通知失敗はログ出力のみとする
+            print("会話履歴更新の通知メール送信に失敗しました。")
     return 0, ""
+
+
+def get_mailBody(gakuseiID, kanriKbn, kanriNo):
+    """会話履歴更新の通知メール本文を編集する
+       追加したデータと同一の管理区分・管理番号のデータを全枝番分出力する"""
+    gakuseiName = GK0S001D.get_gakuseiName(gakuseiID)
+    kanriName = get_name(GK0S081D.get_kanriName(), kanriKbn)
+    rireki = GK0S081D.get_rirekiByNo(gakuseiID, kanriKbn, kanriNo)
+
+    mail = []
+    mail.append(f"学生名：{gakuseiName}（{gakuseiID}）")
+    mail.append(f"管理区分：{kanriName}（{kanriKbn}）")
+    mail.append("")
+    mail.append("下記情報を追加したデータと同一の管理区分・管理番号のデータ全件です。")
+    mail.append("")
+    if rireki:
+        for ix1 in range(len(rireki)):
+            mail.append("------------------------------------------------------------")
+            mail.append(f"管理番号：{rireki[ix1][2]}")
+            mail.append(f"日　　付：{get_ymd(rireki[ix1][5])}")
+            mail.append(f"起 票 者：{rireki[ix1][4]}")
+            mail.append(f"内　　容：{rireki[ix1][6]}")
+        mail.append("------------------------------------------------------------")
+    else:
+        mail.append("該当データが取得できませんでした。")
+    return "\n".join(mail)
+
+
+def get_ymd(ymd):
+    """YYYYMMDDの8桁文字列をYYYY/MM/DDに編集する"""
+    if ymd and len(ymd) == 8:
+        return f"{ymd[0:4]}/{ymd[4:6]}/{ymd[6:8]}"
+    return ymd
 
 
 def get_nextNo(maxKanriNo):
