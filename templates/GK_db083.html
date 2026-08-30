@@ -89,21 +89,21 @@
                     <div class="kbn-group">
                         <label>
                             <input type="radio" name="koshin_kbn" value="1" {% if koshinKbn=='1' %}checked{% endif %}>
-                            会話の更新<span class="kbn-note">既存の会話に追記します</span>
+                            会話番号の追加<span class="kbn-note">既存の会話に追記します</span>
                         </label>
                         <label>
                             <input type="radio" name="koshin_kbn" value="2" {% if koshinKbn=='2' %}checked{% endif %}>
-                            会話の追加<span class="kbn-note">既存の管理区分に新しい会話を開始します</span>
+                            テーマの追加<span class="kbn-note">既存のフェーズに新しいテーマを追加します</span>
                         </label>
                         <label>
                             <input type="radio" name="koshin_kbn" value="3" {% if koshinKbn=='3' %}checked{% endif %}>
-                            管理区分追加<span class="kbn-note">新しい管理区分で起票します</span>
+                            フェーズの追加<span class="kbn-note">新しいフェーズで起票します</span>
                         </label>
                     </div>
 
                     {# 枝番追加：既存の管理区分＋管理番号を選択する #}
                     <div class="select-row" id="row_eda">
-                        <label for="kanri_no">追記する管理番号</label>
+                        <label for="kanri_no">追記するテーマ</label>
                         {% if kanriNoList %}
                         <select id="kanri_no" name="kanri_no">
                             {% for list in kanriNoList %}
@@ -119,7 +119,7 @@
 
                     {# 管理番号追加：既存の管理区分を選択する #}
                     <div class="select-row" id="row_kanri">
-                        <label for="kanri_kbn">管理区分</label>
+                        <label for="kanri_kbn">フェーズ</label>
                         {% if kanriKbnList %}
                         <select id="kanri_kbn" name="kanri_kbn">
                             {% for list in kanriKbnList %}
@@ -127,13 +127,13 @@
                             {% endfor %}
                         </select>
                         {% else %}
-                        <a class="empty-note">登録済みの管理区分がありません。</a>
+                        <a class="empty-note">登録済みのフェーズがありません。</a>
                         {% endif %}
                     </div>
 
                     {# 管理区分追加：まだ登録されていない管理区分を選択する #}
                     <div class="select-row" id="row_new">
-                        <label for="new_kanri_kbn">追加する管理区分</label>
+                        <label for="new_kanri_kbn">追加するテーマ</label>
                         {% if newKanriKbnList %}
                         <select id="new_kanri_kbn" name="new_kanri_kbn">
                             {% for list in newKanriKbnList %}
@@ -141,7 +141,7 @@
                             {% endfor %}
                         </select>
                         {% else %}
-                        <a class="empty-note">追加できる管理区分がありません。</a>
+                        <a class="empty-note">追加できるテーマがありません。</a>
                         {% endif %}
                     </div>
                 </div>
