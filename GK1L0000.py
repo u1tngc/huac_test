@@ -257,7 +257,7 @@ def GK_menu01():
                 session[f"{user_id}_wk81shoriKbn"] = 1
             elif cntl_kbn == "2":
                 #機能：会話履歴更新
-                GK1S0040.insertLog(user_id,"F002","")
+                GK1S0040.insertLog(user_id,"F011","")
                 session[f"{user_id}_wk81shoriKbn"] = 2
             return render_template('GK_db081.html', gakuseiCHK=gakuseiCHK, err1="")                
         elif shorikbn == "password":
