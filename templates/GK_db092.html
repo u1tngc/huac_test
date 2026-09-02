@@ -23,7 +23,7 @@
 
             {# info／info_flg は2次元配列。[0]=自家用 [1]=赤帽、各行は[0]機能cd [1]日～[7]土 #}
             {# info_flg[x][y]が1の項目は変更有のため赤字で印字する #}
-            {% set days = ['日','月','火','水','木','金','土'] %}
+            {% set days = ['月','火','水','木','金','土','日'] %}
             {% set kbns = [('自家用',0),('赤帽',1)] %}
 
             {% if info %}
@@ -44,8 +44,7 @@
                             <td class="col-kbn">{{ kbn[0] }}</td>
                             {% for day in days %}
                             <td class="col-day">
-                                <span
-                                    {% if info_flg and info_flg[kbn[1]][loop.index]|int == 1 %}class="chg" {% endif %}>
+                                <span {% if info_flg and info_flg[kbn[1]][loop.index]|int==1 %}class="chg" {% endif %}>
                                     {% if info[kbn[1]][loop.index]|int == 1 %}●{% else %}－{% endif %}
                                 </span>
                             </td>

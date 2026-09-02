@@ -23,7 +23,7 @@
 
             {# info_bef／info_aft は2次元配列。[0]=自家用 [1]=赤帽、各行は[0]機能cd [1]日～[7]土 #}
             {# 送信名の接尾辞は a=赤帽 b=自家用（GK_db091ルートの akabou／jikayo に対応） #}
-            {% set days = [('日','sun'),('月','mon'),('火','tue'),('水','wed'),('木','thr'),('金','fri'),('土','sat')] %}
+            {% set days = [('月','mon'),('火','tue'),('水','wed'),('木','thr'),('金','fri'),('土','sat'),('日','sun')] %}
             {% set kbns = [('自家用','b',0),('赤帽','a',1)] %}
 
             <form method="post" action="/GK_db091">

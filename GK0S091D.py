@@ -23,7 +23,7 @@ def get_testInfo():
         conn = psycopg2.connect(**DB_CONFIG)
         with conn.cursor() as cur:
             sql = f'''
-                SELECT 機能cd, 日, 月, 火, 水, 木, 金, 土
+                SELECT 機能cd, 月, 火, 水, 木, 金, 土, 日
                 FROM 定時稼働管理セグ where 機能cd = 'XA01' or 機能cd = 'XA11' 
                 ORDER BY 機能cd
             '''
@@ -42,7 +42,7 @@ def update_test(array):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
         with conn.cursor() as cur:
-            sql = 'UPDATE 定時稼働管理セグ SET 日 = %s, 月 = %s, 火 = %s, 水 = %s, 木 = %s, 金 = %s, 土 = %s WHERE 機能cd = %s'
+            sql = 'UPDATE 定時稼働管理セグ SET 月 = %s, 火 = %s, 水 = %s, 木 = %s, 金 = %s, 土 = %s, 日 = %s WHERE 機能cd = %s'
             data = (array[1], array[2], array[3], array[4], array[5], array[6], array[7], array[0]) 
             cur.execute(sql, data)
             conn.commit()

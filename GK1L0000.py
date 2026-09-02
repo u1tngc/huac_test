@@ -1225,8 +1225,8 @@ def GK_db091():
         return redirect(url_for('GK_menu01'))
     if request.method == 'POST':
         bef = session.get(f"{user_id}_wk91testInfoBef")
-        akabou = [bef[1][0],request.form['sun_a'],request.form['mon_a'],request.form['tue_a'],request.form['wed_a'],request.form['thr_a'],request.form['fri_a'],request.form['sat_a']]
-        jikayo = [bef[0][0],request.form['sun_b'],request.form['mon_b'],request.form['tue_b'],request.form['wed_b'],request.form['thr_b'],request.form['fri_b'],request.form['sat_b']]
+        akabou = [bef[1][0],request.form['mon_a'],request.form['tue_a'],request.form['wed_a'],request.form['thr_a'],request.form['fri_a'],request.form['sat_a'],request.form['sun_a']]
+        jikayo = [bef[0][0],request.form['mon_b'],request.form['tue_b'],request.form['wed_b'],request.form['thr_b'],request.form['fri_b'],request.form['sat_b'],request.form['sun_b']]
         info_bef = session.get(f"{user_id}_wk91testInfoBef")
         err, info_aft, info_flg = GK1S0043.updateData(akabou,jikayo, info_bef)
         if err:
