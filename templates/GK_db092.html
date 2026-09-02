@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 小テスト発行頻度変更（結果）</title>
+    <link rel="stylesheet" href="../static/GK1C0051.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>小テスト発行頻度変更（結果）</h2>
+            {% if err %}
+            <a class="msg">{{ err }}</a>
+            <br><br>
+            {% endif %}
+
+            {# info／info_flg は2次元配列。[0]=自家用 [1]=赤帽、各行は[0]機能cd [1]日～[7]土 #}
+            {# info_flg[x][y]が1の項目は変更有のため赤字で印字する #}
+            {% set days = ['日','月','火','水','木','金','土'] %}
+            {% set kbns = [('自家用',0),('赤帽',1)] %}
+
+            {% if info %}
+            <div class="data-section">
+                <h3>変更後</h3>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th class="col-kbn">区分</th>
+                            {% for day in days %}
+                            <th class="col-day">{{ day }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for kbn in kbns %}
+                        <tr>
+                            <td class="col-kbn">{{ kbn[0] }}</td>
+                            {% for day in days %}
+                            <td class="col-day">
+                                <span
+                                    {% if info_flg and info_flg[kbn[1]][loop.index]|int == 1 %}class="chg" {% endif %}>
+                                    {% if info[kbn[1]][loop.index]|int == 1 %}●{% else %}－{% endif %}
+                                </span>
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <p class="legend">●＝発行あり／－＝発行なし。<span class="chg">赤字</span>は今回変更した項目です。</p>
+            </div>
+            {% else %}
+            <div class="no-data">
+                <a>変更後のデータがありません。</a>
+            </div>
+            {% endif %}
+
+            <div class="button-group">
+                <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

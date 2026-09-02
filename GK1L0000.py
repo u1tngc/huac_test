@@ -15,6 +15,7 @@ import GK1S0001
 import GK1S0040
 import GK1S0041
 import GK1S0042
+import GK1S0043
 import GK1S0201
 
 import WL1M0000
@@ -31,8 +32,8 @@ app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=10)  # セッショ
 def GK_login():
     if request.method == 'POST':
         now = datetime.now(ZoneInfo("Asia/Tokyo"))
-        if now.weekday() in [1, 3, 6] and now.hour == 0 and now.minute < 30:
-            flash("日曜・火曜・木曜の午前0時から午前0時30分まではメンテナンス時間です。")
+        if now.hour == 0 and now.minute < 30:
+            flash("午前0時から午前0時30分まではメンテナンス時間です。")
             return redirect(url_for('GK_login'))
         in_password = request.form['password']
         in_user = request.form['user']
@@ -259,7 +260,15 @@ def GK_menu01():
                 #機能：会話履歴更新
                 GK1S0040.insertLog(user_id,"F011","")
                 session[f"{user_id}_wk81shoriKbn"] = 2
-            return render_template('GK_db081.html', gakuseiCHK=gakuseiCHK, err1="")                
+            return render_template('GK_db081.html', gakuseiCHK=gakuseiCHK, err1="")
+        elif shorikbn == "test_cntl":
+            cntl_kbn = request.form['cntl_kbn']
+            if cntl_kbn == "1":
+                #機能：小テスト発行頻度変更
+                GK1S0040.insertLog(user_id,"G001","")
+                testInfo = GK1S0043.get_testInfo()
+                session[f"{user_id}_wk91testInfoBef"] = testInfo
+                return render_template('GK_db091.html', err="", info_bef=testInfo,info_aft=testInfo)
         elif shorikbn == "password":
             #機能：パスワード変更
             return redirect(url_for('GK_db010',err=""))
@@ -1204,6 +1213,29 @@ def GK_db083():
                            err1=err1,
                            msg1=msg1)
 
+#小テスト発行頻度更新
+@app.route('/GK_db091', methods=['GET','POST'])
+def GK_db091():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if f"{user_id}_wk91testInfoBef" not in session:
+        return redirect(url_for('GK_menu01'))
+    if not session.get('authority') in [7,9]:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':
+        bef = session.get(f"{user_id}_wk91testInfoBef")
+        akabou = [bef[1][0],request.form['sun_a'],request.form['mon_a'],request.form['tue_a'],request.form['wed_a'],request.form['thr_a'],request.form['fri_a'],request.form['sat_a']]
+        jikayo = [bef[0][0],request.form['sun_b'],request.form['mon_b'],request.form['tue_b'],request.form['wed_b'],request.form['thr_b'],request.form['fri_b'],request.form['sat_b']]
+        info_bef = session.get(f"{user_id}_wk91testInfoBef")
+        err, info_aft, info_flg = GK1S0043.updateData(akabou,jikayo, info_bef)
+        if err:
+            return render_template('GK_db091.html', err=err, info_bef=info_bef,info_aft=info_aft)
+        else:
+            err = "小テストの発行頻度を変更しました。"
+            return render_template('GK_db092.html', err=err, info=info_aft,info_flg=info_flg)
+    return render_template('GK_db091.html', err="", info_bef=session.get(f"{user_id}_wk91testInfoBef"),info_aft=session.get(f"{user_id}_wk91testInfoBef"))
+
 # セッションの有効期限をリセット
 @app.before_request
 def refresh_session():
@@ -1259,8 +1291,6 @@ def init07(user_id):
     session.pop(f"{user_id}_wk81kaiwaRireki", None)
     session.pop(f"{user_id}_wk81shoriKbn", None)
     session.pop(f"{user_id}_wk81shoriKbn", None)
-
-
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

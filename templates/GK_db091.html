@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 小テスト発行頻度変更</title>
+    <link rel="stylesheet" href="../static/GK1C0051.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>小テスト発行頻度変更</h2>
+            {% if err %}
+            <a class="err">{{ err }}</a>
+            <br><br>
+            {% endif %}
+
+            {# info_bef／info_aft は2次元配列。[0]=自家用 [1]=赤帽、各行は[0]機能cd [1]日～[7]土 #}
+            {# 送信名の接尾辞は a=赤帽 b=自家用（GK_db091ルートの akabou／jikayo に対応） #}
+            {% set days = [('日','sun'),('月','mon'),('火','tue'),('水','wed'),('木','thr'),('金','fri'),('土','sat')] %}
+            {% set kbns = [('自家用','b',0),('赤帽','a',1)] %}
+
+            <form method="post" action="/GK_db091">
+                {% if info_bef %}
+                {# エラーで戻った場合、info_aftが空なら変更前の値を初期表示する #}
+                {% set aft = info_aft if info_aft else info_bef %}
+
+                <div class="data-section">
+                    <h3>変更前</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="col-kbn">区分</th>
+                                {% for day in days %}
+                                <th class="col-day">{{ day[0] }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for kbn in kbns %}
+                            <tr>
+                                <td class="col-kbn">{{ kbn[0] }}</td>
+                                {% for day in days %}
+                                <td class="col-day">
+                                    {% if info_bef[kbn[2]][loop.index]|int == 1 %}●{% else %}－{% endif %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="data-section">
+                    <h3>変更後</h3>
+                    {# 機能cdは画面から送らず、GK_db091ルートがセッションの変更前データから取得する #}
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="col-kbn">区分</th>
+                                {% for day in days %}
+                                <th class="col-day">{{ day[0] }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for kbn in kbns %}
+                            <tr>
+                                <td class="col-kbn">{{ kbn[0] }}</td>
+                                {% for day in days %}
+                                <td class="col-day">
+                                    <select name="{{ day[1] }}_{{ kbn[1] }}" class="table-input"
+                                        aria-label="{{ kbn[0] }} {{ day[0] }}曜">
+                                        <option value="0" {% if aft[kbn[2]][loop.index]|int==0 %}selected{% endif %}>－
+                                        </option>
+                                        <option value="1" {% if aft[kbn[2]][loop.index]|int==1 %}selected{% endif %}>●
+                                        </option>
+                                    </select>
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <p class="legend">●＝発行あり／－＝発行なし。●の曜日に小テストを発行します。</p>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                    <button type="submit" class="execute-button">変更</button>
+                </div>
+                {% else %}
+                <div class="no-data">
+                    <a>発行頻度のデータが取得できませんでした。</a>
+                </div>
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                </div>
+                {% endif %}
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>
