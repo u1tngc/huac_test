@@ -32,7 +32,8 @@
                         <table class="data-table">
                             <thead>
                                 <tr>
-                                    <th class="col-id">タスクid</th>
+                                    <th class="col-id">タスクID
+                                    </th>
                                     <th>タスク内容</th>
                                     <th class="col-user">担当者</th>
                                     <th class="col-date">期限</th>
@@ -66,7 +67,8 @@
                                 </tr>
                                 {# 次の明細が同一タスクidなら点線区切り、異なれば実線区切り #}
                                 <tr class="task-memo{% if cont %} task-cont{% endif %}">
-                                    <td class="col-memo" colspan="5"><span class="memo-label">メモ</span>{% if list[7] %}{{ list[7] }}{% else %}<span class="none">－</span>{% endif %}</td>
+                                    <td class="col-memo" colspan="5"><span class="memo-label">メモ</span>{% if list[7]
+                                        %}{{ list[7] }}{% else %}<span class="none">－</span>{% endif %}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
