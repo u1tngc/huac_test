@@ -1,6 +1,6 @@
-#PGM-ID:GK0S081D
-#PGM-NAME:GK会話履歴セグI/O(オンライン)
-#最終更新日:2026/08/29
+#PGM-ID:GK0S082D
+#PGM-NAME:GKタスク管理セグI/O(オンライン)
+#最終更新日:2026/09/04
 
 import os
 
@@ -19,18 +19,17 @@ DB_CONFIG = {
     "target_session_attrs": "read-write"
 }
 
-def get_rirekiAll(user_id):
+def get_task01(user_id):
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         with conn.cursor() as cur:
-            sql = '''
-                SELECT 学籍番号, 管理区分, 管理番号, 枝番, 起票者, 開始年月日, 内容
-                  FROM 会話履歴セグ
-                 WHERE 学籍番号 = %s
-                 ORDER BY 管理区分, 管理番号, 枝番
-            '''
-            data = (user_id,)
-            cur.execute(sql, data)
+            if user_id:
+                sql = "SELECT * FROM タスク管理セグ WHERE 担当 = %s"
+                data = (user_id,)
+                cur.execute(sql, data)
+            else:
+                sql = "SELECT * FROM タスク管理セグ"
+                cur.execute(sql,)                
             result = cur.fetchall()
         conn.close()
         return [list(row) for row in result] if result else []

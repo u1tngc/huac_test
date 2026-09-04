@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2026/07/08
+#最終更新日:2026/09/04
 
 import csv
 from datetime import timedelta
@@ -249,7 +249,7 @@ def GK_menu01():
                 return render_template('GK_WX_gaikyoIN.html', err="") 
                 pass
         elif shorikbn == "student_cntl":
-            cntl_kbn = request.form['cntl_kbn']
+            cntl_kbn = request.form['cntl_kbn1']
             gakuseiCHK = GK1S0042.get_gakuseiInfo02()
             session[f"{user_id}_wk81gakuseiName"] = gakuseiCHK
             if cntl_kbn == "1":
@@ -262,13 +262,34 @@ def GK_menu01():
                 session[f"{user_id}_wk81shoriKbn"] = 2
             return render_template('GK_db081.html', gakuseiCHK=gakuseiCHK, err1="")
         elif shorikbn == "test_cntl":
-            cntl_kbn = request.form['cntl_kbn']
+            cntl_kbn = request.form['cntl_kbn2']
             if cntl_kbn == "1":
                 #機能：小テスト発行頻度変更
                 GK1S0040.insertLog(user_id,"G001","")
                 testInfo = GK1S0043.get_testInfo()
                 session[f"{user_id}_wk91testInfoBef"] = testInfo
                 return render_template('GK_db091.html', err="", info_bef=testInfo,info_aft=testInfo)
+        elif shorikbn == "task_cntl":
+            cntl_kbn = request.form['cntl_kbn3']
+            if cntl_kbn in ["1", "2"]:
+                if cntl_kbn == "1":
+                    #機能：タスク照会
+                    GK1S0040.insertLog(user_id,"H001","個人")
+                    task_list = GK1S0042.get_task1(user_id)
+                elif cntl_kbn == "2":
+                    #機能：タスク照会
+                    GK1S0040.insertLog(user_id,"H001","全体")
+                    task_list = GK1S0042.get_task1("")
+                if task_list:
+                    #管理区分名は管理区分管理セグから取得して画面へ渡す
+                    kanriList = GK1S0042.get_kanriName()
+                    return render_template('GK_task01.html', task_list=task_list,kanriList=kanriList,cntl_kbn=cntl_kbn,err="")   
+                else:
+                    flash("タスクが存在しません。")     
+            elif cntl_kbn == "3":
+                pass
+            elif cntl_kbn == "4":
+                pass
         elif shorikbn == "password":
             #機能：パスワード変更
             return redirect(url_for('GK_db010',err=""))

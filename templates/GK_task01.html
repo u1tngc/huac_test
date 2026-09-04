@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール タスク照会（{% if cntl_kbn == "1" %}個人{% else %}全体{% endif %}）</title>
+    <link rel="stylesheet" href="../static/GK1C0052.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>タスク照会（{% if cntl_kbn == "1" %}個人{% else %}全体{% endif %}）</h2>
+            {% if task_list %}
+            <div class="kanri-container">
+                {% for kanriKbn, taskGroup in task_list|sort(attribute='2')|sort(attribute='1')|groupby('0') %}
+                {% set ns = namespace(kanriName=kanriKbn) %}
+                {% for kanri in kanriList %}
+                {% if kanri[0] == kanriKbn %}{% set ns.kanriName = kanri[1] %}{% endif %}
+                {% endfor %}
+                <div class="kanri-box">
+                    <div class="kanri-box-header">
+                        <h3 class="kanri-box-title">{{ ns.kanriName }}（{{ kanriKbn }}）</h3>
+                        <span class="kanri-box-count">{{ taskGroup|length }}件</span>
+                    </div>
+                    <div class="kanri-box-body">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-id">タスクid</th>
+                                    <th>タスク内容</th>
+                                    <th class="col-user">担当者</th>
+                                    <th class="col-date">期限</th>
+                                    <th class="col-prog">進捗</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {# 1タスクにつき2行。1行目が明細、2行目がメモ #}
+                                {% for list in taskGroup %}
+                                {% set cont = (not loop.last and loop.nextitem[1] == list[1]) %}
+                                <tr class="task-main">
+                                    <td class="col-id">{{ list[1] }}-{{ list[2] }}</td>
+                                    <td class="col-naiyo">{{ list[3] }}</td>
+                                    <td class="col-user">{{ list[9] }}</td>
+                                    <td class="col-date">
+                                        {% if list[6] and list[6]|length == 8 %}
+                                        {{ list[6][0:4] }}/{{ list[6][4:6] }}/{{ list[6][6:8] }}
+                                        {% else %}
+                                        {{ list[6] }}
+                                        {% endif %}
+                                    </td>
+                                    <td class="col-prog">
+                                        {% set prog = list[8]|int %}
+                                        <div class="prog">
+                                            <div class="prog-bar{% if prog >= 100 %} done{% endif %}">
+                                                <span style="width: {{ [prog, 100]|min }}%"></span>
+                                            </div>
+                                            <span class="prog-val">{{ prog }}%</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {# 次の明細が同一タスクidなら点線区切り、異なれば実線区切り #}
+                                <tr class="task-memo{% if cont %} task-cont{% endif %}">
+                                    <td class="col-memo" colspan="5"><span class="memo-label">メモ</span>{% if list[7] %}{{ list[7] }}{% else %}<span class="none">－</span>{% endif %}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-data">
+                <a>タスクが存在しません。</a>
+            </div>
+            {% endif %}
+
+            <div class="button-group">
+                <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

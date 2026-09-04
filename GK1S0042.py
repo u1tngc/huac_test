@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0042
-#PGM-NAME:GK学生管理サブ
-#最終更新日:2026/08/29
+#PGM-NAME:GK学科機能メイン
+#最終更新日:2026/09/04
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -8,6 +8,7 @@ import os
 
 import GK0S001D
 import GK0S081D
+import GK0S082D
 import PK0S0002
 
 def get_gakuseiInfo02():
@@ -83,8 +84,8 @@ def insert_Kaiwa(gakuseiID, userID, koshinKbn, kanriKbn, kanriNo, naiyo):
         # 枝番追加：管理区分・管理番号は既存のものを使い、枝番のみ採番する
         if not kanriKbn or not kanriNo:
             return 1, "追記する管理番号を選択してください。"
-        rc, maxEdaNo = GK0S081D.get_maxEdaNo(gakuseiID, kanriKbn, kanriNo)
-        if rc != 0:
+        ret_cd, maxEdaNo = GK0S081D.get_maxEdaNo(gakuseiID, kanriKbn, kanriNo)
+        if ret_cd != 0:
             return 1, "枝番の採番に失敗しました。"
         if maxEdaNo is None:
             return 1, "選択された管理番号の明細が存在しません。"
@@ -93,8 +94,8 @@ def insert_Kaiwa(gakuseiID, userID, koshinKbn, kanriKbn, kanriNo, naiyo):
         # 管理番号追加／管理区分追加：管理番号を採番し、枝番は0とする
         if not kanriKbn:
             return 1, "管理区分を選択してください。"
-        rc, maxKanriNo = GK0S081D.get_maxKanriNo(gakuseiID, kanriKbn)
-        if rc != 0:
+        ret_cd, maxKanriNo = GK0S081D.get_maxKanriNo(gakuseiID, kanriKbn)
+        if ret_cd != 0:
             return 1, "管理番号の採番に失敗しました。"
         kanriNo = get_nextNo(maxKanriNo)
         if kanriNo is None:
@@ -169,3 +170,19 @@ def get_nextNo(maxKanriNo):
     if nextNo > 9999:
         return None
     return str(nextNo).zfill(4)
+
+
+def get_kanriName():
+    ret_array = GK0S082D.get_kanriName()
+    return ret_array
+
+
+def get_task1(id):
+    task_list = GK0S082D.get_task01(id)
+    if task_list:
+        for ix1 in range(len(task_list)):
+            name = GK0S001D.get_gakuseiName(task_list[ix1][4])
+            task_list[ix1].append(name)
+            ymd = get_ymd(task_list[ix1][6])
+            task_list[ix1][6] = ymd
+    return task_list
