@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HUAC学科ツール 学生情報訂正（照会）</title>
+    <title>HUAC学科ツール タスク登録訂正（選択）</title>
     <link rel="stylesheet" href="../static/GK1C0041.css">
 </head>
 
@@ -15,7 +15,7 @@
 
     <main>
         <section class="options">
-            <h2>学生情報訂正（照会）</h2>
+            <h2>タスク登録訂正（選択）</h2>
             {% if err1 %}
             <a class="err">{{ err1 }}</a>
             <br><br>
@@ -23,28 +23,24 @@
             <a>訂正する学生を選択してください。</a>
             <br>
             <br>
-            <form method="post" action="/GK_db002">
+            <form method="post" action="/GK_task02">
                 <div class="data-section">
                     <table class="data-table">
                         <thead>
                             <tr>
                                 <th>選択</th>
-                                <th>学籍番号</th>
-                                <th>氏名</th>
+                                <th>管理区分</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for student in gakuseiData %}
+                            {% for list in kanriKbn %}
                             <tr>
                                 <td>
-                                    <input type="radio" name="selected_studentInfo" value="{{ student[0] }}"
-                                        id="student_{{ loop.index }}" {% if loop.first %}checked{% endif %}>
+                                    <input type="radio" name="selected_taskInfo" value="{{ list[0] }}"
+                                        id="list_{{ loop.index }}" {% if loop.first %}checked{% endif %}>
                                 </td>
                                 <td>
-                                    <label for="student_{{ loop.index }}">{{ student[0] }}</label>
-                                </td>
-                                <td>
-                                    <label for="student_{{ loop.index }}">{{ student[1] }}</label>
+                                    <label for="list_{{ loop.index }}">{{ list[1] }}</label>
                                 </td>
                             </tr>
                             {% endfor %}
@@ -55,7 +51,6 @@
                     <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
                     <button type="submit" class="execute-button">次へ</button>
                 </div>
-
             </form>
         </section>
     </main>
