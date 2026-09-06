@@ -24,11 +24,6 @@
             <a class="msg">{{ msg }}</a>
             <br><br>
             {% endif %}
-
-            {# task_listは1次元の明細を並べた二次配列 #}
-            {# [0]管理区分 [1]タスクid [2]枝番 [3]タスク内容 [4]担当 [5]依頼元 [6]期限 [7]メモ [8]進捗 [9]担当者名 #}
-            {# 期限はget_task02でYYYY/MM/DD整形済み。日付未設定は「遅滞なく」が入る #}
-
             <form method="post" action="/GK_task02">
                 {% if task_list %}
                 {# 既存タスク一覧。訂正時はここで対象を1件選択する #}
@@ -51,7 +46,7 @@
                                     <thead>
                                         <tr>
                                             <th class="col-sel">選択</th>
-                                            <th class="col-id">タスクid</th>
+                                            <th class="col-id">タスクID</th>
                                             <th>タスク内容</th>
                                             <th class="col-user">担当者</th>
                                             <th class="col-date">期限</th>
@@ -88,7 +83,9 @@
                                         </tr>
                                         {# 次の明細が同一タスクidなら点線区切り、異なれば実線区切り #}
                                         <tr class="task-memo{% if cont %} task-cont{% endif %}">
-                                            <td class="col-memo" colspan="6"><span class="memo-label">メモ</span>{% if list[7] %}{{ list[7] }}{% else %}<span class="none">－</span>{% endif %}</td>
+                                            <td class="col-memo" colspan="6"><span class="memo-label">メモ</span>{% if
+                                                list[7] %}{{ list[7] }}{% else %}<span class="none">－</span>{% endif %}
+                                            </td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -114,31 +111,28 @@
                     </div>
                 </div>
                 {% else %}
-                {# タスクが1件も無い場合は登録のみ #}
                 <input type="hidden" name="shori_kbn" value="1">
                 <div class="no-data">
                     <a>タスクが存在しません。新しいタスクを登録してください。</a>
                 </div>
                 {% endif %}
 
-                {# 登録のときだけ表示する。登録種類と、その対象の選択 #}
                 <div class="task-block" id="block_toroku">
                     <span class="block-title">登録種類</span>
                     <div class="kbn-group">
                         <label>
                             <input type="radio" name="koshin_kbn" value="1" checked>
-                            タスクid追加<span class="kbn-note">新しいタスクidを起票します</span>
+                            タスクID追加<span class="kbn-note">新しいタスクIDを起票します</span>
                         </label>
                         <label>
                             <input type="radio" name="koshin_kbn" value="2">
-                            枝番追加<span class="kbn-note">既存のタスクidに追加します</span>
+                            枝番追加<span class="kbn-note">既存のタスクIDに追加します</span>
                         </label>
                     </div>
 
                     <div class="input-grid">
-                        {# タスクid追加：管理区分を選ぶ。タスクidはpython側で採番する #}
                         <div class="input-cell" id="cell_kanri">
-                            <label for="kanri_kbn">管理区分</label>
+                            <label for="kanri_kbn">フェーズ</label>
                             <select id="kanri_kbn" name="kanri_kbn">
                                 {% for kanri in kanriList %}
                                 <option value="{{ kanri[0] }}">{{ kanri[1] }}（{{ kanri[0] }}）</option>

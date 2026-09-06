@@ -24,10 +24,6 @@
             <a class="msg">{{ msg }}</a>
             <br><br>
             {% endif %}
-
-            {# task_listはget_task03の戻り値 #}
-            {# [0]管理区分 [1]タスクid [2]枝番 [3]タスク内容 [4]担当者 [5]期限 #}
-
             <form method="post" action="/GK_task03">
                 {% if task_list %}
                 <div class="task-block">
@@ -52,7 +48,7 @@
                                     <thead>
                                         <tr>
                                             <th class="col-sel">選択</th>
-                                            <th class="col-id">タスクid</th>
+                                            <th class="col-id">タスクID</th>
                                             <th>タスク内容</th>
                                             <th class="col-user">担当者</th>
                                             <th class="col-date">期限</th>
