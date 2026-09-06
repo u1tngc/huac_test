@@ -287,9 +287,14 @@ def GK_menu01():
                 else:
                     flash("タスクが存在しません。")     
             elif cntl_kbn == "3":
-                pass
+                #機能：タスク登録・更新
+                GK1S0040.insertLog(user_id,"H011","")
+                return redirect(url_for('GK_task02'))
             elif cntl_kbn == "4":
-                pass
+                #機能：タスク削除
+                GK1S0040.insertLog(user_id,"H012","")
+                return redirect(url_for('GK_task03'))
+                
         elif shorikbn == "password":
             #機能：パスワード変更
             return redirect(url_for('GK_db010',err=""))
@@ -1257,6 +1262,107 @@ def GK_db091():
             return render_template('GK_db092.html', err=err, info=info_aft,info_flg=info_flg)
     return render_template('GK_db091.html', err="", info_bef=session.get(f"{user_id}_wk91testInfoBef"),info_aft=session.get(f"{user_id}_wk91testInfoBef"))
 
+#タスク登録訂正
+@app.route('/GK_task02', methods=['GET','POST'])
+def GK_task02():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [6,7,9]:
+        return redirect(url_for('GK_menu01'))
+    err = ""
+    msg = ""
+    if request.method == 'POST':
+        shoriKbn = request.form.get('shori_kbn', "1")
+        naiyo = request.form.get('naiyo', "")
+        tanto = request.form.get('tanto', "")
+        kigenDate = request.form.get('kigen', "")
+        memo = request.form.get('memo', "")
+        shinchoku = request.form.get('shinchoku', "0")
+        if shoriKbn == "1":
+            #登録
+            koshinKbn = request.form.get('koshin_kbn', "1")
+            iraimoto = request.form.get('iraimoto', "")
+            if koshinKbn == "1":
+                # タスクid追加：管理区分のみ選択させ、タスクidは採番する
+                kanriKbn = request.form.get('kanri_kbn', "")
+                taskId = ""
+            else:
+                # 枝番追加：選択値は「管理区分,タスクid」の形式
+                taskKey = request.form.get('task_id', "")
+                kanriKbn, _, taskId = taskKey.partition(",")
+            ret_cd, err = GK1S0042.insert_Task(koshinKbn, kanriKbn, taskId, naiyo, tanto,
+                                               iraimoto, kigenDate, memo, shinchoku)
+            if ret_cd == 0:
+                msg = "タスクを登録しました。"
+        else:
+            #訂正：選択値は「管理区分,タスクid,枝番」の形式
+            taskKey = request.form.get('sel_task', "")
+            keyList = taskKey.split(",")
+            if len(keyList) == 3:
+                ret_cd, err = GK1S0042.update_Task(keyList[0], keyList[1], keyList[2], naiyo,
+                                                   tanto, kigenDate, memo, shinchoku)
+                if ret_cd == 0:
+                    msg = "タスクを訂正しました。"
+            else:
+                err = "訂正するタスクを選択してください。"
+    # 登録・訂正の結果を反映するため、一覧は毎回取得し直す
+    task_list = GK1S0042.get_task02()
+    return render_template('GK_task02.html',
+                           task_list=task_list,
+                           kanriList=GK1S0042.get_kanriName(),
+                           gakkahanList=GK1S0042.get_gakkahan(),
+                           err=err,
+                           msg=msg)
+
+#タスク削除
+@app.route('/GK_task03', methods=['GET','POST'])
+def GK_task03():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [7,9]:
+        return redirect(url_for('GK_menu01'))
+    msg = ""
+    err = ""
+    if request.method == 'POST':
+        #チェックした明細を確定し、確認画面へ渡す
+        delKeys = request.form.getlist('del_task')
+        delList = GK1S0042.get_delList(GK1S0042.get_task03(), delKeys)
+        if delList:
+            session[f'{user_id}_wk03delList'] = delList
+            return redirect(url_for('GK_task04'))
+        err = "削除するタスクを選択してください。"
+    else:
+        #選択画面に戻ってきた時点で確定済みの削除対象は破棄する
+        session.pop(f"{user_id}_wk03delList", None)
+    task_list = GK1S0042.get_task03()
+    kanriList = GK1S0042.get_kanriName()
+    return render_template('GK_task03.html', task_list=task_list,kanriList=kanriList,msg=msg,err=err) 
+
+#タスク削除（確認）
+@app.route('/GK_task04', methods=['GET','POST'])
+def GK_task04():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if f"{user_id}_wk03delList" not in session:
+        return redirect(url_for('GK_task03'))
+    if not session.get('authority') in [7,9]:
+        return redirect(url_for('GK_menu01'))
+    delList = session.get(f'{user_id}_wk03delList')
+    kanriList = GK1S0042.get_kanriName()
+    if request.method == 'POST':
+        ret_cd, err = GK1S0042.delete_Task(delList)
+        if ret_cd != 0:
+            return render_template('GK_task04.html', delList=delList,kanriList=kanriList,err=err)
+        #削除後は選択画面に戻り、完了メッセージを表示する
+        session.pop(f"{user_id}_wk03delList", None)
+        msg = f"タスクを{len(delList)}件削除しました。"
+        return render_template('GK_task03.html', task_list=GK1S0042.get_task03(),
+                               kanriList=kanriList,msg=msg,err="")
+    return render_template('GK_task04.html', delList=delList,kanriList=kanriList,err="") 
+
 # セッションの有効期限をリセット
 @app.before_request
 def refresh_session():
@@ -1312,6 +1418,8 @@ def init07(user_id):
     session.pop(f"{user_id}_wk81kaiwaRireki", None)
     session.pop(f"{user_id}_wk81shoriKbn", None)
     session.pop(f"{user_id}_wk81shoriKbn", None)
+    session.pop(f"{user_id}task02TaskList", None)
+    session.pop(f"{user_id}task02user_list", None)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

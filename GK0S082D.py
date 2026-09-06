@@ -40,6 +40,29 @@ def get_task01(user_id):
         print(f'エラー内容：{e}')
         return []
 
+def get_task02(ymd):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = '''
+                SELECT * FROM タスク管理セグ
+                WHERE (進捗 <> 100 AND タスクid <= %s)
+                OR タスクid > %s
+                ORDER BY 管理区分, タスクid, 枝番
+            '''
+            #WHERE句のプレースホルダが2個のため同じ値を2つ渡す
+            data = (ymd, ymd)
+            cur.execute(sql,data)                
+            result = cur.fetchall()
+        conn.close()
+        return [list(row) for row in result] if result else []
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
+
 def get_kanriName():
     try:
         conn = psycopg2.connect(**DB_CONFIG)
@@ -149,3 +172,121 @@ def get_rirekiByNo(gakuseiID, kanriKbn, kanriNo):
     except Exception as e:
         print(f'エラー内容：{e}')
         return []
+
+
+def get_maxTaskId(kanriKbn):
+    """指定管理区分の最大タスクidを返す（進捗・年度で絞り込まない全件対象）
+       戻り値：(rc, タスクid)  rc 0=正常 1=DBエラー / 明細無しの場合はタスクid=None"""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = '''
+                SELECT MAX(タスクid) FROM タスク管理セグ
+                 WHERE 管理区分 = %s
+            '''
+            data = (kanriKbn,)
+            cur.execute(sql, data)
+            result = cur.fetchone()
+        conn.close()
+        return 0, result[0] if result else None
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1, None
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 1, None
+
+
+def get_maxEdaNo02(kanriKbn, taskId):
+    """指定管理区分・タスクidの最大枝番を返す
+       戻り値：(rc, 枝番)  rc 0=正常 1=DBエラー / 明細無しの場合は枝番=None"""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = '''
+                SELECT MAX(枝番) FROM タスク管理セグ
+                 WHERE 管理区分 = %s AND タスクid = %s
+            '''
+            data = (kanriKbn, taskId)
+            cur.execute(sql, data)
+            result = cur.fetchone()
+        conn.close()
+        return 0, result[0] if result else None
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1, None
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 1, None
+
+
+def insert_task(kanriKbn, taskId, edaNo, naiyo, tanto, iraimoto, kigen, memo, shinchoku):
+    """タスク管理セグへ1件登録する  戻り値：0=正常 1=DBエラー 2=その他エラー"""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = '''
+                INSERT INTO タスク管理セグ (管理区分, タスクid, 枝番, タスク内容, 担当, 依頼元, 期限, メモ, 進捗)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            '''
+            data = (kanriKbn, taskId, edaNo, naiyo, tanto, iraimoto, kigen, memo, shinchoku)
+            cur.execute(sql, data)
+            conn.commit()
+        conn.close()
+        return 0
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 2
+
+
+def update_task(kanriKbn, taskId, edaNo, naiyo, tanto, kigen, memo, shinchoku):
+    """タスク管理セグを1件訂正する（依頼元は訂正対象外）
+       戻り値：0=正常 1=DBエラー 2=その他エラー"""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = '''
+                UPDATE タスク管理セグ
+                   SET タスク内容 = %s, 担当 = %s, 期限 = %s, メモ = %s, 進捗 = %s
+                 WHERE 管理区分 = %s AND タスクid = %s AND 枝番 = %s
+            '''
+            data = (naiyo, tanto, kigen, memo, shinchoku, kanriKbn, taskId, edaNo)
+            cur.execute(sql, data)
+            conn.commit()
+        conn.close()
+        return 0
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 2
+
+
+def delete_task(delList):
+    """タスク管理セグを一括削除する
+       delListは [管理区分, タスクid, 枝番, ...] の二次配列
+       1件でも失敗した場合はコミットせず全て取り消す
+       戻り値：0=正常 1=DBエラー 2=その他エラー"""
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = '''
+                DELETE FROM タスク管理セグ
+                 WHERE 管理区分 = %s AND タスクid = %s AND 枝番 = %s
+            '''
+            for ix1 in range(len(delList)):
+                data = (delList[ix1][0], delList[ix1][1], delList[ix1][2])
+                cur.execute(sql, data)
+            conn.commit()
+        conn.close()
+        return 0
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 1
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 2

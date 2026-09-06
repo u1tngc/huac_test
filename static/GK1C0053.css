@@ -1,0 +1,603 @@
+/* 全体 */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ヘッダー */
+header {
+    background-color: #1e3a8a;
+    /* PANTONE280 */
+    color: white;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2em;
+}
+
+/* メインコンテンツ */
+main {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.options {
+    background-color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 700px;
+    text-align: center;
+}
+
+.options h2 {
+    color: #333;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+/* 入力グループ */
+.input-group {
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #555;
+}
+
+.input-group input {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    font-size: 16px;
+    color: #333;
+    background-color: white;
+    transition: border-color 0.3s ease;
+}
+
+/* ボタングループ */
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.execute-button,
+.menu-button {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 0 10px;
+}
+
+.execute-button {
+    background-color: #3498db;
+    color: white;
+}
+
+.menu-button {
+    background-color: #e67e22;
+    color: white;
+}
+
+.execute-button:hover,
+.menu-button:hover {
+    opacity: 0.8;
+}
+
+/* フッター */
+footer {
+    background-color: #1e3a8a;
+    color: white;
+    text-align: center;
+    padding: 10px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.err {
+    color: red;
+}
+
+.data-section {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    /* 枠線を統一 */
+    margin-top: 20px;
+}
+
+.data-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.data-table thead th {
+    background-color: #f2f2f2;
+}
+
+.data-table th,
+.data-table td {
+    border: 2px solid black;
+    /* 2pxの黒枠を追加 */
+    padding: 10px;
+    text-align: center;
+}
+
+.data-table th {
+    background-color: #f2f2f2;
+    /* ヘッダー部分の背景色 */
+}
+/* ===== タスク照会（管理区分毎ボックス） ===== */
+
+/* ボックスを並べるため表示領域を広めに取る */
+.options {
+    max-width: 1000px;
+}
+
+/* 管理区分ごとのボックス */
+.kanri-container {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 100%;
+}
+
+.kanri-box {
+    border: 2px solid #1e3a8a;
+    border-radius: 8px;
+    background-color: #fbfbfd;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: left;
+}
+
+.kanri-box-header {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.kanri-box-title {
+    margin: 0;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.kanri-box-count {
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+/* 明細エリア。横に広いため必要なら横スクロールさせる */
+.kanri-box-body {
+    padding: 0 15px 15px 15px;
+    overflow-x: auto;
+}
+
+.kanri-box-body .data-table {
+    margin-top: 15px;
+}
+
+/* 1タスクは明細行＋メモ行の2行。罫線は下罫線のみで制御する */
+/* 明細行とメモ行の間は同一タスクなので罫線を引かない */
+.kanri-box-body .data-table tbody tr.task-main td {
+    border-top: none;
+    border-bottom: none;
+    padding-bottom: 6px;
+}
+
+/* タスクの区切りはメモ行の下罫線で表す */
+.kanri-box-body .data-table tbody tr.task-memo td {
+    border-top: none;
+    border-bottom: 2px solid black;
+    padding-top: 0;
+}
+
+/* 次の明細が同一タスクidの場合は点線で区切る */
+.kanri-box-body .data-table tbody tr.task-memo.task-cont td {
+    border-bottom: 2px dotted #888888;
+}
+
+/* メモ行 */
+.data-table td.col-memo {
+    text-align: left;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #555;
+    font-size: 0.9em;
+    background-color: #fafbfd;
+}
+
+/* メモ行の見出しラベル */
+.memo-label {
+    display: inline-block;
+    margin-right: 8px;
+    padding: 0 6px;
+    border: 1px solid #bdc3c7;
+    border-radius: 3px;
+    background-color: white;
+    color: #777;
+    font-size: 0.9em;
+    white-space: nowrap;
+    vertical-align: 1px;
+}
+
+/* 列幅 */
+.data-table th.col-id,
+.data-table td.col-id,
+.data-table th.col-user,
+.data-table td.col-user,
+.data-table th.col-date,
+.data-table td.col-date,
+.data-table th.col-prog,
+.data-table td.col-prog {
+    white-space: nowrap;
+    width: 1%;
+}
+
+.data-table td.col-id {
+    font-family: 'Courier New', Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+}
+
+.data-table td.col-date {
+    font-variant-numeric: tabular-nums;
+}
+
+/* タスク内容は左寄せ・改行維持 */
+.data-table td.col-naiyo {
+    text-align: left;
+    white-space: pre-wrap;
+    word-break: break-all;
+    min-width: 180px;
+}
+
+/* メモ無しの表示 */
+.data-table td.col-memo .none {
+    color: #aaa;
+}
+
+/* 進捗バー */
+.prog {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 110px;
+}
+
+.prog-bar {
+    flex: 1;
+    height: 8px;
+    background-color: #e4e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.prog-bar span {
+    display: block;
+    height: 100%;
+    background-color: #3498db;
+    border-radius: 4px;
+}
+
+/* 完了した進捗は色を変える */
+.prog-bar.done span {
+    background-color: #1a7f37;
+}
+
+.prog-val {
+    font-variant-numeric: tabular-nums;
+    font-size: 0.9em;
+    white-space: nowrap;
+}
+
+/* データ無しの場合 */
+.no-data {
+    padding: 30px 10px;
+    color: #777;
+}
+
+@media screen and (max-width: 600px) {
+    .kanri-box-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 3px;
+    }
+
+    .kanri-box-body .data-table {
+        font-size: 12px;
+    }
+
+    .kanri-box-body .data-table th,
+    .kanri-box-body .data-table td {
+        padding: 5px;
+    }
+}
+
+/* ===== タスク登録・訂正 ===== */
+
+.options {
+    max-width: 1000px;
+}
+
+/* 基底CSSのform中央寄せでは入力ブロックが縮むため、横幅いっぱいに伸ばす */
+form {
+    width: 100%;
+    align-items: stretch;
+}
+
+/* 完了メッセージ */
+.msg {
+    color: #1a7f37;
+    font-weight: bold;
+}
+
+/* 入力ブロック */
+.task-block {
+    text-align: left;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    background-color: #fbfbfd;
+}
+
+.task-block > .block-title {
+    display: block;
+    font-weight: bold;
+    color: #1e3a8a;
+    margin-bottom: 10px;
+}
+
+/* 処理区分・登録種類のラジオ */
+.kbn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+}
+
+.kbn-group label {
+    cursor: pointer;
+    font-size: 1.05em;
+}
+
+.kbn-group input[type="radio"] {
+    margin-right: 8px;
+}
+
+.kbn-group .kbn-note {
+    color: #777;
+    font-size: 0.85em;
+    margin-left: 6px;
+}
+
+/* 一覧の選択ラジオ列 */
+.data-table th.col-sel,
+.data-table td.col-sel {
+    width: 1%;
+    white-space: nowrap;
+}
+
+/* 選択中のタスクを目立たせる */
+.data-table tbody tr.task-main.selected td,
+.data-table tbody tr.task-memo.selected td {
+    background-color: #eef3fd;
+}
+
+/* 訂正対象が未選択のときの案内 */
+.sel-note {
+    color: #777;
+    font-size: 0.9em;
+    margin: 0 0 10px 0;
+}
+
+/* 入力欄の並び */
+.input-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 15px;
+}
+
+.input-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.input-cell.wide {
+    grid-column: 1 / -1;
+}
+
+.input-cell label {
+    font-weight: bold;
+    color: #555;
+    font-size: 0.95em;
+}
+
+.input-cell .hint {
+    color: #888;
+    font-weight: normal;
+    font-size: 0.85em;
+    margin-left: 6px;
+}
+
+.input-cell input[type="text"],
+.input-cell input[type="number"],
+.input-cell input[type="date"],
+.input-cell select,
+.input-cell textarea {
+    width: 100%;
+    padding: 9px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    font-size: 16px;
+    font-family: inherit;
+    color: #333;
+    background-color: white;
+    box-sizing: border-box;
+}
+
+.input-cell textarea {
+    min-height: 70px;
+    resize: vertical;
+}
+
+/* 期限（カレンダー＋リセット） */
+.kigen-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.kigen-row input[type="date"] {
+    flex: 1;
+}
+
+.reset-button {
+    padding: 8px 14px;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    background-color: #f4f4f4;
+    color: #555;
+    font-size: 14px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.reset-button:hover {
+    background-color: #e8e8e8;
+}
+
+/* 日付未選択の注記 */
+.kigen-note {
+    color: #888;
+    font-size: 0.85em;
+}
+
+@media screen and (max-width: 600px) {
+    .options {
+        padding: 20px;
+    }
+
+    .kbn-group {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* ===== タスク削除（GK_task03／GK_task04） ===== */
+
+/* 削除画面は1タスク1行のため、行間はすべて実線で区切る */
+.kanri-box-body .data-table tbody tr.del-row td {
+    border-top: none;
+    border-bottom: 2px solid black;
+}
+
+/* 選択中の行を目立たせる */
+.kanri-box-body .data-table tbody tr.del-row.selected td {
+    background-color: #fdeeec;
+}
+
+/* 確認画面の警告 */
+.del-warn {
+    border: 2px solid #c0392b;
+    border-radius: 8px;
+    background-color: #fdeeec;
+    color: #c0392b;
+    font-weight: bold;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.del-warn .warn-sub {
+    display: block;
+    margin-top: 6px;
+    color: #7a2b21;
+    font-weight: normal;
+    font-size: 0.9em;
+}
+
+/* 確認画面の一覧 */
+.del-table-wrap {
+    overflow-x: auto;
+    margin-bottom: 10px;
+}
+
+.del-table-wrap .data-table th.col-kanri,
+.del-table-wrap .data-table td.col-kanri {
+    white-space: nowrap;
+    width: 1%;
+}
+
+/* 削除実行ボタン */
+.delete-button {
+    padding: 12px 30px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 0 10px;
+    background-color: #c0392b;
+    color: white;
+}
+
+.delete-button:hover {
+    opacity: 0.8;
+}
+
+/* 全選択 */
+.sel-all {
+    margin: 0 0 10px 0;
+    font-size: 0.9em;
+}
+
+.sel-all label {
+    cursor: pointer;
+}
+
+.sel-all input[type="checkbox"] {
+    margin-right: 6px;
+}

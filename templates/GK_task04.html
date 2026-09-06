@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール タスク削除（確認）</title>
+    <link rel="stylesheet" href="../static/GK1C0053.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>タスク削除（確認）</h2>
+            {% if err %}
+            <a class="err">{{ err }}</a>
+            <br><br>
+            {% endif %}
+
+            {# delListはget_task03の戻り値から選択されたもの #}
+            {# [0]管理区分 [1]タスクid [2]枝番 [3]タスク内容 [4]担当者 [5]期限 #}
+
+            <div class="del-warn">
+                以下の{{ delList|length }}件を削除します。よろしいですか。
+                <span class="warn-sub">削除したタスクは元に戻せません。</span>
+            </div>
+
+            <form method="post" action="/GK_task04">
+                <div class="del-table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="col-kanri">管理区分</th>
+                                <th class="col-id">タスクid</th>
+                                <th>タスク内容</th>
+                                <th class="col-user">担当者</th>
+                                <th class="col-date">期限</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for list in delList %}
+                            {% set ns = namespace(kanriName=list[0]) %}
+                            {% for kanri in kanriList %}
+                            {% if kanri[0] == list[0] %}{% set ns.kanriName = kanri[1] %}{% endif %}
+                            {% endfor %}
+                            <tr>
+                                <td class="col-kanri">{{ ns.kanriName }}（{{ list[0] }}）</td>
+                                <td class="col-id">{{ list[1] }}-{{ list[2] }}</td>
+                                <td class="col-naiyo">{{ list[3] }}</td>
+                                <td class="col-user">{{ list[4] }}</td>
+                                <td class="col-date">{{ list[5] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                    <button type="button" onclick="location.href='/GK_task03'" class="menu-button">戻る</button>
+                    <button type="submit" class="delete-button">削除実行</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

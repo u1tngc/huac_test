@@ -3,7 +3,10 @@
 #最終更新日:2026/09/04
 
 from datetime import datetime
+from datetime import timedelta
 from zoneinfo import ZoneInfo
+
+from dateutil.relativedelta import relativedelta
 import os
 
 import GK0S001D
@@ -46,7 +49,6 @@ def get_name(kanriList,kanricd):
             return kanriList[ix1][1]
     return kanricd
 
-
 def get_KoshinList(gakuseiID):
     """会話履歴更新画面の選択肢を組み立てる
        戻り値：(kanriNoList, kanriKbnList, newKanriKbnList)
@@ -68,7 +70,6 @@ def get_KoshinList(gakuseiID):
     kanriKbnList = [[kbn, get_name(kanriList, kbn)] for kbn in existKbn]
     newKanriKbnList = [[row[0], row[1]] for row in kanriList if row[0] not in existKbn]
     return kanriNoList, kanriKbnList, newKanriKbnList
-
 
 def insert_Kaiwa(gakuseiID, userID, koshinKbn, kanriKbn, kanriNo, naiyo):
     """会話履歴を1件登録する
@@ -125,7 +126,6 @@ def insert_Kaiwa(gakuseiID, userID, koshinKbn, kanriKbn, kanriNo, naiyo):
             print("会話履歴更新の通知メール送信に失敗しました。")
     return 0, ""
 
-
 def get_mailBody(gakuseiID, kanriKbn, kanriNo):
     """会話履歴更新の通知メール本文を編集する
        追加したデータと同一の管理区分・管理番号のデータを全枝番分出力する"""
@@ -151,13 +151,11 @@ def get_mailBody(gakuseiID, kanriKbn, kanriNo):
         mail.append("該当データが取得できませんでした。")
     return "\n".join(mail)
 
-
 def get_ymd(ymd):
     """YYYYMMDDの8桁文字列をYYYY/MM/DDに編集する"""
     if ymd and len(ymd) == 8:
         return f"{ymd[0:4]}/{ymd[4:6]}/{ymd[6:8]}"
     return ymd
-
 
 def get_nextNo(maxKanriNo):
     """管理番号の次番を4桁ゼロ埋めで返す。採番できない場合は None"""
@@ -171,13 +169,12 @@ def get_nextNo(maxKanriNo):
         return None
     return str(nextNo).zfill(4)
 
-
 def get_kanriName():
     ret_array = GK0S082D.get_kanriName()
     return ret_array
 
-
 def get_task1(id):
+    #担当者単位
     task_list = GK0S082D.get_task01(id)
     if task_list:
         for ix1 in range(len(task_list)):
@@ -186,3 +183,186 @@ def get_task1(id):
             ymd = get_ymd(task_list[ix1][6])
             task_list[ix1][6] = ymd
     return task_list
+
+def get_task02():
+    nendo = get_nendo()
+    ymd = nendo + '00'
+    task_list = GK0S082D.get_task02(ymd)
+    if task_list:
+        for ix1 in range(len(task_list)):
+            name = GK0S001D.get_gakuseiName(task_list[ix1][4])
+            task_list[ix1].append(name)
+            ymd = get_ymd(task_list[ix1][6])
+            task_list[ix1][6] = ymd
+    return task_list
+
+def get_task03():
+    #削除画面用。印字項目のみに絞り込む
+    #戻り値：[管理区分, タスクid, 枝番, タスク内容, 担当者, 期限] * 件数
+    task_list = get_task02()
+    ret_array = []
+    if task_list:
+        for ix1 in range(len(task_list)):
+            temp_array = []
+            temp_array.append(task_list[ix1][0])
+            temp_array.append(task_list[ix1][1])
+            temp_array.append(task_list[ix1][2])
+            temp_array.append(task_list[ix1][3])
+            temp_array.append(task_list[ix1][9])
+            temp_array.append(task_list[ix1][6])
+            ret_array.append(temp_array)
+    return ret_array
+
+
+def get_delList(task_list, delKeys):
+    """画面で選択されたキー（管理区分,タスクid,枝番）に一致する明細を抽出する"""
+    ret_array = []
+    if not task_list or not delKeys:
+        return ret_array
+    for ix1 in range(len(task_list)):
+        key = f"{task_list[ix1][0]},{task_list[ix1][1]},{task_list[ix1][2]}"
+        if key in delKeys:
+            ret_array.append(task_list[ix1])
+    return ret_array
+
+
+def delete_Task(delList):
+    """選択されたタスクを削除する
+       戻り値：(rc, エラーメッセージ)  rc 0=正常 1=エラー"""
+    if not delList:
+        return 1, "削除するタスクを選択してください。"
+    err = GK0S082D.delete_task(delList)
+    if err != 0:
+        return 1, "タスクの削除に失敗しました。"
+    return 0, ""
+
+
+def get_nendo():
+    now = datetime.now(ZoneInfo("Asia/Tokyo"))
+    nendo = now.year if now.month >= 4 else now.year - 1
+    return str(nendo)
+
+
+def get_gakkahan():
+    ret_array = GK0S001D.get_gakkahan()
+    return ret_array
+
+
+def get_nextTaskId(kanriKbn):
+    """管理区分内の次のタスクidを YYYY@@ の6桁で採番する
+       YYYY=処理日の年度（JST・4月始まり）／@@=管理区分内の連番
+       最大タスクidの年度が当年度と異なる場合は 01 から振り直す
+       戻り値：(rc, タスクid)  rc 0=正常 1=エラー"""
+    nendo = get_nendo()
+    ret_cd, maxTaskId = GK0S082D.get_maxTaskId(kanriKbn)
+    if ret_cd != 0:
+        return 1, None
+    if maxTaskId is None or maxTaskId[0:4] != nendo:
+        return 0, nendo + "01"
+    try:
+        renban = int(maxTaskId[4:6]) + 1
+    except (TypeError, ValueError):
+        return 1, None
+    if renban > 99:
+        return 1, None
+    return 0, nendo + str(renban).zfill(2)
+
+
+def get_kigen(kigenDate):
+    """画面のカレンダー入力（YYYY-MM-DD）を登録用の期限に編集する
+       未選択の場合は「遅滞なく」とする
+       戻り値：(rc, 期限, エラーメッセージ)  rc 0=正常 1=エラー"""
+    if not kigenDate:
+        return 0, "遅滞なく", ""
+    try:
+        kigen = datetime.strptime(kigenDate, "%Y-%m-%d")
+    except (TypeError, ValueError):
+        return 1, "", "期限は１週間前～２年度の範囲内で設定してください。"
+    today = datetime.now(ZoneInfo("Asia/Tokyo")).replace(tzinfo=None)
+    today = today.replace(hour=0, minute=0, second=0, microsecond=0)
+    if kigen < today - timedelta(days=7) or kigen > today + relativedelta(years=2):
+        return 1, "", "期限は１週間前～２年度の範囲内で設定してください。"
+    return 0, kigen.strftime("%Y%m%d"), ""
+
+
+def chk_task(naiyo, iraimoto, memo, shinchoku):
+    """タスクの入力チェック。エラーが無い場合は (0, 進捗, "") を返す"""
+    if len(naiyo) > 30:
+        return 1, 0, "タスク内容の字数が超過しています。"
+    if len(iraimoto) > 30:
+        return 1, 0, "依頼元の字数が超過しています。"
+    if len(memo) > 100:
+        return 1, 0, "メモの字数が超過しています。"
+    try:
+        shinchoku = int(shinchoku)
+    except (TypeError, ValueError):
+        return 1, 0, "進捗は100以下で入力してください。"
+    if shinchoku > 100:
+        return 1, 0, "進捗は100以下で入力してください。"
+    return 0, shinchoku, ""
+
+
+def insert_Task(koshinKbn, kanriKbn, taskId, naiyo, tanto, iraimoto, kigenDate, memo, shinchoku):
+    """タスクを1件登録する
+       koshinKbn 1=タスクid追加 2=枝番追加
+       戻り値：(rc, エラーメッセージ)  rc 0=正常 1=エラー"""
+    if not naiyo:
+        return 1, "タスク内容を入力してください。"
+    if not tanto:
+        return 1, "担当者を選択してください。"
+    # 依頼元は未入力可。NOT NULL項目のため空文字で登録する
+    ret_cd, shinchoku, err = chk_task(naiyo, iraimoto, memo, shinchoku)
+    if ret_cd != 0:
+        return 1, err
+    ret_cd, kigen, err = get_kigen(kigenDate)
+    if ret_cd != 0:
+        return 1, err
+
+    if koshinKbn == "1":
+        # タスクid追加：管理区分内で次のタスクidを採番し、枝番は1とする
+        if not kanriKbn:
+            return 1, "管理区分を選択してください。"
+        ret_cd, taskId = get_nextTaskId(kanriKbn)
+        if ret_cd != 0:
+            return 1, "タスクidの採番に失敗しました。"
+        edaNo = 1
+    else:
+        # 枝番追加：管理区分・タスクidは既存のものを使い、枝番のみ採番する
+        if not kanriKbn or not taskId:
+            return 1, "追加するタスクidを選択してください。"
+        ret_cd, maxEdaNo = GK0S082D.get_maxEdaNo02(kanriKbn, taskId)
+        if ret_cd != 0:
+            return 1, "枝番の採番に失敗しました。"
+        if maxEdaNo is None:
+            return 1, "選択されたタスクidの明細が存在しません。"
+        edaNo = int(maxEdaNo) + 1
+
+    err = GK0S082D.insert_task(kanriKbn, taskId, edaNo, naiyo, tanto, iraimoto, kigen,
+                               memo if memo else None, shinchoku)
+    if err != 0:
+        return 1, "タスクの登録に失敗しました。"
+    return 0, ""
+
+
+def update_Task(kanriKbn, taskId, edaNo, naiyo, tanto, kigenDate, memo, shinchoku):
+    """タスクを1件訂正する（依頼元は訂正対象外）
+       戻り値：(rc, エラーメッセージ)  rc 0=正常 1=エラー"""
+    if not kanriKbn or not taskId or not edaNo:
+        return 1, "訂正するタスクを選択してください。"
+    if not naiyo:
+        return 1, "タスク内容を入力してください。"
+    if not tanto:
+        return 1, "担当者を選択してください。"
+    # 依頼元は訂正対象外のためチェック対象からは空文字を渡す
+    ret_cd, shinchoku, err = chk_task(naiyo, "", memo, shinchoku)
+    if ret_cd != 0:
+        return 1, err
+    ret_cd, kigen, err = get_kigen(kigenDate)
+    if ret_cd != 0:
+        return 1, err
+
+    err = GK0S082D.update_task(kanriKbn, taskId, int(edaNo), naiyo, tanto, kigen,
+                               memo if memo else None, shinchoku)
+    if err != 0:
+        return 1, "タスクの訂正に失敗しました。"
+    return 0, ""

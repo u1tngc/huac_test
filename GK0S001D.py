@@ -42,7 +42,6 @@ def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
         if conn:
             conn.close() 
 
-
 def select_gakusei(id):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  # 定数を展開して接続
@@ -60,7 +59,6 @@ def select_gakusei(id):
         print(f'エラー内容：{e}')
         return []
 
-
 def get_gakusei(id):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
@@ -77,7 +75,6 @@ def get_gakusei(id):
     except Exception as e:
         print(f'エラー内容：{e}')
         return []
-    
 
 def update_gakusei(list):
     try:
@@ -95,7 +92,6 @@ def update_gakusei(list):
     except Exception as e:
         print(f'エラー内容：{e}')
         return 2
-    
 
 def get_gakuseiAll():
     try:
@@ -112,7 +108,6 @@ def get_gakuseiAll():
     except Exception as e:
         print(f'エラー内容：{e}')
         return []
-
 
 def update_lastLogin(id):
     try:
@@ -133,7 +128,6 @@ def update_lastLogin(id):
         print(f'エラー内容：{e}')
         return 2
 
-
 def update_password(id, password):
     try:
         conn = psycopg2.connect(**DB_CONFIG)
@@ -151,7 +145,6 @@ def update_password(id, password):
         print(f'エラー内容：{e}')
         return 2
 
-
 def get_gakuseiInfo01():
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
@@ -167,7 +160,6 @@ def get_gakuseiInfo01():
     except Exception as e:
         print(f'エラー内容：{e}')
         return ""
-
 
 def get_gakuseiInfo00(authority):
     try:
@@ -226,7 +218,6 @@ def get_renkyosei():
         print(f'エラー内容：{e}')
         return ""
 
-
 def get_gakuseiName(id):
     try:
         conn = psycopg2.connect(**DB_CONFIG)  
@@ -263,3 +254,19 @@ def update_password1(id, password):
 
 def hash_password(plain: str) -> str:
     return bcrypt.hashpw(plain.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+def get_gakkahan():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ" WHERE 権限 IN (6, 7, 9)'
+            cur.execute(sql)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return ""
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return ""

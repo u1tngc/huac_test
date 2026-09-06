@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール タスク登録・訂正</title>
+    <link rel="stylesheet" href="../static/GK1C0053.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>タスク登録・訂正</h2>
+            {% if err %}
+            <a class="err">{{ err }}</a>
+            <br><br>
+            {% endif %}
+            {% if msg %}
+            <a class="msg">{{ msg }}</a>
+            <br><br>
+            {% endif %}
+
+            {# task_listは1次元の明細を並べた二次配列 #}
+            {# [0]管理区分 [1]タスクid [2]枝番 [3]タスク内容 [4]担当 [5]依頼元 [6]期限 [7]メモ [8]進捗 [9]担当者名 #}
+            {# 期限はget_task02でYYYY/MM/DD整形済み。日付未設定は「遅滞なく」が入る #}
+
+            <form method="post" action="/GK_task02">
+                {% if task_list %}
+                {# 既存タスク一覧。訂正時はここで対象を1件選択する #}
+                <div class="task-block">
+                    <span class="block-title">現在のタスク</span>
+                    <p class="sel-note">訂正する場合は、対象のタスクを選択してください。</p>
+                    <div class="kanri-container">
+                        {% for kanriKbn, taskGroup in task_list|sort(attribute='2')|sort(attribute='1')|groupby('0') %}
+                        {% set ns = namespace(kanriName=kanriKbn) %}
+                        {% for kanri in kanriList %}
+                        {% if kanri[0] == kanriKbn %}{% set ns.kanriName = kanri[1] %}{% endif %}
+                        {% endfor %}
+                        <div class="kanri-box">
+                            <div class="kanri-box-header">
+                                <h3 class="kanri-box-title">{{ ns.kanriName }}（{{ kanriKbn }}）</h3>
+                                <span class="kanri-box-count">{{ taskGroup|length }}件</span>
+                            </div>
+                            <div class="kanri-box-body">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-sel">選択</th>
+                                            <th class="col-id">タスクid</th>
+                                            <th>タスク内容</th>
+                                            <th class="col-user">担当者</th>
+                                            <th class="col-date">期限</th>
+                                            <th class="col-prog">進捗</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {# 1タスクにつき2行。1行目が明細、2行目がメモ #}
+                                        {% for list in taskGroup %}
+                                        {% set cont = (not loop.last and loop.nextitem[1] == list[1]) %}
+                                        <tr class="task-main">
+                                            <td class="col-sel">
+                                                <input type="radio" name="sel_task"
+                                                    value="{{ list[0] }},{{ list[1] }},{{ list[2] }}"
+                                                    data-naiyo="{{ list[3] }}" data-tanto="{{ list[4] }}"
+                                                    data-kigen="{% if list[6] and list[6]|length == 10 %}{{ list[6][0:4] }}-{{ list[6][5:7] }}-{{ list[6][8:10] }}{% endif %}"
+                                                    data-memo="{{ list[7] if list[7] else '' }}"
+                                                    data-shinchoku="{{ list[8] }}"
+                                                    aria-label="{{ list[1] }}-{{ list[2] }} を訂正対象にする">
+                                            </td>
+                                            <td class="col-id">{{ list[1] }}-{{ list[2] }}</td>
+                                            <td class="col-naiyo">{{ list[3] }}</td>
+                                            <td class="col-user">{{ list[9] }}</td>
+                                            <td class="col-date">{{ list[6] }}</td>
+                                            <td class="col-prog">
+                                                {% set prog = list[8]|int %}
+                                                <div class="prog">
+                                                    <div class="prog-bar{% if prog >= 100 %} done{% endif %}">
+                                                        <span style="width: {{ [prog, 100]|min }}%"></span>
+                                                    </div>
+                                                    <span class="prog-val">{{ prog }}%</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {# 次の明細が同一タスクidなら点線区切り、異なれば実線区切り #}
+                                        <tr class="task-memo{% if cont %} task-cont{% endif %}">
+                                            <td class="col-memo" colspan="6"><span class="memo-label">メモ</span>{% if list[7] %}{{ list[7] }}{% else %}<span class="none">－</span>{% endif %}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                {# タスクが存在する場合のみ処理区分を選ばせる #}
+                <div class="task-block">
+                    <span class="block-title">処理区分</span>
+                    <div class="kbn-group">
+                        <label>
+                            <input type="radio" name="shori_kbn" value="1" checked>
+                            登録<span class="kbn-note">新しいタスクを追加します</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="shori_kbn" value="2">
+                            訂正<span class="kbn-note">上で選択したタスクを直します</span>
+                        </label>
+                    </div>
+                </div>
+                {% else %}
+                {# タスクが1件も無い場合は登録のみ #}
+                <input type="hidden" name="shori_kbn" value="1">
+                <div class="no-data">
+                    <a>タスクが存在しません。新しいタスクを登録してください。</a>
+                </div>
+                {% endif %}
+
+                {# 登録のときだけ表示する。登録種類と、その対象の選択 #}
+                <div class="task-block" id="block_toroku">
+                    <span class="block-title">登録種類</span>
+                    <div class="kbn-group">
+                        <label>
+                            <input type="radio" name="koshin_kbn" value="1" checked>
+                            タスクid追加<span class="kbn-note">新しいタスクidを起票します</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="koshin_kbn" value="2">
+                            枝番追加<span class="kbn-note">既存のタスクidに追加します</span>
+                        </label>
+                    </div>
+
+                    <div class="input-grid">
+                        {# タスクid追加：管理区分を選ぶ。タスクidはpython側で採番する #}
+                        <div class="input-cell" id="cell_kanri">
+                            <label for="kanri_kbn">管理区分</label>
+                            <select id="kanri_kbn" name="kanri_kbn">
+                                {% for kanri in kanriList %}
+                                <option value="{{ kanri[0] }}">{{ kanri[1] }}（{{ kanri[0] }}）</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        {# 枝番追加：既存の管理区分＋タスクidを選ぶ #}
+                        <div class="input-cell" id="cell_task">
+                            <label for="task_id">追加するタスクid</label>
+                            {% if task_list %}
+                            {% set ns2 = namespace(seen=[]) %}
+                            <select id="task_id" name="task_id">
+                                {% for list in task_list|sort(attribute='1')|sort(attribute='0') %}
+                                {% if list[0] ~ list[1] not in ns2.seen %}
+                                {% set _ = ns2.seen.append(list[0] ~ list[1]) %}
+                                {% set ns3 = namespace(kanriName=list[0]) %}
+                                {% for kanri in kanriList %}
+                                {% if kanri[0] == list[0] %}{% set ns3.kanriName = kanri[1] %}{% endif %}
+                                {% endfor %}
+                                <option value="{{ list[0] }},{{ list[1] }}">
+                                    {{ ns3.kanriName }}（{{ list[0] }}）－ {{ list[1] }}
+                                </option>
+                                {% endif %}
+                                {% endfor %}
+                            </select>
+                            {% else %}
+                            <a class="err">追加できるタスクがありません。</a>
+                            {% endif %}
+                        </div>
+
+                        <div class="input-cell" id="cell_iraimoto">
+                            <label for="iraimoto">依頼元<span class="hint">30文字以内・任意</span></label>
+                            <input type="text" id="iraimoto" name="iraimoto" maxlength="30">
+                        </div>
+                    </div>
+                </div>
+
+                {# 登録・訂正で共通の入力項目 #}
+                <div class="task-block">
+                    <span class="block-title">入力項目</span>
+                    <div class="input-grid">
+                        <div class="input-cell wide">
+                            <label for="naiyo">タスク内容<span class="hint">30文字以内</span></label>
+                            <input type="text" id="naiyo" name="naiyo" maxlength="30" required>
+                        </div>
+
+                        <div class="input-cell">
+                            <label for="tanto">担当者</label>
+                            <select id="tanto" name="tanto" required>
+                                {% for gakusei in gakkahanList %}
+                                <option value="{{ gakusei[0] }}">{{ gakusei[1] }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="input-cell">
+                            <label for="kigen">期限<span class="hint">１週間前～２年後</span></label>
+                            <div class="kigen-row">
+                                <input type="date" id="kigen" name="kigen">
+                                <button type="button" class="reset-button" id="kigen_reset">リセット</button>
+                            </div>
+                            <span class="kigen-note">未選択の場合は「遅滞なく」で登録します。</span>
+                        </div>
+
+                        <div class="input-cell">
+                            <label for="shinchoku">進捗<span class="hint">0～100</span></label>
+                            <input type="number" id="shinchoku" name="shinchoku" min="0" max="100" step="1" value="0"
+                                required>
+                        </div>
+
+                        <div class="input-cell wide">
+                            <label for="memo">メモ<span class="hint">100文字以内・任意</span></label>
+                            <textarea id="memo" name="memo" maxlength="100"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                    <button type="submit" class="execute-button">実行</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+
+    <script>
+        // 期限のリセット（日付を選ばない＝「遅滞なく」にするため）
+        var kigenReset = document.getElementById('kigen_reset');
+        if (kigenReset) {
+            kigenReset.addEventListener('click', function () {
+                document.getElementById('kigen').value = "";
+            });
+        }
+
+        // 登録種類に応じて選択欄の表示を切り替える
+        function switchKoshinKbn() {
+            var kbn = document.querySelector('input[name="koshin_kbn"]:checked');
+            kbn = kbn ? kbn.value : "1";
+            var cellKanri = document.getElementById('cell_kanri');
+            var cellTask = document.getElementById('cell_task');
+            if (cellKanri) { cellKanri.style.display = (kbn === "1") ? "" : "none"; }
+            if (cellTask) { cellTask.style.display = (kbn === "2") ? "" : "none"; }
+        }
+
+        // 選択中のタスクの値を訂正用の入力欄へ流し込む
+        function applySelectedTask() {
+            var sel = document.querySelector('input[name="sel_task"]:checked');
+            if (!sel) { return; }
+            document.getElementById('naiyo').value = sel.dataset.naiyo || "";
+            document.getElementById('tanto').value = sel.dataset.tanto || "";
+            document.getElementById('kigen').value = sel.dataset.kigen || "";
+            document.getElementById('memo').value = sel.dataset.memo || "";
+            document.getElementById('shinchoku').value = sel.dataset.shinchoku || "0";
+        }
+
+        // 一覧の選択行に色を付ける
+        function markSelectedRow() {
+            var rows = document.querySelectorAll('tr.task-main, tr.task-memo');
+            for (var i = 0; i < rows.length; i++) { rows[i].classList.remove('selected'); }
+            var sel = document.querySelector('input[name="sel_task"]:checked');
+            if (!sel) { return; }
+            var main = sel.closest('tr');
+            if (!main) { return; }
+            main.classList.add('selected');
+            if (main.nextElementSibling) { main.nextElementSibling.classList.add('selected'); }
+        }
+
+        // 処理区分に応じて登録ブロックの表示を切り替える
+        function switchShoriKbn() {
+            var kbn = document.querySelector('input[name="shori_kbn"]:checked');
+            kbn = kbn ? kbn.value : "1";
+            var block = document.getElementById('block_toroku');
+            if (block) { block.style.display = (kbn === "1") ? "" : "none"; }
+            if (kbn === "2") { applySelectedTask(); }
+        }
+
+        var shoriRadios = document.querySelectorAll('input[name="shori_kbn"]');
+        for (var i = 0; i < shoriRadios.length; i++) {
+            shoriRadios[i].addEventListener('change', switchShoriKbn);
+        }
+        var koshinRadios = document.querySelectorAll('input[name="koshin_kbn"]');
+        for (var i = 0; i < koshinRadios.length; i++) {
+            koshinRadios[i].addEventListener('change', switchKoshinKbn);
+        }
+        // タスクを選んだら訂正に切り替えて、その値を入力欄へ反映する
+        var selRadios = document.querySelectorAll('input[name="sel_task"]');
+        for (var i = 0; i < selRadios.length; i++) {
+            selRadios[i].addEventListener('change', function () {
+                var teisei = document.querySelector('input[name="shori_kbn"][value="2"]');
+                if (teisei) { teisei.checked = true; }
+                markSelectedRow();
+                switchShoriKbn();
+            });
+        }
+        switchKoshinKbn();
+        switchShoriKbn();
+    </script>
+</body>
+
+</html>

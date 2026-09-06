@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール タスク削除</title>
+    <link rel="stylesheet" href="../static/GK1C0053.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>タスク削除</h2>
+            {% if err %}
+            <a class="err">{{ err }}</a>
+            <br><br>
+            {% endif %}
+            {% if msg %}
+            <a class="msg">{{ msg }}</a>
+            <br><br>
+            {% endif %}
+
+            {# task_listはget_task03の戻り値 #}
+            {# [0]管理区分 [1]タスクid [2]枝番 [3]タスク内容 [4]担当者 [5]期限 #}
+
+            <form method="post" action="/GK_task03">
+                {% if task_list %}
+                <div class="task-block">
+                    <span class="block-title">削除するタスク</span>
+                    <p class="sel-note">削除するタスクを選択してください。複数選択できます。</p>
+                    <p class="sel-all">
+                        <label><input type="checkbox" id="sel_all">すべて選択</label>
+                    </p>
+                    <div class="kanri-container">
+                        {% for kanriKbn, taskGroup in task_list|sort(attribute='2')|sort(attribute='1')|groupby('0') %}
+                        {% set ns = namespace(kanriName=kanriKbn) %}
+                        {% for kanri in kanriList %}
+                        {% if kanri[0] == kanriKbn %}{% set ns.kanriName = kanri[1] %}{% endif %}
+                        {% endfor %}
+                        <div class="kanri-box">
+                            <div class="kanri-box-header">
+                                <h3 class="kanri-box-title">{{ ns.kanriName }}（{{ kanriKbn }}）</h3>
+                                <span class="kanri-box-count">{{ taskGroup|length }}件</span>
+                            </div>
+                            <div class="kanri-box-body">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-sel">選択</th>
+                                            <th class="col-id">タスクid</th>
+                                            <th>タスク内容</th>
+                                            <th class="col-user">担当者</th>
+                                            <th class="col-date">期限</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for list in taskGroup %}
+                                        <tr class="del-row">
+                                            <td class="col-sel">
+                                                <input type="checkbox" name="del_task"
+                                                    value="{{ list[0] }},{{ list[1] }},{{ list[2] }}"
+                                                    aria-label="{{ list[1] }}-{{ list[2] }} を削除対象にする">
+                                            </td>
+                                            <td class="col-id">{{ list[1] }}-{{ list[2] }}</td>
+                                            <td class="col-naiyo">{{ list[3] }}</td>
+                                            <td class="col-user">{{ list[4] }}</td>
+                                            <td class="col-date">{{ list[5] }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                    <button type="submit" class="execute-button">確認へ</button>
+                </div>
+                {% else %}
+                <div class="no-data">
+                    <a>削除できるタスクがありません。</a>
+                </div>
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+                </div>
+                {% endif %}
+            </form>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+
+    <script>
+        var boxes = document.querySelectorAll('input[name="del_task"]');
+
+        // チェックした行に色を付ける
+        function markRow(box) {
+            var row = box.closest('tr');
+            if (!row) { return; }
+            if (box.checked) { row.classList.add('selected'); }
+            else { row.classList.remove('selected'); }
+        }
+
+        for (var i = 0; i < boxes.length; i++) {
+            boxes[i].addEventListener('change', function () { markRow(this); });
+        }
+
+        // すべて選択
+        var selAll = document.getElementById('sel_all');
+        if (selAll) {
+            selAll.addEventListener('change', function () {
+                for (var i = 0; i < boxes.length; i++) {
+                    boxes[i].checked = selAll.checked;
+                    markRow(boxes[i]);
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
