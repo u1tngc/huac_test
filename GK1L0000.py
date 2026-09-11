@@ -73,7 +73,7 @@ def GK_menu01():
                 flash("問題数は5問以上25問以下で指定してください。")
                 return redirect(url_for('GK_menu01'))
             init02(user_id)
-            GK1S0040.insertLog(user_id,"A001",bunya)
+            GK1S0040.insertLog(user_id,"A001",f"{bunya}-{str(mondai_num).zfill(2)}")
             # if bunya == "Z" and user_id == "23C2739":
             #     flash("使用上限回数に達しました。")
             #     return redirect(url_for('GK_menu01')) 
@@ -107,7 +107,7 @@ def GK_menu01():
                 session[f"{user_id}_fukushuNum"] = fukushu_num
                 session[f"{user_id}_fukushu_ix1"] = 0
                 session[f"{user_id}_fukushu_eof"] = 0
-                GK1S0040.insertLog(user_id,"A021",fukushu_kbn)
+                GK1S0040.insertLog(user_id,"A021",f"{fukushu_kbn}-{fukushu_num}")
                 return redirect(url_for('GK_fukushu01', err=""))
             else:
                 flash("復習対象の問題がありません。")
