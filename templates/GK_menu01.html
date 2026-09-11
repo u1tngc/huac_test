@@ -209,8 +209,18 @@
                         <div class="radio-section">
                             <label class="radio-group"><input type="radio" name="selection"
                                     value="password">パスワード変更</label>
+                            <div class="form-group">
+                                <label for="cntl_kbnP"></label>
+                                <select id="cntl_kbnP" name="cntl_kbnP">
+                                    {% if session['authority'] in [7, 9] %}
+                                    <option value="1">パスワードリセット</option>
+                                    {% endif %}
+                                    <option value="2">パスワード変更</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
+                    {% endif %}
                     <div class="button-group">
                         <button type="submit" class="execute-button">実行</button>
                     </div>

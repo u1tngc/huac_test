@@ -173,9 +173,16 @@ def get_kanriName():
     ret_array = GK0S082D.get_kanriName()
     return ret_array
 
+def get_kanryoFrom():
+    """完了年月日の出力下限（処理日の1ヵ月前）をYYYYMMDDの文字列8桁で返す
+       完了年月日がこの値より後のタスクのみ照会・更新画面へ出力する"""
+    today = datetime.now(ZoneInfo("Asia/Tokyo"))
+    return (today - relativedelta(months=1)).strftime("%Y%m%d")
+
+
 def get_task1(id):
-    #担当者単位
-    task_list = GK0S082D.get_task01(id)
+    #担当者単位。完了から1ヵ月を超えたタスクは出力しない
+    task_list = GK0S082D.get_task01(id, get_kanryoFrom())
     if task_list:
         for ix1 in range(len(task_list)):
             name = GK0S001D.get_gakuseiName(task_list[ix1][4])
@@ -184,10 +191,14 @@ def get_task1(id):
             task_list[ix1][6] = ymd
     return task_list
 
-def get_task02():
+def get_task02(kanryoFilter=True):
+    """登録訂正画面用
+       kanryoFilter True=完了から1ヵ月を超えたタスクを除外する（更新機能）
+                    False=完了年月日による絞り込みを行わない（削除機能）"""
     nendo = get_nendo()
     ymd = nendo + '00'
-    task_list = GK0S082D.get_task02(ymd)
+    kanryoFrom = get_kanryoFrom() if kanryoFilter else None
+    task_list = GK0S082D.get_task02(ymd, kanryoFrom)
     if task_list:
         for ix1 in range(len(task_list)):
             name = GK0S001D.get_gakuseiName(task_list[ix1][4])
@@ -199,7 +210,8 @@ def get_task02():
 def get_task03():
     #削除画面用。印字項目のみに絞り込む
     #戻り値：[管理区分, タスクid, 枝番, タスク内容, 担当者, 期限] * 件数
-    task_list = get_task02()
+    #削除対象は完了年月日で絞り込まない（古い完了タスクも削除できるようにする）
+    task_list = get_task02(False)
     ret_array = []
     if task_list:
         for ix1 in range(len(task_list)):
@@ -361,8 +373,14 @@ def update_Task(kanriKbn, taskId, edaNo, naiyo, tanto, kigenDate, memo, shinchok
     if ret_cd != 0:
         return 1, err
 
+    # 完了年月日：進捗100で処理日を編集し、100以外はクリアする
+    if shinchoku == 100:
+        kanryoYmd = datetime.now(ZoneInfo("Asia/Tokyo")).strftime("%Y%m%d")
+    else:
+        kanryoYmd = ""
+
     err = GK0S082D.update_task(kanriKbn, taskId, int(edaNo), naiyo, tanto, kigen,
-                               memo if memo else None, shinchoku)
+                               memo if memo else None, shinchoku, kanryoYmd)
     if err != 0:
         return 1, "タスクの訂正に失敗しました。"
     return 0, ""

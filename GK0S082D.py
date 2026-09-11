@@ -19,17 +19,28 @@ DB_CONFIG = {
     "target_session_attrs": "read-write"
 }
 
-def get_task01(user_id):
+def get_task01(user_id, kanryoFrom=None):
+    """タスク照会用。完了年月日は画面出力しないため選択項目に含めない
+       user_id    　指定時は担当で絞り込む（空文字は全件）
+       kanryoFrom 　指定時は未完了または完了年月日がkanryoFromより後の明細に絞り込む"""
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         with conn.cursor() as cur:
+            sql = '''
+                SELECT 管理区分, タスクid, 枝番, タスク内容, 担当, 依頼元, 期限, メモ, 進捗
+                  FROM タスク管理セグ
+            '''
+            where = []
+            data = []
             if user_id:
-                sql = "SELECT * FROM タスク管理セグ WHERE 担当 = %s"
-                data = (user_id,)
-                cur.execute(sql, data)
-            else:
-                sql = "SELECT * FROM タスク管理セグ"
-                cur.execute(sql,)                
+                where.append("担当 = %s")
+                data.append(user_id)
+            if kanryoFrom:
+                where.append("(完了年月日 IS NULL OR 完了年月日 = '' OR 完了年月日 > %s)")
+                data.append(kanryoFrom)
+            if where:
+                sql += " WHERE " + " AND ".join(where)
+            cur.execute(sql, tuple(data))
             result = cur.fetchall()
         conn.close()
         return [list(row) for row in result] if result else []
@@ -40,19 +51,25 @@ def get_task01(user_id):
         print(f'エラー内容：{e}')
         return []
 
-def get_task02(ymd):
+def get_task02(ymd, kanryoFrom=None):
+    """タスク登録訂正・削除用。完了年月日は画面出力しないため選択項目に含めない
+       kanryoFrom 　指定時は未完了または完了年月日がkanryoFromより後の明細に絞り込む"""
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         with conn.cursor() as cur:
             sql = '''
-                SELECT * FROM タスク管理セグ
-                WHERE (進捗 <> 100 AND タスクid <= %s)
-                OR タスクid > %s
-                ORDER BY 管理区分, タスクid, 枝番
+                SELECT 管理区分, タスクid, 枝番, タスク内容, 担当, 依頼元, 期限, メモ, 進捗
+                  FROM タスク管理セグ
+                 WHERE ((進捗 <> 100 AND タスクid <= %s)
+                    OR タスクid > %s)
             '''
             #WHERE句のプレースホルダが2個のため同じ値を2つ渡す
-            data = (ymd, ymd)
-            cur.execute(sql,data)                
+            data = [ymd, ymd]
+            if kanryoFrom:
+                sql += " AND (完了年月日 IS NULL OR 完了年月日 = '' OR 完了年月日 > %s)"
+                data.append(kanryoFrom)
+            sql += " ORDER BY 管理区分, タスクid, 枝番"
+            cur.execute(sql,tuple(data))
             result = cur.fetchall()
         conn.close()
         return [list(row) for row in result] if result else []
@@ -242,18 +259,20 @@ def insert_task(kanriKbn, taskId, edaNo, naiyo, tanto, iraimoto, kigen, memo, sh
         return 2
 
 
-def update_task(kanriKbn, taskId, edaNo, naiyo, tanto, kigen, memo, shinchoku):
+def update_task(kanriKbn, taskId, edaNo, naiyo, tanto, kigen, memo, shinchoku, kanryoYmd):
     """タスク管理セグを1件訂正する（依頼元は訂正対象外）
+       kanryoYmd 　完了年月日。進捗100時はYYYYMMDD、100以外は空文字でクリアする
        戻り値：0=正常 1=DBエラー 2=その他エラー"""
     try:
         conn = psycopg2.connect(**DB_CONFIG)
         with conn.cursor() as cur:
             sql = '''
                 UPDATE タスク管理セグ
-                   SET タスク内容 = %s, 担当 = %s, 期限 = %s, メモ = %s, 進捗 = %s
+                   SET タスク内容 = %s, 担当 = %s, 期限 = %s, メモ = %s, 進捗 = %s,
+                       完了年月日 = %s
                  WHERE 管理区分 = %s AND タスクid = %s AND 枝番 = %s
             '''
-            data = (naiyo, tanto, kigen, memo, shinchoku, kanriKbn, taskId, edaNo)
+            data = (naiyo, tanto, kigen, memo, shinchoku, kanryoYmd, kanriKbn, taskId, edaNo)
             cur.execute(sql, data)
             conn.commit()
         conn.close()

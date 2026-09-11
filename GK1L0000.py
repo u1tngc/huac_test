@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2026/09/04
+#最終更新日:2026/09/11
 
 import csv
 from datetime import timedelta
@@ -295,9 +295,18 @@ def GK_menu01():
                 GK1S0040.insertLog(user_id,"H012","")
                 return redirect(url_for('GK_task03'))
                 
-        elif shorikbn == "password":
-            #機能：パスワード変更
-            return redirect(url_for('GK_db010',err=""))
+        elif shorikbn == "password_chg":
+            cntl_kbn = request.form['cntl_kbnP']
+            if cntl_kbn == "1":
+                #機能：パスワードリセット
+                GK1S0040.insertLog(user_id,"X001","")
+                gakuseiData = GK1S0040.get_user(session.get('authority'))
+                session[f"{user_id}_gakuseiData"] = gakuseiData
+                return render_template('GK_db011.html', gakuseiData=gakuseiData, err1="") 
+            elif cntl_kbn == "2":
+                #機能：パスワード変更
+                GK1S0040.insertLog(user_id,"X002","")               
+                return redirect(url_for('GK_db010',err=""))
     return render_template('GK_menu01.html')
 
 # 練習問題（問題表示）
@@ -492,7 +501,7 @@ def GK_db002():
         ret_gakusei, err = GK1S0040.get_gakusei(gakuseiInfo,session.get('authority'))
         session[f'{user_id}_gakusei'] = ret_gakusei
         return redirect(url_for('GK_db003', gakusei=session.get(f'{user_id}_gakusei'), err=""))
-    
+
     return render_template('GK_db002.html')
 
 #学生管理セグ・訂正
@@ -565,6 +574,57 @@ def GK_db010():
         return redirect(url_for('GK_menu01'))
 
     return render_template('GK_db010.html', err ="")  
+
+#パスワードリセット（選択）
+@app.route('/GK_db011', methods=['GET', 'POST'])
+def GK_db011():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [7,9]:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':
+        gakuseiInfo = request.form['selected_studentInfo']
+        gakuseiName = GK1S0040.get_gakusei(gakuseiInfo)
+        session[f'{user_id}_wkPCgakusei'] = [gakuseiInfo,gakuseiName]
+        print([gakuseiInfo,gakuseiName])
+        return redirect(url_for('GK_db012'))
+    #確認画面から戻ってきた場合も一覧を表示するため、メニューで退避した学生一覧を渡す
+    return render_template('GK_db011.html',
+                           gakuseiData=session.get(f"{user_id}_gakuseiData", []), err1="")
+
+#パスワードリセット（確認）
+@app.route('/GK_db012', methods=['GET', 'POST'])
+def GK_db012():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [7,9]:
+        return redirect(url_for('GK_menu01'))
+    #選択画面を経由していない場合はメニューへ戻す
+    gakusei = session.get(f'{user_id}_wkPCgakusei')
+    if not gakusei:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':
+        newPass = GK1S0040.resetPass(gakusei[0])
+        #結果画面へ引き継ぐため[学籍番号, 氏名, 新パスワード]で退避し直す
+        session[f'{user_id}_wkPCgakusei'] = [gakusei[0], gakusei[1], newPass]
+        return redirect(url_for('GK_db013'))
+    return render_template('GK_db012.html', gakusei=gakusei, err="")
+
+#パスワードリセット（結果）
+@app.route('/GK_db013', methods=['GET', 'POST'])
+def GK_db013():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if not session.get('authority') in [7,9]:
+        return redirect(url_for('GK_menu01'))
+    #リセットを実行していない場合はメニューへ戻す
+    gakusei = session.get(f'{user_id}_wkPCgakusei')
+    if not gakusei or len(gakusei) < 3:
+        return redirect(url_for('GK_menu01'))
+    return render_template('GK_db013.html', gakusei=gakusei, err="")
 
 #履歴管理セグ・照会（学生用）
 @app.route('/GK_db020', methods=['GET', 'POST'])
@@ -1405,6 +1465,7 @@ def init06(user_id):
     session.pop(f"{user_id}_limitdate", None)
 
 def init07(user_id):
+    session.pop(f"{user_id}_wkPCgakusei")
     session.pop(f"{user_id}_wk51gakuseiID", None)
     session.pop(f"{user_id}_wk51gakuseiName", None)
     session.pop(f"{user_id}_wk51yoseiJokyo", None)

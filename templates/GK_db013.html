@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール パスワードリセット（結果）</title>
+    <link rel="stylesheet" href="../static/GK1C0041.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>パスワードリセット（結果）</h2>
+            {% if err %}
+            <a class="err">{{ err }}</a>
+            <br><br>
+            {% endif %}
+            <a>パスワードをリセットしました。</a>
+            <br>
+            <br>
+            {# gakusei は [0]学籍番号 [1]氏名 [2]新しいパスワード #}
+            <div class="data-section">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>学籍番号</th>
+                            <th>氏名</th>
+                            <th>新しいパスワード</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ gakusei[0] }}</td>
+                            <td>{{ gakusei[1] }}</td>
+                            <td>{{ gakusei[2] }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <br>
+            <a class="err">新しいパスワードはこの画面にのみ表示されます。学生へ連絡してください。</a>
+
+            <div class="button-group">
+                <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">Menu</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

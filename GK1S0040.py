@@ -1,12 +1,14 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2026/07/08
+#最終更新日:2026/09/11
 
 
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import re
 import bcrypt
+import secrets
+import string
 
 import GK0S001D
 import GK0S002D
@@ -17,6 +19,7 @@ import GK0S052D
 import GK0S061D
 import GK0S099D
 
+ALPHABET = string.ascii_letters + string.digits
 
 def get_gakusei(id,authority):
     gakusei_list = GK0S001D.get_gakusei(id)
@@ -749,3 +752,45 @@ def update_yoseiTeamInfo(yoseiTeamInfoBef, yoseiTeamInfoAft):
             if err:
                 return err
     return ""
+
+def resetPass(id):
+    newPass = generate_random_string()
+    err = GK0S001D.update_password(id,newPass)
+    err = GK0S001D.update_password1(id,newPass)
+    return newPass
+
+def generate_random_string(min_len: int = 6, max_len: int = 10) -> str:
+    """英字と数字を必ず含む、半角英数字のランダム文字列を生成する。"""
+    length = secrets.randbelow(max_len - min_len + 1) + min_len
+
+    # 英字1文字と数字1文字を先に確保する
+    chars = [
+        secrets.choice(string.ascii_letters),
+        secrets.choice(string.digits),
+    ]
+    chars += [secrets.choice(ALPHABET) for _ in range(length - 2)]
+
+    # 偏りをなくすためシャッフル（Fisher-Yates）
+    for i in range(len(chars) - 1, 0, -1):
+        j = secrets.randbelow(i + 1)
+        chars[i], chars[j] = chars[j], chars[i]
+
+    return "".join(chars)
+
+def get_user():
+    gakka_list = GK0S001D.get_gakkaUser()
+    flight_user = GK0S001D.get_flightUser()
+    merged = {}
+    for student_id, name in gakka_list + flight_user:
+        if student_id not in merged:
+            merged[student_id] = name
+
+    result = [[sid, name] for sid, name in merged.items()]
+    result.sort()
+    return result
+
+def get_userName(id):
+    name = GK0S001D.get_gakuseiName(id)
+    if not name:
+        name = GK0S001D.get_userName(id)
+    return name

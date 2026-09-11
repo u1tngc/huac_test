@@ -234,7 +234,24 @@ def get_gakuseiName(id):
     except Exception as e:
         print(f'エラー内容：{e}')
         return ""
-    
+
+def get_userName(id):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT 氏名 FROM "ユーザー管理セグ" WHERE ユーザーid = %s'
+            data = (id,)
+            cur.execute(sql, data)
+            result = cur.fetchone()  
+        conn.close()
+        return result[0] if result else ""
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return ""
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return ""
+
 def update_password1(id, password):
     try:
         conn = psycopg2.connect(**DB_CONFIG)
@@ -270,3 +287,37 @@ def get_gakkahan():
     except Exception as e:
         print(f'エラー内容：{e}')
         return ""
+
+def get_gakkaUser():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT 学籍番号, 氏名 FROM "学生管理セグ" WHERE 学籍番号 <> %s'
+            data =('16A3184',)
+            cur.execute(sql,data)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
+
+def get_flightUser():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT ユーザーid, 氏名 FROM "ユーザー管理セグ" WHERE ユーザーid <> %s and 権限 NOT IN (0,1,8,9)'
+            data =('16A3184',)
+            cur.execute(sql,data)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
