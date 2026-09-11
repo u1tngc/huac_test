@@ -295,7 +295,7 @@ def GK_menu01():
                 GK1S0040.insertLog(user_id,"H012","")
                 return redirect(url_for('GK_task03'))
                 
-        elif shorikbn == "password_chg":
+        elif shorikbn == "password":
             cntl_kbn = request.form['cntl_kbnP']
             if cntl_kbn == "1":
                 #機能：パスワードリセット
