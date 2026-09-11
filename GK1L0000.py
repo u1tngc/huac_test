@@ -300,7 +300,7 @@ def GK_menu01():
             if cntl_kbn == "1":
                 #機能：パスワードリセット
                 GK1S0040.insertLog(user_id,"X001","")
-                gakuseiData = GK1S0040.get_user(session.get('authority'))
+                gakuseiData = GK1S0040.get_user()
                 session[f"{user_id}_gakuseiData"] = gakuseiData
                 return render_template('GK_db011.html', gakuseiData=gakuseiData, err1="") 
             elif cntl_kbn == "2":
@@ -585,9 +585,8 @@ def GK_db011():
         return redirect(url_for('GK_menu01'))
     if request.method == 'POST':
         gakuseiInfo = request.form['selected_studentInfo']
-        gakuseiName = GK1S0040.get_gakusei(gakuseiInfo)
+        gakuseiName = GK1S0040.get_userName(gakuseiInfo)
         session[f'{user_id}_wkPCgakusei'] = [gakuseiInfo,gakuseiName]
-        print([gakuseiInfo,gakuseiName])
         return redirect(url_for('GK_db012'))
     #確認画面から戻ってきた場合も一覧を表示するため、メニューで退避した学生一覧を渡す
     return render_template('GK_db011.html',
