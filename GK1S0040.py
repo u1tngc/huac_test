@@ -551,9 +551,13 @@ def insertLog(user,shobuncd,biko):
     }
     if shobuncd == "A001":
         bunyacd = biko[0:1]
+        mondai_num = biko[1:]
         biko = bunya_array.get(bunyacd, "")
+        biko = biko + mondai_num
     if shobuncd == "A021":
+        mondai_num = biko[1:]
         biko = kbn_array.get(biko,"")
+        biko = biko + mondai_num
     err = GK0S099D.insertLog(user,shobuncd,ymdHMS,biko)
 
 
