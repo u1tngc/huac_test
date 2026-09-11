@@ -1465,7 +1465,7 @@ def init06(user_id):
     session.pop(f"{user_id}_limitdate", None)
 
 def init07(user_id):
-    session.pop(f"{user_id}_wkPCgakusei")
+    session.pop(f"{user_id}_wkPCgakusei", None)
     session.pop(f"{user_id}_wk51gakuseiID", None)
     session.pop(f"{user_id}_wk51gakuseiName", None)
     session.pop(f"{user_id}_wk51yoseiJokyo", None)
