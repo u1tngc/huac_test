@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 入所時期シミュレーション（結果）</title>
+    <link rel="stylesheet" href="../static/GK1C0055.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>入所時期シミュレーション（結果）</h2>
+            {% if err %}
+            <a class="err">{{ err }}</a>
+            <br><br>
+            {% endif %}
+            {% if simList %}
+            {% set colIx = [1, 4, 0, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12] %}
+            {% set colNm = ['氏名', '試算区分', 'ECW', 'ソロ発数', '23移行', '要件到達見込み', '入所時期',
+            '中間ＣＨＫ①', '中間ＣＨＫ②', '中間ＣＨＫ③', '中間ＣＨＫ④',
+            '学生ＣＨＫ', '教官ＣＨＫ'] %}
+            {% set colCl = ['c-name', 'c-kbn', 'c-ecw', 'c-su', 'c-iko', 'c-gas', 'c-gas',
+            'c-chk', 'c-chk', 'c-chk', 'c-chk', 'c-ym', 'c-ym'] %}
+            <div class="result-wrap">
+                <table class="result-table">
+                    <thead>
+                        <tr>
+                            {% for ix in range(colIx|length) %}
+                            <th class="{{ colCl[ix] }}">{{ colNm[ix] }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in simList %}
+                        <tr>
+                            {% for ix in range(colIx|length) %}
+                            {% if ix < 2 %} <th class="{{ colCl[ix] }}">{{ row[colIx[ix]] }}</th>
+                                {% else %}
+                                <td class="{{ colCl[ix] }}">{% if row[colIx[ix]] or row[colIx[ix]] == 0
+                                    %}{{ row[colIx[ix]] }}{% else %}－{% endif %}</td>
+                                {% endif %}
+                                {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="ecw-note">
+                ＥＣＷ　０：正常　１：試算不可（ソロ発数が要件到達済み）　２：ソロ発数０のため、次合宿で２日目に初ソロに出た想定として試算
+            </p>
+
+            <form method="post" action="/GK_nyusho_sim02">
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_nyusho_sim01'" class="menu-button">戻る</button>
+                    <button type="submit" class="execute-button">csv出力</button>
+                </div>
+            </form>
+            {% else %}
+            <div class="no-data">
+                <a>試算結果が存在しません。</a>
+            </div>
+            <div class="button-group">
+                <button type="button" onclick="location.href='/GK_nyusho_sim01'" class="menu-button">戻る</button>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

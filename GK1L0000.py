@@ -16,6 +16,7 @@ import GK1S0040
 import GK1S0041
 import GK1S0042
 import GK1S0043
+import GK1S0044
 import GK1S0201
 
 import WL1M0000
@@ -247,7 +248,6 @@ def GK_menu01():
                 #機能：概況取得
                 GK1S0040.insertLog(user_id,"W021","")
                 return render_template('GK_WX_gaikyoIN.html', err="") 
-                pass
         elif shorikbn == "student_cntl":
             cntl_kbn = request.form['cntl_kbn1']
             gakuseiCHK = GK1S0042.get_gakuseiInfo02()
@@ -294,7 +294,22 @@ def GK_menu01():
                 #機能：タスク削除
                 GK1S0040.insertLog(user_id,"H012","")
                 return redirect(url_for('GK_task03'))
-                
+        elif shorikbn == "nyusho_sim":
+            if session.get('authority') in [6, 7, 8, 9]:
+                #機能：入所時期シミュレーション（管理者用）
+                GK1S0040.insertLog(user_id,"I001","全体")
+                simList = GK1S0044.get_stuList()
+                simKbn = "1"
+            else:
+                #機能：入所時期シミュレーション（本人）
+                GK1S0040.insertLog(user_id,"I002","本人")
+                name = GK1S0040.get_gakuseiName(user_id)
+                simList = [[user_id, name]]
+                simKbn = "2"
+            session[f"{user_id}_wkSimList"] = simList
+            session[f"{user_id}_wkSimKbn"] = simKbn
+            session.pop(f"{user_id}_wkSimResult", None)
+            return redirect(url_for('GK_nyusho_sim01'))
         elif shorikbn == "password":
             cntl_kbn = request.form['cntl_kbnP']
             if cntl_kbn == "1":
@@ -1422,6 +1437,61 @@ def GK_task04():
                                kanriList=kanriList,msg=msg,err="")
     return render_template('GK_task04.html', delList=delList,kanriList=kanriList,err="") 
 
+#入所時期シミュレーション（入力）
+@app.route('/GK_nyusho_sim01', methods=['GET', 'POST'])
+def GK_nyusho_sim01():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    #メニューを経由していない場合はメニューへ戻す
+    simList = session.get(f'{user_id}_wkSimList')
+    if not simList:
+        return redirect(url_for('GK_menu01'))
+    if request.method == 'POST':
+        #選択値は「学籍番号,試算区分」の形式。試算区分が未選択の学生は含まれない
+        selList = request.form.getlist('sim_kbn')
+        sim_array = GK1S0044.get_simArray(selList)
+        if not sim_array:
+            return render_template('GK_nyusho_sim01.html', list=simList,
+                                   err="試算区分を選択してください。")
+        sim_result = GK1S0044.nyusho_sim(sim_array)
+        #本人の試算でＥＣＷ＝１の場合は結果画面へ進まず当画面へエラーを出力する
+        if session.get(f'{user_id}_wkSimKbn') == "2":
+            for ix1 in range(len(sim_result)):
+                if sim_result[ix1][0] == GK1S0044.ECW_FUKA:
+                    return render_template('GK_nyusho_sim01.html', list=simList,
+                                           err="試算不可")
+        session[f'{user_id}_wkSimResult'] = sim_result
+        return redirect(url_for('GK_nyusho_sim02'))
+    return render_template('GK_nyusho_sim01.html', list=simList, err="")
+
+#入所時期シミュレーション（結果）
+@app.route('/GK_nyusho_sim02', methods=['GET', 'POST'])
+def GK_nyusho_sim02():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    #試算を実施していない場合は選択画面へ戻す
+    sim_result = session.get(f'{user_id}_wkSimResult')
+    if not sim_result:
+        return redirect(url_for('GK_nyusho_sim01'))
+    if request.method == 'POST':
+        #機能：ＣＳＶ出力。学籍番号は出力せず、1行目を項目名とする
+        output = io.StringIO()
+        writer = csv.writer(output)
+        for row in GK1S0044.get_csvArray(sim_result):
+            writer.writerow(row)
+        csv_data = '\ufeff' + output.getvalue()
+        output.close()
+        return Response(
+            csv_data.encode('utf-8'),
+            mimetype='text/csv; charset=utf-8',
+            headers={'Content-Disposition': "attachment; filename*=UTF-8''%E5%85%A5%E6%89%80%E6%99%82%E6%9C%9F%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%B7%E3%83%A7%E3%83%B3%E7%B5%90%E6%9E%9C.csv"}
+        )
+    return render_template('GK_nyusho_sim02.html',
+                           titleList=GK1S0044.get_simTitle(),
+                           simList=GK1S0044.edit_simResult(sim_result), err="")
+
 # セッションの有効期限をリセット
 @app.before_request
 def refresh_session():
@@ -1465,6 +1535,9 @@ def init06(user_id):
 
 def init07(user_id):
     session.pop(f"{user_id}_wkPCgakusei", None)
+    session.pop(f"{user_id}_wkSimList", None)
+    session.pop(f"{user_id}_wkSimKbn", None)
+    session.pop(f"{user_id}_wkSimResult", None)
     session.pop(f"{user_id}_wk51gakuseiID", None)
     session.pop(f"{user_id}_wk51gakuseiName", None)
     session.pop(f"{user_id}_wk51yoseiJokyo", None)
@@ -1480,6 +1553,7 @@ def init07(user_id):
     session.pop(f"{user_id}_wk81shoriKbn", None)
     session.pop(f"{user_id}task02TaskList", None)
     session.pop(f"{user_id}task02user_list", None)
+    session.pop(f"{user_id}_wkSimList", None)
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

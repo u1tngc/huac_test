@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>\
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 入所時期シミュレーション（選択）</title>
+    <link rel="stylesheet" href="../static/GK1C0054.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>入所時期シミュレーション（選択）</h2>
+            {% if err %}
+            <a class="err">{{ err }}</a>
+            <br><br>
+            {% endif %}
+            {% if list %}
+            <form method="post" action="/GK_nyusho_sim01">
+                <div class="data-section">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th class="col-kbn">標準
+                                    <label class="chk-all"><input type="checkbox" id="all_0">全選択</label>
+                                </th>
+                                <th class="col-kbn">最短
+                                    <label class="chk-all"><input type="checkbox" id="all_1">全選択</label>
+                                </th>
+                                <th class="col-name">氏名</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for stu in list %}
+                            <tr>
+                                <td class="col-kbn">
+                                    <input type="checkbox" name="sim_kbn" class="chk0" value="{{ stu[0] }},0"
+                                        aria-label="{{ stu[1] }} を標準試算の対象にする">
+                                </td>
+                                <td class="col-kbn">
+                                    <input type="checkbox" name="sim_kbn" class="chk1" value="{{ stu[0] }},1"
+                                        aria-label="{{ stu[1] }} を最短試算の対象にする">
+                                </td>
+                                <td class="col-name">{{ stu[1] }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="button-group">
+                    <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">menu</button>
+                    <button type="submit" class="execute-button">試算</button>
+                </div>
+            </form>
+            {% else %}
+            <div class="no-data">
+                <a>試算できる学生が存在しません。</a>
+            </div>
+            <div class="button-group">
+                <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">menu</button>
+            </div>
+            {% endif %}
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+
+    <script>
+        // 選択行に色を付ける
+        function markRow(box) {
+            var row = box.closest('tr');
+            if (!row) { return; }
+            var boxes = row.querySelectorAll('input[name="sim_kbn"]');
+            var on = false;
+            for (var i = 0; i < boxes.length; i++) { if (boxes[i].checked) { on = true; } }
+            if (on) { row.classList.add('selected'); }
+            else { row.classList.remove('selected'); }
+        }
+
+        var allBoxes = document.querySelectorAll('input[name="sim_kbn"]');
+        for (var i = 0; i < allBoxes.length; i++) {
+            allBoxes[i].addEventListener('change', function () { markRow(this); });
+        }
+
+        // 試算区分ごとの全選択
+        function bindAll(allId, cls) {
+            var all = document.getElementById(allId);
+            if (!all) { return; }
+            all.addEventListener('change', function () {
+                var boxes = document.querySelectorAll('input.' + cls);
+                for (var i = 0; i < boxes.length; i++) {
+                    boxes[i].checked = all.checked;
+                    markRow(boxes[i]);
+                }
+            });
+        }
+        bindAll('all_0', 'chk0');
+        bindAll('all_1', 'chk1');
+    </script>
+</body>
+
+</html>
