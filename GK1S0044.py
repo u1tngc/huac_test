@@ -297,7 +297,14 @@ def edit_simResult(sim_result):
 
 def get_csvArray(sim_result):
     ret_array = [get_simTitle()]
-    return ret_array + edit_simResult(sim_result)
+    edit_array = edit_simResult(sim_result)
+    for ix1 in range(len(edit_array)):
+        temp_array = list(edit_array[ix1])
+        #中間チェック①〜④、学生ＣＨＫ、教官ＣＨＫはＣＳＶ用の書式へ編集する
+        for ix2 in range(7, 13):
+            temp_array[ix2] = get_ymCsv(temp_array[ix2])
+        ret_array.append(temp_array)
+    return ret_array
 
 def get_ikoName(ikoUmu):
     if str(ikoUmu) == "1":
@@ -316,4 +323,10 @@ def get_kbnName(shisanKbn):
 def get_ymDisp(ym):
     if ym and len(str(ym)) == 6:
         return str(ym)[0:4] + "/" + str(ym)[4:6]
+    return ym
+
+def get_ymCsv(ym):
+    #Excelで日付と解釈されないようYYYY/MMをYYYY-MM月に編集する
+    if ym and len(str(ym)) == 7:
+        return str(ym)[0:4] + "-" + str(ym)[5:7] + "月"
     return ym
