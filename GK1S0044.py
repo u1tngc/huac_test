@@ -263,9 +263,9 @@ def add_years_ymd(ymd, years):
     return dt.strftime("%Y%m%d")
 
 def get_simTitle():
-    return ["ECW", "氏名", "ソロ発数", "２３移行有無", "試算区分",
-            "要件到達見込み", "入所時期", "中間ＣＨＫ①", "中間ＣＨＫ②",
-            "中間ＣＨＫ③", "中間ＣＨＫ④", "学生ＣＨＫ", "教官ＣＨＫ"]
+    return ["ECW", "氏名", "ソロ発数", "23移行", "試算区分",
+            "要件到達見込み", "入所時期", "中間CHK①", "中間CHK②",
+            "中間CHK③", "中間CHK④", "学生CHK", "教官CHK"]
 
 def get_simArray(sel_array):
     ret_array = []
@@ -328,5 +328,5 @@ def get_ymDisp(ym):
 def get_ymCsv(ym):
     #Excelで日付と解釈されないようYYYY/MMをYYYY-MM月に編集する
     if ym and len(str(ym)) == 7:
-        return str(ym)[0:4] + "-" + str(ym)[5:7] + "月"
+        return str(ym)[2:4] + "年" + str(ym)[5:7] + "月"
     return ym
