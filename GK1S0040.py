@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2026/09/11
+#最終更新日:2026/09/23
 
 
 from datetime import datetime
@@ -508,7 +508,7 @@ def get_yoseiKamokuAll():
     return ret_array
 
 
-def get_yoseiJokyo(yoseiKamoku, yoseiStudent, yoseiDateNew):
+def get_yoseiJokyoUpd(yoseiKamoku, yoseiStudent, yoseiDateNew):
     ret_array = []
     if yoseiDateNew:
             yoseiDateNew = f'{yoseiDateNew[0:4]}/{yoseiDateNew[4:6]}/{yoseiDateNew[6:]}'

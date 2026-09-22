@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2026/09/11
+#最終更新日:2026/09/23
 
 import csv
 from datetime import timedelta
@@ -541,8 +541,7 @@ def GK_db003():
         update_gakusei = [id, name, int(status_cd),int(kanri_cd),int(shikaku_cd)]
         err = GK1S0040.update_gakusei(update_gakusei)
         err = f"[{name}]の訂正が完了しました。"
-        gakuseiData = session.get(f"{user_id}_gakuseiData")
-        return render_template('GK_db002.html', gakuseiData=gakuseiData, err1=err) 
+        return render_template('GK_db002.html', gakuseiData=session.get(f"{user_id}_gakuseiData"), err1=err) 
     return render_template('GK_db003.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")      
 
 #学生管理セグ・登録
@@ -922,7 +921,7 @@ def GK_db055():
         session[f'{user_id}_wk54yoseiStudent'] = yoseiStudent
         yoseiKamoku = session.get(f'{user_id}_wk54yoseiKamoku_sel')
         yoseiDateNew = session.get(f'{user_id}_wk54yoseiDate')
-        wk54updateInfo = GK1S0040.get_yoseiJokyo(yoseiKamoku, yoseiStudent, yoseiDateNew)
+        wk54updateInfo = GK1S0040.get_yoseiJokyoUpd(yoseiKamoku, yoseiStudent, yoseiDateNew)
         session[f'{user_id}_wk54updateInfo'] = wk54updateInfo
         return render_template('GK_db056.html', wk54updateInfo=wk54updateInfo, err1="")
     yoseiStudent = GK1S0040.get_renkyosei()
