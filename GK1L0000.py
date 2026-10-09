@@ -130,6 +130,7 @@ def GK_menu01():
                     return render_template('GK_db021.html', gakuseiName=gakuseiName) 
                 else:
                     array = GK1S0040.get_rireki(user_id)
+                    session[f'{user_id}_rireki'] = array
                     if not array:
                         flash("照会するデータがありません。")
                         return redirect(url_for('GK_menu01')) 
@@ -683,7 +684,7 @@ def GK_db022():
     gakuseiName = GK1S0040.get_gakuseiName(session.get(f'{user_id}_gakuseiID'))
     rireki = session.get(f'{user_id}_rireki')
     
-    return render_template('GK_db022.html', gakuseiName=gakuseiName, rireki=rireki)
+    return render_template('GK_db022.html', gakuseiName=gakuseiName, rireki=session.get(f'{user_id}_rireki'))
 
 #学科試験管理セグ・照会
 @app.route('/GK_db031', methods=['GET', 'POST'])

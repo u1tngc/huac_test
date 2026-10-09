@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0040
 #PGM-NAME:GK自家用DB-CNTL
-#最終更新日:2026/09/23
+#最終更新日:2026/10/09
 
 
 from datetime import datetime
@@ -272,6 +272,7 @@ def get_rireki(user_id):
             for ix2 in range(len(number)):
                 list[ix1][number[ix2]] = result[list[ix1][number[ix2]]]
         ret_list = sorted(list, key=lambda x: x[1], reverse=True)
+        ret_list = ret_list[:30]
         return ret_list
 
     return []
@@ -296,6 +297,7 @@ def get_rirekiAll():
             for ix2 in range(len(number)):
                 list[ix1][number[ix2]] = result[list[ix1][number[ix2]]]
         ret_list = sorted(list, key=lambda x: x[1], reverse=True)
+        ret_list = ret_list[:30]
         return ret_list
 
     return []
