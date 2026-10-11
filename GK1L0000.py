@@ -75,6 +75,16 @@ def GK_menu01():
                 return redirect(url_for('GK_menu01'))
             init02(user_id)
             GK1S0040.insertLog(user_id,"A001",f"{bunya}-{str(mondai_num).zfill(2)}")
+            if bunya == "Z":
+                err, jougen_num = GK1S0001.check_gokuhi(user_id, rireki_num)
+                if err:
+                    session.pop('_flashes', None)
+                    flash(err)
+                    return redirect(url_for('GK_menu01'))
+                if mondai_num > jougen_num:
+                    mondai_num = jougen_num
+                if jougen_num != 999:
+                    GK1S0001.consume_gokuhi(user_id, mondai_num)
             # if bunya == "Z" and user_id == "23C2739":
             #     flash("使用上限回数に達しました。")
             #     return redirect(url_for('GK_menu01')) 
@@ -365,6 +375,8 @@ def GK_practice02():
     if request.method == 'POST':
         session[f"{user_id}_ix1"] += 1 
         result = request.form["result"]
+        if session[f'{user_id}_mondaiNo'][0:1] != 'Z':
+            session[f'{user_id}_kaitocount'] += 1
         if result != "1":
             if session[f'{user_id}_mondaiNo'][0:1] == "Z":
                 GK1S0001.update_fukushu(user_id, session[f'{user_id}_mondaiNo'], 3)         
@@ -374,6 +386,7 @@ def GK_practice02():
         if err == 0:
             return redirect(url_for('GK_practice01'))
         else:
+            GK1S0001.grant_count(user_id, session[f"{user_id}_kaitocount"])
             return redirect(url_for('GK_menu01'))  # 最後の問題の場合はメニューに戻る
 
     return render_template('GK_practice02.html', answer=answer, question=question, err=err)
@@ -418,10 +431,12 @@ def GK_fukushu02():
     if request.method == 'POST':
         session[f"{user_id}_fukushu_ix1"] += 1 
         result = request.form["result"]
+        session[f"{user_id}_fukushu_kaitocount"] += 1
         GK1S0001.update_fukushu1(user_id,session[f'{user_id}_fukushuNo'],result)
         if session[f"{user_id}_fukushu_eof"] == 0:
             return redirect(url_for('GK_fukushu01'))
         else:
+            GK1S0001.grant_count(user_id, session[f"{user_id}_fukushu_kaitocount"])
             init05(user_id)
             return redirect(url_for('GK_menu01'))  # 最後の問題の場合はメニューに戻る
 
@@ -541,6 +556,8 @@ def GK_db003():
         id = list[0]
         update_gakusei = [id, name, int(status_cd),int(kanri_cd),int(shikaku_cd)]
         err = GK1S0040.update_gakusei(update_gakusei)
+        old_shikaku = {"練許生": 0, "自家用": 1, "教証": 2}.get(list[4], 0)
+        GK1S0040.grant_shikaku(id, old_shikaku, int(shikaku_cd))
         err = f"[{name}]の訂正が完了しました。"
         return render_template('GK_db002.html', gakuseiData=session.get(f"{user_id}_gakuseiData"), err1=err) 
     return render_template('GK_db003.html', gakusei=session.get(f'{user_id}_gakusei'), err ="")      
@@ -731,6 +748,7 @@ def GK_db032():
         if err:
             return render_template('GK_db032.html', gakkaShiken1=gakkaShiken_old,limitdate1=limitdate_old, gakkaShiken2=gakkaShiken_new,limitdate2=limitdate_new,err=err)   
         err1 = GK1S0040.update_gakkaShiken(user_id,kekka)
+        GK1S0040.grant_gakkaShiken(user_id, gakkaShiken_old[1:6], kekka[0:5])
         session.pop('_flashes', None)
         flash("学科試験結果の訂正が完了しました。")
         init06(user_id)
@@ -822,6 +840,7 @@ def GK_db044():
                           kogaku_date.replace("-", ""), joho_date.replace("-", ""), gakuseiCHK_date.replace("-", ""), kyoukanCHK_date.replace("-", "")]
             aft_array2 = [session.get(f'{user_id}_chk_id'), 2,hoki_name, kisho_name, kogaku_name, joho_name, gakuseiCHK_name, kyoukanCHK_name]
             err = GK1S0040.update_chkList(aft_array1, aft_array2)
+            GK1S0040.grant_chk(session.get(f'{user_id}_chk_id'), bef_array[1:7], date_array)
             err1 = f"{session.get(f'{user_id}_chk_name')}の訂正が完了しました。"
             return render_template('GK_db043.html', gakuseiCHK=session.get(f"{user_id}_gakuseiCHK"), err1=err1) 
 

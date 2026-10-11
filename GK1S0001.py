@@ -1,16 +1,18 @@
 #PGM-ID:GK1S0001
 #PGM-NAME:GK自家用練習問題・テスト
-#最終更新日:2026/06/13
+#最終更新日:2026/10/11
 
 
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 import random
 
+import GK0S001D
 import GK0S002D
 import GK0S003D
+import GK0S004D
 import GK0S01XD
-        
+
 
 def check01(user_id):
     list = GK0S002D.check_rireki(user_id)
@@ -122,3 +124,23 @@ def update_fukushu1(user_id, fukushuNo, result):
             dummy = GK0S003D.delete_fukushu(user_id, fukushuNo)
     else:
         dummy = GK0S003D.update_fukushu(user_id, fukushuNo, today)
+
+def check_gokuhi(user_id, rireki_num):
+    gakusei = GK0S001D.get_gakusei(user_id)
+    if gakusei and gakusei[2] in [7, 9]:
+        return "", 999
+    jougen = GK0S004D.get_gokuhiJougen(user_id)
+    jougen_num = jougen[0] if jougen else 0
+    if rireki_num != 0:
+        return "未解答の小テストがあるため、極秘問題は使用できません。", jougen_num
+    if jougen_num < 5:
+        return "極秘可能数が不足しているため、極秘問題は使用できません。", jougen_num
+    return "", jougen_num
+
+def consume_gokuhi(user_id, mondai_num):
+    GK0S004D.add_gokuhiJougen(user_id, -mondai_num)
+
+def grant_count(user_id, count):
+    amount = count // 5 
+    if amount > 0:
+        GK0S004D.add_gokuhiJougen(user_id, amount)

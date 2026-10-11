@@ -12,6 +12,7 @@ import string
 
 import GK0S001D
 import GK0S002D
+import GK0S004D
 import GK0S031D
 import GK0S041D
 import GK0S051D
@@ -241,9 +242,11 @@ def insert_gakusei(id, name, status_cd, kanri_cd, shikaku_cd):
     if err == 3:
         return "入力した学籍番号は登録済みです。"
     if shikaku_cd == 0:
+        #学科試験(031D),各種CHK(041D),極秘(004D)
         err = GK0S031D.insert_data(id)
         err = GK0S041D.insert_chkList(id,1)
         err = GK0S041D.insert_chkList(id,2)
+        err = GK0S004D.insert_Gokuhidata(id)
     return ""    
 
 
@@ -800,3 +803,24 @@ def get_userName(id):
     if not name:
         name = GK0S001D.get_userName(id)
     return name
+
+def grant_shikaku(id, old_shikaku, new_shikaku):
+    if new_shikaku in [1, 2] and new_shikaku > old_shikaku:
+        GK0S004D.add_gokuhiJougen(id, 30)
+
+
+def grant_gakkaShiken(id, old_kekka, new_kekka):
+    old_all = all(k == 1 for k in old_kekka)
+    new_all = all(k == 1 for k in new_kekka)
+    if new_all and not old_all:
+        GK0S004D.add_gokuhiJougen(id, 10)
+
+
+def grant_chk(id, old_dates, new_dates):
+    fuyo = [5, 5, 5, 5, 10, 20]   # 中間は分野ごとに5、学生CHKは10、教官CHKは20
+    amount = 0
+    for ix1 in range(6):
+        if old_dates[ix1] == "" and new_dates[ix1] != "":
+            amount += fuyo[ix1]
+    if amount > 0:
+        GK0S004D.add_gokuhiJougen(id, amount)
