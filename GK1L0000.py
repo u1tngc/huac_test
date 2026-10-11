@@ -91,6 +91,7 @@ def GK_menu01():
             session[f"{user_id}_fukushu"] = []
             session[f"{user_id}_ix1"] = 0  
             session[f'{user_id}_mondaiNum'] = mondai_num
+            session[f'{user_id}_kaitocount'] = 0
             mondai = GK1S0001.get_mondai(bunya, mondai_num)
             session[f"{user_id}_mondai_list"] = mondai
             return redirect(url_for('GK_practice01'))
@@ -118,6 +119,7 @@ def GK_menu01():
                 session[f"{user_id}_fukushuNum"] = fukushu_num
                 session[f"{user_id}_fukushu_ix1"] = 0
                 session[f"{user_id}_fukushu_eof"] = 0
+                session[f"{user_id}_fukushu_kaitocount"] = 0
                 GK1S0040.insertLog(user_id,"A021",f"{fukushu_kbn}-{fukushu_num}")
                 return redirect(url_for('GK_fukushu01', err=""))
             else:
@@ -386,7 +388,9 @@ def GK_practice02():
         if err == 0:
             return redirect(url_for('GK_practice01'))
         else:
-            GK1S0001.grant_count(user_id, session[f"{user_id}_kaitocount"])
+            GK1S0001.update_fukushu(user_id, session[f'{user_id}_mondaiNo'], 3)
+            if session['authority'] not in [7, 9]:
+                GK1S0001.grant_count(user_id, session[f"{user_id}_kaitocount"])
             return redirect(url_for('GK_menu01'))  # 最後の問題の場合はメニューに戻る
 
     return render_template('GK_practice02.html', answer=answer, question=question, err=err)
