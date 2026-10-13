@@ -74,7 +74,6 @@ def GK_menu01():
                 flash("問題数は5問以上25問以下で指定してください。")
                 return redirect(url_for('GK_menu01'))
             init02(user_id)
-            GK1S0040.insertLog(user_id,"A001",f"{bunya}-{str(mondai_num).zfill(2)}")
             if bunya == "Z":
                 err, jougen_num = GK1S0001.check_gokuhi(user_id, rireki_num)
                 if err:
@@ -85,6 +84,7 @@ def GK_menu01():
                     mondai_num = jougen_num
                 if jougen_num != 999:
                     GK1S0001.consume_gokuhi(user_id, mondai_num)
+            GK1S0040.insertLog(user_id,"A001",f"{bunya}-{str(mondai_num).zfill(2)}")
             # if bunya == "Z" and user_id == "23C2739":
             #     flash("使用上限回数に達しました。")
             #     return redirect(url_for('GK_menu01')) 
