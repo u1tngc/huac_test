@@ -335,6 +335,10 @@ def GK_menu01():
                 #機能：パスワード変更
                 GK1S0040.insertLog(user_id,"X002","")               
                 return redirect(url_for('GK_db010',err=""))
+        elif shorikbn == "chart":
+                #機能：航空図
+                GK1S0040.insertLog(user_id,"J001","")
+                return render_template('GK_chart.html')
     return render_template('GK_menu01.html')
 
 # 練習問題（問題表示）
