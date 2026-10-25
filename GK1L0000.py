@@ -1,6 +1,6 @@
 #PGM-ID:GK1L0000
 #PGM-NAME:GK自家用オンラインメイン
-#最終更新日:2026/09/23
+#最終更新日:2026/10/25
 
 import csv
 from datetime import timedelta
@@ -17,6 +17,7 @@ import GK1S0041
 import GK1S0042
 import GK1S0043
 import GK1S0044
+import GK1S0051
 import GK1S0201
 
 import WL1M0000
@@ -338,8 +339,15 @@ def GK_menu01():
         elif shorikbn == "chart":
                 #機能：航空図
                 GK1S0040.insertLog(user_id,"J001","")
-                return render_template('GK_chart.html')
+                return redirect(url_for('GK_chart'))
     return render_template('GK_menu01.html')
+
+# 航空図（静的HTMLをキャッシュ・gzip圧縮付きで返す）
+@app.route('/GK_chart', methods=['GET'])
+def GK_chart():
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    return GK1S0051.get_chart()
 
 # 練習問題（問題表示）
 @app.route('/GK_practice01', methods=['GET', 'POST']) 
