@@ -3,6 +3,7 @@
 #最終更新日:
 
 import datetime
+from concurrent.futures import ThreadPoolExecutor
 import os
 from PIL import Image
 import requests
@@ -114,48 +115,24 @@ def get_kyosho_kousou(timeKbn, currentDate, fileName,temp_file):
     currentMM = str(currentDate.strftime("%m"))
     currentDD = str(currentDate.strftime("%d"))
     eof_flg = 0
-    hh_num = 0
-    mm_num = 30
+    session = requests.Session()
     while eof_flg <= 1:
-        try:
-            hh = f'{hh_num:02}'
-            mm = f'{mm_num:02}'
-            hhmm = hh + mm
-            url1 = 'https://www.sunny-spot.net/chart/data/AUXN50/'
-            url2 = currentYYYY + '/' + currentMM + '/AUXN50_'
-            url3 = currentYYYY + currentMM + currentDD + hhmm + '.pdf'
-            url_50 = url1 + url2 + url3
-            response = requests.get(url_50)
-            response.raise_for_status()
-            file = open(f"高層天気図(北半球500)_{str(2 - eof_flg)}_{temp_file}.pdf","wb")
-            fileName[13 - eof_flg] = f"高層天気図(北半球500)_{str(2 - eof_flg)}_{temp_file}.pdf"
-            eof_flg += 1
-            for chunk in response.iter_content(200000):
-                file.write(chunk)    
-            file.close()
-            delta = datetime.timedelta(days=-1)
-            currentDate = currentDate + delta
-            currentYYYY = str(currentDate.year)
-            currentMM  = str(currentDate.strftime("%m"))
-            currentDD  = str(currentDate.strftime("%d"))
-            hh_num = 0
-            mm_num = 30
-        except requests.exceptions.HTTPError:
-            if mm_num == 59:
-                mm_num = 0
-                hh_num += 1
-            else:
-                mm_num += 1
-            if hh_num == 1 and mm_num == 30:
-                fileName[13 - eof_flg] = make_no_data_pdf(currentYYYY, currentMM, currentDD, eof_flg, temp_file)
-                eof_flg += 1
-                delta = datetime.timedelta(days=-1)
-                currentDate = currentDate + delta
-                currentYYYY = str(currentDate.year)
-                currentMM  = str(currentDate.strftime("%m"))
-                currentDD  = str(currentDate.strftime("%d"))
-                hh_num = 0
-                mm_num = 30
+        response = find_auxn50(session, currentYYYY, currentMM, currentDD)
+        if response is not None:
+            file_name = f"高層天気図(北半球500)_{str(2 - eof_flg)}_{temp_file}.pdf"
+            with open(file_name, "wb") as file:
+                for chunk in response.iter_content(200000):
+                    file.write(chunk)
+            fileName[13 - eof_flg] = file_name
+        else:
+            # 該当日のデータが無い場合は「データ無し」PDFを出力する
+            fileName[13 - eof_flg] = make_no_data_pdf(currentYYYY, currentMM, currentDD, eof_flg, temp_file)
+        eof_flg += 1
+        currentDate = currentDate + datetime.timedelta(days=-1)
+        currentYYYY = str(currentDate.year)
+        currentMM  = str(currentDate.strftime("%m"))
+        currentDD  = str(currentDate.strftime("%d"))
+    session.close()
 
     url_50 = 'https://www.jma.go.jp/bosai/numericmap/data/nwpmap/auxn50_12.pdf'
     response = requests.get(url_50)
@@ -165,6 +142,27 @@ def get_kyosho_kousou(timeKbn, currentDate, fileName,temp_file):
         file.write(chunk)    
     file.close()
     return fileName
+
+def find_auxn50(session, yyyy, mm, dd):
+    """AUXN50(北半球500hPa)の指定日分を探して、取得できたレスポンスを返す。無ければNone。
+    ファイル名の時刻(HHMM)が日によって異なるため、00:30〜01:29を並列で試行する。
+    (逐次で1分刻みに試すと時間がかかり、502(タイムアウト)の原因になるため)"""
+    base = f'https://www.sunny-spot.net/chart/data/AUXN50/{yyyy}/{mm}/AUXN50_{yyyy}{mm}{dd}'
+    hhmm_list = [f'{(30 + i) // 60:02}{(30 + i) % 60:02}' for i in range(60)]
+
+    def try_get(hhmm):
+        try:
+            r = session.get(f'{base}{hhmm}.pdf', timeout=5)
+            return r if r.status_code == 200 else None
+        except requests.exceptions.RequestException:
+            return None
+
+    with ThreadPoolExecutor(max_workers=10) as ex:
+        results = list(ex.map(try_get, hhmm_list))
+    for r in results:  # 時刻の早い順に最初に取得できたものを採用
+        if r is not None:
+            return r
+    return None
 
 def get_kyosho_asas(timeKbn, currentDate, fileName, temp_file):
     try:
