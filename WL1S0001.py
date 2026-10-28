@@ -146,8 +146,8 @@ def get_kyosho_kousou(timeKbn, currentDate, fileName,temp_file):
                 hh_num += 1
             else:
                 mm_num += 1
-            if hh_num == 2:
-                make_no_data_pdf(currentYYYY, currentMM, currentDD, eof_flg)
+            if hh_num == 1 and mm_num == 30:
+                fileName[13 - eof_flg] = make_no_data_pdf(currentYYYY, currentMM, currentDD, eof_flg, temp_file)
                 eof_flg += 1
                 delta = datetime.timedelta(days=-1)
                 currentDate = currentDate + delta
@@ -252,14 +252,19 @@ def get_kyosho_asas(timeKbn, currentDate, fileName, temp_file):
     except requests.exceptions.ConnectionError as e:
         raise e
     
-def make_no_data_pdf(currentYYYY, currentMM, currentDD, eof_flg):
+def make_no_data_pdf(currentYYYY, currentMM, currentDD, eof_flg, temp_file):
     """データ無しのPDFを作成する"""
-    filename = "高層天気図(北半球500)_" + str(2 - eof_flg) + ".pdf"
+    # 通常取得分と同じ命名(temp_file付き)にして、結合・削除処理の対象に含める
+    filename = f"高層天気図(北半球500)_{str(2 - eof_flg)}_{temp_file}.pdf"
     width, height = A4
     c = canvas.Canvas(filename, pagesize=A4)
     c.setFont("HeiseiKakuGo-W5", 20)
     text = f"{currentYYYY}/{currentMM}/{currentDD}のデータ無し"
-    c.drawCentredString(width / 2, height / 2, text)
+    # このページは後工程(WL1M0000.rotatePDF)で270度回転されるため、
+    # 回転後に正立して読めるよう、あらかじめ時計回りに90度傾けて描画する
+    c.translate(width / 2, height / 2)
+    c.rotate(-90)
+    c.drawCentredString(0, 0, text)
     c.showPage()
     c.save()
     return filename
