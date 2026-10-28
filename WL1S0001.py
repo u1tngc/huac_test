@@ -6,6 +6,12 @@ import datetime
 import os
 from PIL import Image
 import requests
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.cidfonts import UnicodeCIDFont
+from reportlab.pdfgen import canvas
+
+pdfmetrics.registerFont(UnicodeCIDFont("HeiseiKakuGo-W5"))
 
 def get_kyosho(timeKbn, currentDateTime, fileName, temp_file):
     fileName = get_kyosho_asas(timeKbn, currentDateTime, fileName,temp_file)
@@ -140,6 +146,16 @@ def get_kyosho_kousou(timeKbn, currentDate, fileName,temp_file):
                 hh_num += 1
             else:
                 mm_num += 1
+            if hh_num == 2:
+                make_no_data_pdf(currentYYYY, currentMM, currentDD, eof_flg)
+                eof_flg += 1
+                delta = datetime.timedelta(days=-1)
+                currentDate = currentDate + delta
+                currentYYYY = str(currentDate.year)
+                currentMM  = str(currentDate.strftime("%m"))
+                currentDD  = str(currentDate.strftime("%d"))
+                hh_num = 0
+                mm_num = 30
 
     url_50 = 'https://www.jma.go.jp/bosai/numericmap/data/nwpmap/auxn50_12.pdf'
     response = requests.get(url_50)
@@ -236,4 +252,14 @@ def get_kyosho_asas(timeKbn, currentDate, fileName, temp_file):
     except requests.exceptions.ConnectionError as e:
         raise e
     
-
+def make_no_data_pdf(currentYYYY, currentMM, currentDD, eof_flg):
+    """データ無しのPDFを作成する"""
+    filename = "高層天気図(北半球500)_" + str(2 - eof_flg) + ".pdf"
+    width, height = A4
+    c = canvas.Canvas(filename, pagesize=A4)
+    c.setFont("HeiseiKakuGo-W5", 20)
+    text = f"{currentYYYY}/{currentMM}/{currentDD}のデータ無し"
+    c.drawCentredString(width / 2, height / 2, text)
+    c.showPage()
+    c.save()
+    return filename
