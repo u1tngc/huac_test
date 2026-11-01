@@ -40,9 +40,10 @@ def GK_login():
         in_password = request.form['password']
         in_user = request.form['user']
         login_ret, info = GK1S0040.login_check(in_user, in_password)
-        #if in_user not in ["16A3184","22A0134","22H9509","23H1019","24C3113","24X0077","25X0043","25X0155","99A0000"]:
-        #    flash("緊急メンテナンス中")
-        #    return redirect(url_for('GK_login'))
+        if in_user not in ["16A3184"]:
+            if now.hour in [10,11]:
+                flash("緊急メンテナンス中")
+                return redirect(url_for('GK_login'))
         if login_ret == 0:
             session.permanent = True
             session['logged_in'] = True
