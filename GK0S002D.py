@@ -1,6 +1,6 @@
 #PGM-ID:GK0S002D
 #PGM-NAME:GK履歴管理セグI/O(オンライン)
-#最終更新日:
+#最終更新日:2026/11/01
 
 import os
 
@@ -152,5 +152,20 @@ def check_nigate(user_id):
         return []
 
 
-
+def get_firstTestdate(user_id,kbn):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT 処理年月日 FROM "履歴管理セグ" WHERE 学籍番号 = %s AND 出題区分 = %s ORDER BY 処理年月日 ASC LIMIT 1'
+            data = (user_id, kbn)
+            cur.execute(sql,data)
+            result = cur.fetchone()  
+        conn.close()
+        return result[0] if result else None
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return None
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return None
     

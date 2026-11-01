@@ -77,3 +77,25 @@ def add_gokuhiJougen(id, amount):
         if conn:
             conn.close()
 
+
+def get_gokuhiNum(id):
+    conn = None
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = 'SELECT 極秘可能数 FROM "極秘管理セグ" WHERE 学籍番号 = %s'
+            data = (id,)
+            cur.execute(sql,data)
+            result = cur.fetchone()  
+        conn.close()
+        return result[0] if result else 0
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return 0
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return 0
+    finally:
+        if conn:
+            conn.close()
+

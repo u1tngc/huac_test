@@ -1,6 +1,6 @@
 #PGM-ID:GK0S001D
 #PGM-NAME:GK学生管理セグI/O(オンライン)
-#最終更新日:2026/06/24
+#最終更新日:2026/11/01
 
 import os
 
@@ -312,6 +312,22 @@ def get_flightUser():
             sql = 'SELECT ユーザーid, 氏名 FROM "ユーザー管理セグ" WHERE ユーザーid <> %s and 権限 NOT IN (0,1,8,9)'
             data =('16A3184',)
             cur.execute(sql,data)
+            result = cur.fetchall()  
+        conn.close()
+        return [list(row) for row in result]
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return []
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return []
+
+def get_testUmu():
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = 'SELECT 学籍番号, 氏名, 出題区分 FROM "学生管理セグ" WHERE 出題区分 != 0'
+            cur.execute(sql)
             result = cur.fetchall()  
         conn.close()
         return [list(row) for row in result]

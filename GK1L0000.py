@@ -271,11 +271,18 @@ def GK_menu01():
                 #機能：会話履歴照会
                 GK1S0040.insertLog(user_id,"F001","")
                 session[f"{user_id}_wk81shoriKbn"] = 1
+                return render_template('GK_db081.html', gakuseiCHK=gakuseiCHK, err1="")
             elif cntl_kbn == "2":
                 #機能：会話履歴更新
                 GK1S0040.insertLog(user_id,"F011","")
                 session[f"{user_id}_wk81shoriKbn"] = 2
-            return render_template('GK_db081.html', gakuseiCHK=gakuseiCHK, err1="")
+                return render_template('GK_db081.html', gakuseiCHK=gakuseiCHK, err1="")
+            elif cntl_kbn == "3":
+                #機能：学習状況照会
+                GK1S0040.insertLog(user_id, "F021", "")
+                info = GK1S0042.get_gakushu()
+                session[f"{user_id}_wk82info"] = info
+                return render_template('GK_gakushu.html', info=info)
         elif shorikbn == "test_cntl":
             cntl_kbn = request.form['cntl_kbn2']
             if cntl_kbn == "1":
@@ -1349,6 +1356,18 @@ def GK_db083():
                            err1=err1,
                            msg1=msg1)
 
+#学習状況照会
+@app.route('/GK_gakushu', methods=['GET', 'POST'])
+def GK_gakushu():
+    user_id = session.get('user_id')
+    if not session.get('logged_in'):
+        return redirect(url_for('GK_login'))
+    if f"{user_id}_wk82info" not in session:
+        return redirect(url_for('GK_menu01'))
+    if not session.get('authority') in [6,7,9]:
+        return redirect(url_for('GK_menu01'))
+    return render_template('GK_gakushu.html', info=session.get(f'{user_id}_wk82info'))
+
 #小テスト発行頻度更新
 @app.route('/GK_db091', methods=['GET','POST'])
 def GK_db091():
@@ -1587,6 +1606,7 @@ def init07(user_id):
     session.pop(f"{user_id}_wk81kaiwaRireki", None)
     session.pop(f"{user_id}_wk81shoriKbn", None)
     session.pop(f"{user_id}_wk81shoriKbn", None)
+    session.pop(f"{user_id}_wk82info", None)
     session.pop(f"{user_id}task02TaskList", None)
     session.pop(f"{user_id}task02user_list", None)
     session.pop(f"{user_id}_wkSimList", None)

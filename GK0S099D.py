@@ -20,18 +20,6 @@ DB_CONFIG = {
     "target_session_attrs": "read-write"
 }
 
-# DB_CONFIG = {
-#     "dbname": "huac_gakka", 
-#     "user": "taniguchi_tanglin_ic", 
-#     "password": "N6eEqr20vmfNV-_McGwfkA", 
-#     "host": "huac-tngc-6767.jxf.gcp-asia-southeast1.cockroachlabs.cloud", 
-#     "port": 26257,
-#     "sslmode": "require",
-#     "sslcert": "",
-#     "sslkey": "",
-#     "sslrootcert": "",
-#     "target_session_attrs": "read-write"
-# }
 
 def insertLog(gakuseki, shobuncd, shobun_datetime, biko):
     """ログ管理セグにデータを登録"""
@@ -53,3 +41,26 @@ def insertLog(gakuseki, shobuncd, shobun_datetime, biko):
     except Exception as e:
         print(f'エラー内容：{e}')
         return 2
+
+def get_alertNum(id,date):
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)  
+        with conn.cursor() as cur:
+            sql = """
+            SELECT COUNT(*) AS 未解答件数 FROM 通報管理セグ
+            WHERE 学籍番号 = %s AND 通報年月日 >= %s
+            """
+            data = (id,date)
+            cur.execute(sql,data)
+            result = cur.fetchone()  
+        conn.close()
+        if result:
+            return result[0]
+        else:
+            return None
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return None
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return None

@@ -1,6 +1,6 @@
 #PGM-ID:GK1S0042
 #PGM-NAME:GK学科機能メイン
-#最終更新日:2026/09/04
+#最終更新日:2026/11/01
 
 from datetime import datetime
 from datetime import timedelta
@@ -10,8 +10,12 @@ from dateutil.relativedelta import relativedelta
 import os
 
 import GK0S001D
+import GK0S002D
+import GK0S003D
+import GK0S004D
 import GK0S081D
 import GK0S082D
+import GK0S099D
 import PK0S0002
 
 def get_gakuseiInfo02():
@@ -384,3 +388,53 @@ def update_Task(kanriKbn, taskId, edaNo, naiyo, tanto, kigenDate, memo, shinchok
     if err != 0:
         return 1, "タスクの訂正に失敗しました。"
     return 0, ""
+
+def get_gakushu():
+    gakuseiList = GK0S001D.get_testUmu()
+    if not gakuseiList:
+        return ""
+    ret_array = []
+    for ix1 in range(len(gakuseiList)):
+        temp_array = []
+        first_testdate = GK0S002D.get_firstTestdate(gakuseiList[ix1][0],gakuseiList[ix1][2])
+        if first_testdate:
+            alert_num = GK0S099D.get_alertNum(gakuseiList[ix1][0], first_testdate)
+            sunday_num = count_sundays(first_testdate)
+            if sunday_num == 0:
+                alert_rate = "-"
+            else:
+                alert_rate = int(round(alert_num / sunday_num * 100))
+                alert_rate = f"{str(alert_rate)}%"
+            gokuhi_num = GK0S004D.get_gokuhiNum(gakuseiList[ix1][0])
+            rate = GK0S003D.get_fukushu_rate(gakuseiList[ix1][0],1)
+            if rate == "":
+                fukushu_rate1 = ""
+            else:
+                fukushu_rate1 = f"{round(float(rate))}%"
+            rate = GK0S003D.get_fukushu_rate(gakuseiList[ix1][0],2)
+            if rate == "":
+                fukushu_rate2 = ""
+            else:
+                fukushu_rate2 = f"{round(float(rate))}%"
+            temp_array.append(gakuseiList[ix1][0])
+            temp_array.append(gakuseiList[ix1][1])
+            temp_array.append(str(alert_num))
+            temp_array.append(alert_rate)
+            temp_array.append(str(gokuhi_num))
+            temp_array.append(fukushu_rate2)
+            temp_array.append(fukushu_rate1)
+            ret_array.append(temp_array)
+    return ret_array
+
+def count_sundays(start_yyyymmdd, end=None):
+    """start（YYYYMMDD文字列）から end（省略時は今日・日本時間）までの日曜日の数。両端を含む。"""
+    start = datetime.strptime(start_yyyymmdd, "%Y%m%d").date()
+    if end is None:
+        end = datetime.now(ZoneInfo("Asia/Tokyo")).date()
+    if start > end:
+        return 0
+    # 最初の日曜日（weekday: 月=0 ... 日=6）
+    first_sunday = start + timedelta(days=(6 - start.weekday()) % 7)
+    if first_sunday > end:
+        return 0
+    return (end - first_sunday).days // 7 + 1

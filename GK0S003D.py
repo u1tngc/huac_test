@@ -1,6 +1,6 @@
 #PGM-ID:GK0S003D
 #PGM-NAME:GK復習問題セグI/O(オンライン)
-#最終更新日:2025/10/27
+#最終更新日:2026/11/01
 
 import os
 
@@ -133,3 +133,33 @@ def check_shoriymd(user_id, mondaiNo):
     finally:
         if conn:
             conn.close()  # 接続を確実に閉じる
+
+def get_fukushu_rate(id, kbn):
+    conn = None
+    try:
+        conn = psycopg2.connect(**DB_CONFIG)
+        with conn.cursor() as cur:
+            sql = '''
+                SELECT
+                    ROUND(
+                        100.0 * COUNT(*) FILTER (WHERE 復習状況 = 1)
+                        / NULLIF(COUNT(*), 0), 1
+                    )
+                FROM "復習問題セグ"
+                WHERE 学籍番号 = %s
+                  AND 出題区分 = %s
+            '''
+            cur.execute(sql, (id, kbn))
+            row = cur.fetchone()
+        if row is None or row[0] is None:
+            return ""
+        return str(row[0])
+    except psycopg2.Error as e:
+        print(f'エラー内容：{e}')
+        return ""
+    except Exception as e:
+        print(f'エラー内容：{e}')
+        return ""
+    finally:
+        if conn:
+            conn.close()

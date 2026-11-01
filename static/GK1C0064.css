@@ -1,0 +1,60 @@
+/* ===== 学習状況照会 ===== */
+
+.options {
+    max-width: 760px;
+}
+
+.gakushu-note {
+    color: #777;
+    font-size: 0.85em;
+    text-align: left;
+    margin: 0 0 10px 0;
+}
+
+.gakushu-scroll {
+    max-height: none;
+    overflow-x: auto;
+}
+
+.gakushu-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.gakushu-table th,
+.gakushu-table td {
+    border: 2px solid black;
+    padding: 10px 8px;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.gakushu-table thead th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.gakushu-table tbody td.col-name {
+    text-align: left;
+}
+
+.gakushu-table .no-data {
+    padding: 20px 10px;
+    color: #777;
+}
+
+@media screen and (max-width: 600px) {
+    .options {
+        padding: 20px;
+    }
+
+    .gakushu-table {
+        font-size: 12px;
+    }
+
+    .gakushu-table th,
+    .gakushu-table td {
+        padding: 6px 4px;
+    }
+}
