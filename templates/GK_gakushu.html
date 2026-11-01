@@ -19,11 +19,19 @@
             <h2>学習状況照会</h2>
             <div class="data-section gakushu-scroll">
                 <table class="data-table gakushu-table">
+                    <colgroup>
+                        <col class="col-shimei">
+                        <col class="col-kaisu">
+                        <col class="col-rate">
+                        <col class="col-point">
+                        <col class="col-rate">
+                        <col class="col-rate">
+                    </colgroup>
                     <thead>
                         <tr>
-                            <th rowspan="2">氏名</th>
+                            <th rowspan="2" class="col-name">氏名</th>
                             <th rowspan="2">通報<br>回数</th>
-                            <th rowspan="2">通報P</th>
+                            <th rowspan="2">通報率</th>
                             <th rowspan="2">学習P</th>
                             <th colspan="2">復習消化率</th>
                         </tr>
@@ -35,7 +43,7 @@
                     <tbody>
                         {% for row in info %}
                         <tr>
-                            <td class="col-name">{{ row[1] }}</td>
+                            <td class="col-name" title="{{ row[1] }}">{{ row[1] }}</td>
                             <td>{{ row[2] }}</td>
                             <td>{{ row[3] }}</td>
                             <td>{{ row[4] }}</td>
