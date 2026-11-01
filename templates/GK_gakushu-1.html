@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUAC学科ツール 学習状況照会</title>
+    <link rel="stylesheet" href="../static/GK1C0040.css">
+    <link rel="stylesheet" href="../static/GK1C0064.css">
+</head>
+
+<body>
+    <header>
+        <h1>HUAC学科ツール</h1>
+    </header>
+
+    <main>
+        <section class="options">
+            <h2>学習状況照会</h2>
+            <div class="data-section gakushu-scroll">
+                <table class="data-table gakushu-table">
+                    <colgroup>
+                        <col class="col-shimei">
+                        <col class="col-num">
+                        <col class="col-num">
+                        <col class="col-num">
+                        <col class="col-rate">
+                        <col class="col-rate">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th rowspan="2" class="col-name">氏名</th>
+                            <th rowspan="2">通報<br>回数</th>
+                            <th rowspan="2">通報P</th>
+                            <th rowspan="2">学習P</th>
+                            <th colspan="2">復習消化率</th>
+                        </tr>
+                        <tr>
+                            <th>練習問題</th>
+                            <th>小テスト</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in info %}
+                        <tr>
+                            <td class="col-name" title="{{ row[1] }}">{{ row[1] }}</td>
+                            <td>{{ row[2] }}</td>
+                            <td>{{ row[3] }}</td>
+                            <td>{{ row[4] }}</td>
+                            <td>{{ row[5] }}</td>
+                            <td>{{ row[6] }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="6" class="no-data">表示するデータがありません。</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="button-group">
+                <button type="button" onclick="location.href='/GK_menu01'" class="menu-button">戻る</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Yuichi Taniguchi</p>
+    </footer>
+</body>
+
+</html>

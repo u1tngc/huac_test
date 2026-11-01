@@ -1,0 +1,123 @@
+/* ===== 学習状況照会 ===== */
+
+.options {
+    max-width: 760px;
+}
+
+/* スクロール領域（縦・横） */
+.gakushu-scroll {
+    max-height: max(240px, calc(100vh - 340px));
+    overflow: auto;
+    margin-top: 10px;
+}
+
+/* 表本体：列幅の合計で表幅を決め、中央寄せ（狭い画面では横スクロール） */
+.data-table.gakushu-table {
+    table-layout: fixed;
+    width: 38em;
+    /* = 氏名10em + 数値5.2em×3 + 率6.2em×2 */
+    margin: 0 auto;
+    border-collapse: separate;
+    /* スクロール中も見出しの罫線を残すため separate にする */
+    border-spacing: 0;
+    font-size: 15px;
+    font-variant-numeric: tabular-nums;
+}
+
+.gakushu-table col.col-shimei {
+    width: 10em;
+}
+
+.gakushu-table col.col-num {
+    width: 5.2em;
+}
+
+.gakushu-table col.col-rate {
+    width: 6.2em;
+}
+
+/* 基底CSS（GK1C0040）の列幅・折り返し指定を打ち消す */
+.data-table.gakushu-table th,
+.data-table.gakushu-table td {
+    width: auto;
+    word-break: normal;
+    white-space: nowrap;
+    padding: 8px 6px;
+    text-align: center;
+    border: none;
+    border-right: 2px solid black;
+    border-bottom: 2px solid black;
+}
+
+.data-table.gakushu-table thead tr:first-child th {
+    border-top: 2px solid black;
+}
+
+.data-table.gakushu-table th.col-name,
+.data-table.gakushu-table tbody td:first-child {
+    border-left: 2px solid black;
+}
+
+/* 見出し（縦スクロール時に固定） */
+.data-table.gakushu-table thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.data-table.gakushu-table thead th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    line-height: 1.3;
+}
+
+/* 氏名列（横スクロール時に固定、長い氏名は省略表示） */
+.data-table.gakushu-table .col-name {
+    position: sticky;
+    left: 0;
+    z-index: 1;
+    text-align: left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-color: white;
+}
+
+.data-table.gakushu-table th.col-name {
+    z-index: 3;
+    text-align: center;
+    background-color: #f2f2f2;
+}
+
+/* 行の見やすさ */
+.data-table.gakushu-table tbody tr:nth-child(even) td {
+    background-color: #f8f9fb;
+}
+
+.data-table.gakushu-table tbody tr:hover td {
+    background-color: #e8eefb;
+}
+
+.data-table.gakushu-table .no-data {
+    padding: 20px 10px;
+    color: #777;
+    text-align: center;
+}
+
+@media screen and (max-width: 600px) {
+    .options {
+        padding: 15px;
+    }
+
+    .gakushu-scroll {
+        max-height: max(220px, calc(100vh - 300px));
+    }
+
+    .data-table.gakushu-table {
+        font-size: 13px;
+    }
+
+    .data-table.gakushu-table th,
+    .data-table.gakushu-table td {
+        padding: 6px 4px;
+    }
+}
