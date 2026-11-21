@@ -673,13 +673,26 @@ def prepare(jpn, eng, warning_flg, path, kind):
     levels = [lv for _, lv in chips]
     colored = []
     k = 0
+    # FM で改行した行の字下げ：2行目以降の原文と同じ（無ければ2文字）
+    cont_ind = [len(ln) - len(ln.lstrip(' ')) for ln in lines[1:] if ln.strip()]
+    cont_ind = max(cont_ind) if cont_ind and max(cont_ind) > 0 else 2
     for ln in lines:
         words = [('', len(ln) - len(ln.lstrip(' ')))]
         for w in ln.replace('$', '').split():
             lv = levels[k] if k < len(levels) else ''
             words.append((w, lv if lv in ('red', 'org') else ''))
             k += 1
-        colored.append(words)
+        if kind == 2:
+            # TAF は FM（FMddhhmm／FM 単独）の前でも改行する
+            cur = [words[0]]
+            for w in words[1:]:
+                if len(cur) > 1 and re.match(r'^FM(\d{6})?$', w[0]):
+                    colored.append(cur)
+                    cur = [('', cont_ind)]
+                cur.append(w)
+            colored.append(cur)
+        else:
+            colored.append(words)
     return {'raw_lines': raw_lines, 'raw_text': raw_text, 'header': header, 'rows': rows,
             'colored': colored, 'station_code': station_code}
 

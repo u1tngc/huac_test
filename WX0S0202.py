@@ -426,9 +426,10 @@ def readTaf(taf):
             tafRet ,tafEng, warning_flg = appendList(tafRet, tafEng, warning_flg, tafStr, " ", 0)
             time_z = [0,0,0]
             time_j = []
-            time_z[0] = int(tafInfo[ix1 + 1][0:2])
-            time_z[1] = int(tafInfo[ix1 + 1][3:5])
-            time_z[2] = int(tafInfo[ix1 + 1][5:7])
+            fm_time = tafInfo[ix1 + 1].replace('/', '')    # 「21/1800」「211800」どちらの書き方も ddhhmm にそろえる
+            time_z[0] = int(fm_time[0:2])
+            time_z[1] = int(fm_time[2:4])
+            time_z[2] = int(fm_time[4:6])
             time_j = PK0S0100.utc_to_jst(time_z)
             if time_j[2] < 10:
                 time_j_m = "0" + str(time_j[2])
