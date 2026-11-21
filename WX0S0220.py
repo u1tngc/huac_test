@@ -510,6 +510,8 @@ class RawText(Flowable):
         inner = aw - self.PAD * 2
         sp = pdfmetrics.stringWidth(' ', FONT_B, self.FS)
         self.placed = []          # (行番号, x, 文字列, 判定)
+        self.soft_break = set()   # 群と群の間で折り返した行（行末に空白を入れる）
+        self.sp = sp
         row = 0
         for words in self.lines:
             indent = words[0][1] if words and words[0][0] == '' else 0
@@ -519,6 +521,7 @@ class RawText(Flowable):
             for i, (w, lv) in enumerate(words):
                 ww = pdfmetrics.stringWidth(w, FONT_B, self.FS)
                 if x > lead_x and x + ww > inner:
+                    self.soft_break.add(row)
                     row += 1
                     lead_x = lead_x + sp * 2 if self.indent_cont else 0
                     x = lead_x
@@ -546,10 +549,26 @@ class RawText(Flowable):
         c.setLineWidth(0.75)
         c.roundRect(0, 0, self.width, self.height, 3, stroke=1, fill=1)
         top = self.height - self.PAD - self.FS + 1
+        # コピーしたときに群の間の空白が残るよう、空白も文字として1行ずつ書く
+        rows = {}
         for row, x, text, lv in self.placed:
-            c.setFillColor(RAW_TEXT_COLOR.get(lv, INK))
-            c.setFont(FONT_B, self.FS)
-            c.drawString(self.PAD + x, top - row * self.LEAD, text)
+            rows.setdefault(row, []).append((x, text, lv))
+        for row, items in rows.items():
+            t = c.beginText(self.PAD, top - row * self.LEAD)
+            t.setFont(FONT_B, self.FS)
+            cursor = 0.0
+            for x, text, lv in sorted(items):
+                n = int(round((x - cursor) / self.sp))
+                if n > 0:
+                    t.setFillColor(INK)
+                    t.textOut(' ' * n)
+                t.setFillColor(RAW_TEXT_COLOR.get(lv, INK))
+                t.textOut(text)
+                cursor = x + pdfmetrics.stringWidth(text, FONT_B, self.FS)
+            if row in self.soft_break:
+                t.setFillColor(INK)
+                t.textOut(' ')
+            c.drawText(t)
 
 
 class Pill(Flowable):

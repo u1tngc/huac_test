@@ -16,6 +16,7 @@ TAF 1通を METAR（WX0S0221）と同じ構成の PDF にする。
 レイアウト
     ・見出し → 原文（行の区切りを残し、赤・橙の群に色） → 基本予報 → 変化群1… の順に1列で並べる
     ・各ブロックの見出し帯（1行）に 種類（BECMG/TEMPO/FM）・一言の説明・時間帯（JST）を出す
+    ・FM（FMddhhmm、FM と時刻が離れた書き方の両方）も変化群として数え、変化群の番号は出現順に振り直す
     ・同じブロックの雲・乱気流・着氷はそれぞれ1行にまとめ、風や雲の文言は短くする
     ・A4 1枚に収まらないときは次ページに続ける
 """
@@ -35,7 +36,7 @@ HEAD_BG = {'base': HexColor('#E6EDF5'), 'grp': HexColor('#F1F3F5')}
 KIND_TEXT = {
     'BECMG': 'この間に変化し、以後この状態',
     'TEMPO': 'この間、一時的にこの状態',
-    'FM': 'この時刻からこの状態',
+    'FM': '以降でこの状態',
 }
 MERGE_KEYS = ('雲', '乱気流', '着氷')
 
@@ -69,29 +70,45 @@ def _clean_time(v):
     return v + ' JST' if v else ''
 
 
+def _new_block(kind, kw='', no=0):
+    return {'kind': kind, 'no': no, 'kw': kw, 'time': '', 'prob': '', 'rows': []}
+
+
 def _split_blocks(rows):
     blocks = []
     for r in rows:
         if r['type'] == 'section':
             m = re.match(r'変化群(\d+)（(\w+)）', r['title'])
             if m:
-                blocks.append({'kind': 'grp', 'no': int(m.group(1)), 'kw': m.group(2),
-                               'time': '', 'prob': '', 'rows': []})
+                kw = m.group(2)
+                if re.match(r'FM\d', kw):          # FMddhhmm
+                    kw = 'FM'
+                blocks.append(_new_block('grp', kw))
+            elif r['title'].startswith('変化'):    # FM と時刻が離れた書き方（WX0S0202 では「変化」）
+                blocks.append(_new_block('grp', 'FM'))
             else:
-                blocks.append({'kind': 'base', 'kw': '', 'time': '', 'prob': '', 'rows': []})
+                blocks.append(_new_block('base'))
             continue
         if not blocks:
-            blocks.append({'kind': 'base', 'kw': '', 'time': '', 'prob': '', 'rows': []})
+            blocks.append(_new_block('base'))
         b = blocks[-1]
         if r['item'] in ('対象時刻', '開始時間') and not b['time']:
             b['time'] = _clean_time(r['value'])
+            continue
+        m = re.match(r'(\d+日\d+:\d+)\(JST\)から下記の現象が開始', r['value'] or '')
+        if m and b['kw'] == 'FM' and not b['time']:
+            b['time'] = m.group(1) + ' JST'
             continue
         if r['item'] == '発生確率':
             b['prob'] = r['value']
             continue
         b['rows'].append(r)
+    no = 0
     for b in blocks:
         b['rows'] = _compact(b['rows'])
+        if b['kind'] == 'grp':
+            no += 1
+            b['no'] = no
     return blocks
 
 
