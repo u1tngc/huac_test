@@ -1,19 +1,15 @@
 #PGM-ID:WL0S0200
 #PGM-NAME:WLメタタフ取得
-#最終更新日:
+#最終更新日:2026/11/21
 
 import os
 from pypdf import PdfWriter
-from reportlab.lib.colors import HexColor
-from reportlab.lib.pagesizes import A4, portrait
-from reportlab.lib.pagesizes import A3, portrait
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
 
 import WX0S0201
 import WX0S0202
 import WX0S0205
+import WX0S0221
+import WX0S0222
 
 def translate_MetarTaf(fileName, path):
     fileName_m = 'Metar'
@@ -50,7 +46,7 @@ def translate_MetarTaf(fileName, path):
                 metarEng.insert(1, "")
                 warning_flg.insert(0, 0)
                 warning_flg.insert(1, 0)
-            metarTaf_pdf(metarJpn, metarEng, warning_flg, fileName_m, 1, ix1, path)  
+            WX0S0221.metar_pdf(metarJpn, metarEng, warning_flg, fileName_m, ix1, path)
             metarJpn = []
             metarEng = []
             warning_flg = []
@@ -73,7 +69,7 @@ def translate_MetarTaf(fileName, path):
             tafJpn.insert(ix1 + 1, "")
             tafEng.insert(ix1 + 1, "")
             warning_flg.insert(ix1 + 1,0)
-            metarTaf_pdf(tafJpn, tafEng, warning_flg, fileName_t, 2, ix2, path) 
+            WX0S0222.taf_pdf(tafJpn, tafEng, warning_flg, fileName_t, ix2, path)
         taf_umu = 1
         if ix2 >= 1:
             join_File(ix2, fileName_t, path)
@@ -143,97 +139,6 @@ def get_MetarTaf(fileName, path):
             else:
                 taf = taf_wk2
     return metar, taf
-
-def metarTaf_pdf(metartafJpn, metartafEng, warning_flg, fileName, metartaf, ix1, path):
-    GEN_SHIN_GOTHIC_MEDIUM_TTF = os.path.abspath("static/fonts/GenShinGothic-Monospace-Medium.ttf")
-    if metartaf == 1: #metar
-        FILENAME = path + fileName + '_' + str(ix1 + 1) +'.pdf'
-        c = canvas.Canvas(FILENAME, pagesize=portrait(A4))
-        pdfmetrics.registerFont(TTFont('GenShinGothic', GEN_SHIN_GOTHIC_MEDIUM_TTF))
-        font_size = 10
-        c.setFont('GenShinGothic', font_size)
-        y = 800
-        for ix2 in range(len(metartafJpn)):
-            if warning_flg[ix2] == 1:
-                c.setFillColor(HexColor('#FF0000'))
-            elif warning_flg[ix2] == 2:
-                c.setFillColor(HexColor('#FF9900'))
-            else:
-                c.setFillColor(HexColor('#0d0000'))
-            c.drawString(400, y, metartafEng[ix2])
-            c.setFillColor(HexColor('#0d0000'))
-            c.drawString(30, y, metartafJpn[ix2])
-            y -= 13
-        c.save()
-    elif metartaf == 2: #taf
-        FILENAME = path + fileName + '_' + str(ix1 + 1) +'.pdf'
-        if len(metartafJpn) >= 60:
-            flg_1 = 0
-            flg_2 = 0
-            c = canvas.Canvas(FILENAME, pagesize=portrait(A3))
-            pdfmetrics.registerFont(TTFont('GenShinGothic', GEN_SHIN_GOTHIC_MEDIUM_TTF))
-            y = 1150
-            for ix2 in range(len(metartafJpn)):
-                if metartafJpn[ix2][0:2] == "～Ｔ":
-                    flg_2 = 1             
-                if len(metartafJpn[ix2]) == 0:
-                    font_size = 3
-                    if flg_2 == 1:
-                        newY = y - 11
-                        flg_2 = 0
-                    if y <= 200:
-                        flg_1 = 1
-                    c.setFont('GenShinGothic', font_size)
-                    c.drawString(30, y, metartafJpn[ix2])
-                    c.drawString(400, y, metartafEng[ix2])
-                else:
-                    font_size = 11
-                    if warning_flg[ix2] == 1:
-                        c.setFillColor(HexColor('#FF0000'))
-                    elif warning_flg[ix2] == 2:
-                        c.setFillColor(HexColor('#FF9900'))
-                    else:
-                        c.setFillColor(HexColor('#0d0000'))
-                    if flg_1 == 1:
-                        y = newY
-                        flg_1 = 3   
-                        c.setFont('GenShinGothic', font_size)    
-                        c.drawString(780, y, metartafEng[ix2])
-                        c.setFillColor(HexColor('#0d0000'))
-                        c.drawString(450, y, metartafJpn[ix2])       
-                    elif flg_1 == 3:
-                        c.setFont('GenShinGothic', font_size)  
-                        c.drawString(780, y, metartafEng[ix2])   
-                        c.setFillColor(HexColor('#0d0000'))
-                        c.drawString(450, y, metartafJpn[ix2])
-                    else:
-                        c.setFont('GenShinGothic', font_size)    
-                        c.drawString(350, y, metartafEng[ix2])
-                        c.setFillColor(HexColor('#0d0000'))
-                        c.drawString(20, y, metartafJpn[ix2])
-                        
-                y -= 11
-        else:
-            c = canvas.Canvas(FILENAME, pagesize=portrait(A4))
-            pdfmetrics.registerFont(TTFont('GenShinGothic', GEN_SHIN_GOTHIC_MEDIUM_TTF))
-            font_size = 10
-            c.setFont('GenShinGothic', font_size)
-            y = 800
-            for ix2 in range(len(metartafJpn)):
-                if warning_flg[ix2] == 1:
-                    c.setFillColor(HexColor('#FF0000'))
-                elif warning_flg[ix2] == 2:
-                    c.setFillColor(HexColor('#FF9900'))
-                else:
-                    c.setFillColor(HexColor('#0d0000'))
-                c.drawString(400, y, metartafEng[ix2])
-                c.setFillColor(HexColor('#0d0000'))
-                c.drawString(30, y, metartafJpn[ix2])
-                y -= 13
-
-        c.save()
-
-    return FILENAME
 
 def join_metar_taf(fileName_m, fileName_t, fileName,path):
     try:
